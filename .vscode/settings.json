@@ -15,4 +15,7 @@
         },
       },
       "isort.args":["--profile", "black"],
+      "terminal.integrated.env.osx": {
+        // "PYTHONPATH": "${workspaceFolder}.src",
+      },
 }

@@ -4,9 +4,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from report.interactive import run_app
-from report.static import create_pdf_report
-from report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.interactive import run_app
+from krisi.report.static import create_pdf_report
+from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def plotly_interactive(

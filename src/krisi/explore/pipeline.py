@@ -3,7 +3,7 @@ from typing import Optional
 import pandas as pd
 from dash import dcc
 
-from explore.analysis import (
+from krisi.explore.analysis import (
     addfuller_test,
     plot_acf_pacf,
     plot_df,
@@ -11,10 +11,10 @@ from explore.analysis import (
     plot_rolling_mean,
     plot_table,
 )
-from explore.modeling import fit_multiple_arimas
-from explore.utils import generating_arima_synthetic_data, make_it_stationary
-from report.report import Report, plotly_interactive
-from report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.explore.modeling import fit_multiple_arimas
+from krisi.explore.utils import generating_arima_synthetic_data, make_it_stationary
+from krisi.report.report import Report, plotly_interactive
+from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def eda_pipeline(

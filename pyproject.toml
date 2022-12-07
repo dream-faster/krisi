@@ -20,16 +20,16 @@ classifiers = [
 ]
 
 dependencies = [
-  "numpy",
-  "pandas",
-  "matplotlib",
-  "tqdm",
-  "pyarrow>=3.0",
-  "dash",
-  "plotly",
-  "missingno",
-  "seaborn",
-  "statsmodels==0.12.1"
+  # "numpy",
+  # "pandas",
+  # "matplotlib",
+  # "tqdm",
+  # "pyarrow>=3.0",
+  # "dash",
+  # "plotly",
+  # "missingno",
+  # "seaborn",
+  # "statsmodels==0.12.1"
   
   # -- Dev Dependencies --
   # "pyright",
