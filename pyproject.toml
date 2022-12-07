@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "krisi"
+version = "0.0.1"
+authors = [
+  { name="Mark Szulyovszky", email="mark.szulyovszky@gmail.com" },
+  { name="Daniel Szemerey", email="daniel@szemerey.eu" },
+]
+description = "Testing, Reporting and EDA framework for Time Series Analysis"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "tqdm",
+  "pyarrow>=3.0",
+  "dash",
+  "plotly",
+  "missingno",
+  "seaborn",
+  "statsmodels==0.12.1"
+  
+  # -- Dev Dependencies --
+  # "pyright",
+  # "black",
+  # "ipython",
+  # "notebook",
+  # "ipykernel",
+  # "pydeps",
+  # "pytest",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.urls]
+"Homepage" = "https://github.com/dream-faster/krisi"
+"Bug Tracker" = "https://github.com/dream-faster/krisi/issues"
