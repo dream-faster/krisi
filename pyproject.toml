@@ -39,6 +39,7 @@ dependencies = [
   # "ipykernel",
   # "pydeps",
   # "pytest",
+  # "isort"
 ]
 
 [tool.hatch.metadata]

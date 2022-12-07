@@ -5,7 +5,7 @@ import numpy as np
 from statsmodels.tsa.stattools import acf, pacf, q_stat
 
 from models.base import Model
-from eda.utils import generating_arima_synthetic_data
+from explore.utils import generating_arima_synthetic_data
 from models.naive_models import default_naive_model
 from models.arima import default_arima_model
 from scorecard import ScoreCard, SampleTypes

@@ -1,7 +1,7 @@
 import base64
+from typing import List
 
 from xhtml2pdf import pisa
-from typing import List
 
 
 def figure_to_base64(figures):
@@ -25,7 +25,7 @@ def convert_html_to_pdf(source_html, output_filename):
     return pisa_status.err
 
 
-def create_pdf_report(figures: List, path: str = "reporting"):
+def create_pdf_report(figures: List, path: str = "report"):
     [fig.update_layout(width=900.0) for fig in figures]
     images_html = figure_to_base64(figures)
     report_html = create_html_report(f"{path}/template.html", images_html)
