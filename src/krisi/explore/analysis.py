@@ -1,15 +1,11 @@
 from typing import Callable
-import pandas as pd
+
 import numpy as np
-
-
-from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.stattools import acf, pacf
-
-from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
-
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
+from statsmodels.tsa.stattools import acf, adfuller, pacf
 
 
 def plot_df(df: pd.DataFrame) -> go.Figure:

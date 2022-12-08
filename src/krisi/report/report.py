@@ -1,12 +1,12 @@
-import plotly.express as px
-from typing import Optional, List, Callable, Union
+from typing import Callable, List, Optional, Union
 
-from reporting.interactive import run_app
-from reporting.static import create_pdf_report
-from reporting.types import InteractiveFigure, DisplayModes, PlotlyInput
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
+
+from krisi.report.interactive import run_app
+from krisi.report.static import create_pdf_report
+from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def plotly_interactive(

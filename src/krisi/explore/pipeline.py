@@ -1,23 +1,20 @@
 from typing import Optional
-import pandas as pd
 
+import pandas as pd
 from dash import dcc
 
-from reporting.report import Report, plotly_interactive
-from reporting.types import InteractiveFigure, DisplayModes, PlotlyInput
-
-import plotly.graph_objects as go
-
-from eda.analysis import (
-    plot_df,
-    plot_rolling_mean,
-    plot_acf_pacf,
-    plot_predict,
-    plot_table,
+from krisi.explore.analysis import (
     addfuller_test,
+    plot_acf_pacf,
+    plot_df,
+    plot_predict,
+    plot_rolling_mean,
+    plot_table,
 )
-from eda.utils import make_it_stationary, generating_arima_synthetic_data
-from eda.modeling import fit_multiple_arimas
+from krisi.explore.modeling import fit_multiple_arimas
+from krisi.explore.utils import generating_arima_synthetic_data, make_it_stationary
+from krisi.report.report import Report, plotly_interactive
+from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def eda_pipeline(

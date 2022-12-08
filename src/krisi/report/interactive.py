@@ -1,6 +1,8 @@
-from dash import Dash, dcc, html, Input, Output
 from typing import List
-from .types import InteractiveFigure
+
+from dash import Dash, Input, Output, dcc, html
+
+from .types_ import InteractiveFigure
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
@@ -11,7 +13,7 @@ def block(graph: dcc.Graph, title: html.P, controllers: html.Div) -> html.Div:
         className="flex flex-row flex-wrap w-full min-h-[450px]",
     )
 
-
+ 
 def run_app(components: List[InteractiveFigure]) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True

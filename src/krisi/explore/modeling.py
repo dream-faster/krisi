@@ -1,7 +1,7 @@
-from typing import Optional, Tuple, List, Union
-import pandas as pd
-
 import itertools
+from typing import List, Optional, Tuple, Union
+
+import pandas as pd
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 
 

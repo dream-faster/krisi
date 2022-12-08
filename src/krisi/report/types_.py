@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Tuple, Callable, Optional, Any, Literal, Union
+from typing import Any, Callable, List, Literal, Optional, Tuple, Union
+
 from dash import dcc
 
 
@@ -27,4 +28,4 @@ class DisplayModes(Enum):
     direct = "direct"
 
 
-save_path = "reporting/"
+save_path = "report/"
