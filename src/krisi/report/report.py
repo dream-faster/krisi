@@ -44,6 +44,7 @@ class Report:
     def __init__(self, modes: List[DisplayModes]) -> None:
         self.modes = modes
         self.figures: List[InteractiveFigure] = []
+        self.global_controllers: List[PlotlyInput] = []
 
     def generate_launch(self):
         if DisplayModes.pdf in self.modes:
@@ -52,7 +53,7 @@ class Report:
             )
 
         if DisplayModes.interactive in self.modes:
-            run_app(self.figures)
+            run_app(self.figures, self.global_controllers)
 
         if DisplayModes.direct in self.modes:
             [figure.get_figure(width=900.0).show() for figure in self.figures]
@@ -62,6 +63,12 @@ class Report:
             self.figures += figures
         else:
             self.figures.append(figures)
+            
+    def add_global_controller(self, controller: Union[PlotlyInput, List[PlotlyInput]]) -> None:
+        if isinstance(controller, List):
+            self.global_controllers += controller
+        else:
+            self.global_controllers.append(controller)
 
 
 if __name__ == "__main__":

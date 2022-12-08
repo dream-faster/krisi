@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -8,30 +8,43 @@ from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 from statsmodels.tsa.stattools import acf, adfuller, pacf
 
 
-def plot_df(df: pd.DataFrame) -> go.Figure:
+def plot_df(df: pd.DataFrame, columns:Optional[Union[List[str], str]] = None ) -> go.Figure:
+    # if columns is not None and len(columns) > 0:
+    #     if isinstance(columns, str):
+    #         columns = [columns]
+    #     df = df[columns]
+
     fig = go.Figure()
     fig.add_scatter(x=df.index, y=df.iloc[:, 0].to_list(), mode="lines")
+    # fig.add_scatter(x=df.index, y=[df[column].to_list() for column in df.columns], mode="lines")
+    # fig = df.plot(backend='plotly')
     return fig
 
 
 def plot_rolling_mean(
-    ds: pd.Series,
+    df: pd.DataFrame,
     rolling: int = 52,
+    columns:Optional[List[str]] = None
 ) -> go.Figure:
+    if columns:
+        df = df[columns]
+    else:
+        df = df.iloc[:,0]
+    
     fig = go.Figure()
 
     colors = px.colors.qualitative.Plotly
 
-    mean = ds.rolling(window=rolling).mean()
-    std = ds.rolling(window=rolling).std()
+    mean = df.rolling(window=rolling).mean()
+    std = df.rolling(window=rolling).std()
 
-    df = mean.to_frame(name="mean")
-    df["upper"] = mean + (2 * std)
-    df["lower"] = mean - (2 * std)
+    df_mean = mean.to_frame(name="mean")
+    df_mean["upper"] = mean + (2 * std)
+    df_mean["lower"] = mean - (2 * std)
 
     fig.add_traces(
         go.Scatter(
-            x=ds.index,
+            x=df.index,
             y=mean,
             mode="lines",
             name=f"rolling mean {rolling}",
@@ -40,8 +53,8 @@ def plot_rolling_mean(
     )
     fig.add_traces(
         go.Scatter(
-            x=ds.index,
-            y=df["upper"],
+            x=df.index,
+            y=df_mean["upper"],
             mode="lines",
             name="upper bounds (2*std)",
             line=dict(color=colors[1]),
@@ -49,8 +62,8 @@ def plot_rolling_mean(
     )
     fig.add_traces(
         go.Scatter(
-            x=ds.index,
-            y=df["lower"],
+            x=df.index,
+            y=df_mean["lower"],
             name="lower bounds (2*std)",
             mode="lines",
             line=dict(color=colors[2]),
