@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import Callable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -14,22 +14,39 @@ from krisi.utils.models import (
 )
 
 
+
+def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
+    def wrap(*args2, **kwargs2):
+        return func(*args, **kwargs, *args2, **kwargs2)
+
+    return wrap
+
+
+
+default_scoring_functions = [("pacf",metric_hoc(pacf, alpha=0.05)), ("acf",metric_hoc(acf, alpha=0.05))]
+
 def evaluate(
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
-    features: pd.DataFrame,
+    X: pd.DataFrame,
+    y: pd.Series,
     predictions: Union[np.ndarray, pd.Series],
+    scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
 ) -> ScoreCard:
     summary = ScoreCard(
         model_name=model_name, dataset_name=dataset_name, sample_type=sample_type
     )
+    
+    for score_name, score_function in scoring_functions:
+        summary[score_name] = score_function(predictions, y)
+    
 
     alpha = 0.05
     pacf_res = pacf(predictions, alpha=alpha)
     acf_res = acf(predictions, alpha=alpha)
 
-    summary.update("ljung_box", q_stat(acf_res, len(features)))
+    summary.update("ljung_box", q_stat(acf_res, len(X)))
 
     return summary
 

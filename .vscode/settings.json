@@ -9,15 +9,18 @@
     "python.linting.enabled": true,
     "editor.formatOnSave": true,
     "python.formatting.provider": "black",
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true
-        },
-      },
-      "isort.args":["--profile", "black"],
-      "terminal.integrated.env.osx": {
-        "PYTHONPATH": "${workspaceFolder}",
-      },
+    // "[python]": {
+    //     "editor.defaultFormatter": "ms-python.black-formatter",
+    //     "editor.formatOnSave": true,
+    //     "editor.codeActionsOnSave": {
+    //         "source.organizeImports": true
+    //     },
+    // },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "isort.args":["--profile", "black"],
+    "terminal.integrated.env.osx": {
+    "PYTHONPATH": "${workspaceFolder}",
+    },
 }
