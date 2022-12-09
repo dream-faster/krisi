@@ -32,25 +32,6 @@ class Model(ABC):
         raise NotImplementedError
 
 
- 
- 
-
-
-
-def generate_univariate_predictions(
-    model: Model,
-    train: pd.DataFrame, 
-    test: pd.DataFrame, 
-    target_col: str,
-) -> Tuple[Union[pd.Series, np.ndarray], Union[pd.Series, np.ndarray]]:
-
-    model.fit(train[[target_col]], train[target_col]) 
-    outsample_prediction = model.predict(test[[target_col]])
-    insample_prediction = model.predict_in_sample(test[[target_col]])
-
-    return insample_prediction, outsample_prediction
-
-
 class StrategyTypes(Enum):
     mean = "mean"
     last = "last"
@@ -94,6 +75,7 @@ class NaiveForecasterWrapper(Model):
         )
         return self.model.predict(fh=fh)
 
+
 @dataclass
 class ArimaConfig:
     """
@@ -126,6 +108,7 @@ class ArimaWrapper(Model):
             return self.model.forecast(len(X))
         else:
             raise ValueError("Model has to be fitted first")
+
 
 default_naive_model = NaiveForecasterWrapper(
     NaiveForecasterConfig(strategy=NaiveForecasterWrapper.strategy_types.last)
