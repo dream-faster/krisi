@@ -12,7 +12,7 @@ from krisi.utils.models import (
     default_naive_model,
     generate_univariate_predictions,
 )
-
+ 
 
 
 def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
@@ -25,7 +25,7 @@ def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
 
 default_scoring_functions = [("pacf",metric_hoc(pacf, alpha=0.05)), ("acf",metric_hoc(acf, alpha=0.05))]
 
-def evaluate(
+def evaluate( 
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
