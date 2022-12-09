@@ -5,7 +5,7 @@ import pandas as pd
 from statsmodels.tsa.stattools import acf, pacf, q_stat
 
 from krisi.evaluate.scorecard import SampleTypes, ScoreCard
-from krisi.explore.utils import generating_arima_synthetic_data
+from krisi.utils.data import generating_arima_synthetic_data
 from krisi.utils.models import (
     Model,
     default_arima_model,
@@ -52,17 +52,14 @@ def evaluate(
 
 
 def evaluate_in_out_sample(
-    model_name, model, dataset_name, y, scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
+    model_name:str, dataset_name:str, y_insample:pd.Series, insample_predictions:pd.Series,y_outsample:pd.Series, outsample_predictions:pd.Series,   scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
 ) -> Tuple[ScoreCard, ScoreCard]:
-    insample_predictions, outsample_predictions = generate_univariate_predictions(
-        model, df, dataset_name
-    )
 
     insample_summary = evaluate(
-        model_name, dataset_name, SampleTypes.insample, y, insample_predictions, scoring_functions=scoring_functions
+        model_name, dataset_name, SampleTypes.insample, y_insample, insample_predictions, scoring_functions=scoring_functions
     )
     outsample_summary = evaluate(
-        model_name, dataset_name, SampleTypes.outsample, y, outsample_predictions, scoring_functions=scoring_functions
+        model_name, dataset_name, SampleTypes.outsample, y_outsample, outsample_predictions, scoring_functions=scoring_functions
     )
 
     return insample_summary, outsample_summary
