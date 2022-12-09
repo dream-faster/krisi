@@ -7,7 +7,7 @@ from .types_ import InteractiveFigure, PlotlyInput
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
 
-def block(graph: dcc.Graph, title: html.P, controllers: html.Div) -> html.Div:
+def block(graph: dcc.Graph, title: Optional[html.P]=None, controllers: Optional[html.Div]=None) -> html.Div:
     return html.Div(
         children=[graph, title, controllers],
         className="flex flex-row flex-wrap w-full min-h-[450px]",
@@ -38,9 +38,9 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
                 children=[
                     *[
                         block(
-                            dcc.Graph(id=component.id),
-                            html.P("Select rolling window:"),
-                            html.Div(
+                            graph = dcc.Graph(id=component.id),
+                            title = None,#html.P("Select rolling window:"),
+                            controllers = html.Div(
                                 className="w-full h-full flex align-center",
                                 children=[
                                     input_.type(
