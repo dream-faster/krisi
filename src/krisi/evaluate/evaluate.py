@@ -29,7 +29,7 @@ def evaluate(
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
-    X: pd.DataFrame,
+    # X: pd.DataFrame,
     y: pd.Series,
     predictions: Union[np.ndarray, pd.Series],
     scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
@@ -46,47 +46,47 @@ def evaluate(
     pacf_res = pacf(predictions, alpha=alpha)
     acf_res = acf(predictions, alpha=alpha)
 
-    summary.update("ljung_box", q_stat(acf_res, len(X)))
+    # summary.update("ljung_box", q_stat(acf_res, len(X)))
 
     return summary
 
 
 def evaluate_in_out_sample(
-    model_name, model, dataset_name, df
+    model_name, model, dataset_name, y, scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
 ) -> Tuple[ScoreCard, ScoreCard]:
     insample_predictions, outsample_predictions = generate_univariate_predictions(
         model, df, dataset_name
     )
 
     insample_summary = evaluate(
-        model_name, dataset_name, SampleTypes.insample, df, insample_predictions
+        model_name, dataset_name, SampleTypes.insample, y, insample_predictions, scoring_functions=scoring_functions
     )
     outsample_summary = evaluate(
-        model_name, dataset_name, SampleTypes.outsample, df, outsample_predictions
+        model_name, dataset_name, SampleTypes.outsample, y, outsample_predictions, scoring_functions=scoring_functions
     )
 
     return insample_summary, outsample_summary
 
 
-def evaluate_models(
-    models: List[Tuple[str, Model]]
-) -> List[Tuple[ScoreCard, ScoreCard]]:
+# def evaluate_models(
+#     models: List[Tuple[str, Model]]
+# ) -> List[Tuple[ScoreCard, ScoreCard]]:
 
-    dataset_name = "synthetic"
-    df = generating_arima_synthetic_data(
-        target_col=dataset_name,
-        nsample=1000,
-    ).to_frame()
+#     dataset_name = "synthetic"
+#     df = generating_arima_synthetic_data(
+#         target_col=dataset_name,
+#         nsample=1000,
+#     ).to_frame()
 
-    return [
-        evaluate_in_out_sample(model_name, model, dataset_name, df)
-        for model_name, model in models
-    ]
+#     return [
+#         evaluate_in_out_sample(model_name, model, dataset_name, df)
+#         for model_name, model in models
+#     ]
 
 
-if __name__ == "__main__":
-    models = [
-        ("default_naive_last", default_naive_model),
-        ("default_arima", default_arima_model),
-    ]
-    evaluate_models(models)
+# if __name__ == "__main__":
+#     models = [
+#         ("default_naive_last", default_naive_model),
+#         ("default_arima", default_arima_model),
+#     ]
+#     evaluate_models(models)

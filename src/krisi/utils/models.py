@@ -39,13 +39,14 @@ class Model(ABC):
 
 def generate_univariate_predictions(
     model: Model,
-    df: pd.DataFrame, 
+    train: pd.DataFrame, 
+    test: pd.DataFrame, 
     target_col: str,
 ) -> Tuple[Union[pd.Series, np.ndarray], Union[pd.Series, np.ndarray]]:
 
-    model.fit(df[[target_col]], df[target_col]) 
-    outsample_prediction = model.predict(df[[target_col]])
-    insample_prediction = model.predict_in_sample(df[[target_col]])
+    model.fit(train[[target_col]], train[target_col]) 
+    outsample_prediction = model.predict(test[[target_col]])
+    insample_prediction = model.predict_in_sample(test[[target_col]])
 
     return insample_prediction, outsample_prediction
 
