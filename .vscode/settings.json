@@ -7,6 +7,8 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.linting.enabled": true,
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
@@ -16,6 +18,6 @@
       },
       "isort.args":["--profile", "black"],
       "terminal.integrated.env.osx": {
-        // "PYTHONPATH": "${workspaceFolder}.src",
+        "PYTHONPATH": "${workspaceFolder}",
       },
 }

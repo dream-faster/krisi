@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from dash import Dash, Input, Output, dcc, html
 
@@ -12,7 +12,6 @@ def block(graph: dcc.Graph, title: html.P, controllers: html.Div) -> html.Div:
         children=[graph, title, controllers],
         className="flex flex-row flex-wrap w-full min-h-[450px]",
     )
-
  
 def run_app(components: List[InteractiveFigure], global_controllers: List[PlotlyInput]) -> None:
     app = Dash(__name__, external_scripts=external_script)
@@ -53,7 +52,7 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
                                     )
                                     for input_ in component.inputs
                                 ],
-                            ),
+                            ) 
                         )
                         if len(component.inputs) > 0 or len(component.global_input_ids) > 0
                         else dcc.Graph(
@@ -70,7 +69,7 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
     )
 
     for component in components:
-        if len(component.inputs) > 0:
+        if len(component.inputs) > 0 or len(component.global_input_ids) > 0:
             app.callback(
                 Output(component.id, "figure"),
                 [Input(input_.id, input_.value_name) for input_ in component.inputs] + [Input(input_id, "value") for input_id in component.global_input_ids],

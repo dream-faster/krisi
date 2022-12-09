@@ -7,19 +7,20 @@ import plotly.graph_objects as go
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 from statsmodels.tsa.stattools import acf, adfuller, pacf
 
+pd.options.plotting.backend = "plotly"
 
 def plot_df(df: pd.DataFrame, columns:Optional[Union[List[str], str]] = None ) -> go.Figure:
-    # if columns is not None and len(columns) > 0:
-    #     if isinstance(columns, str):
-    #         columns = [columns]
-    #     df = df[columns]
+    if columns is not None and len(columns) > 0:
+        if isinstance(columns, str): 
+            columns = [columns]
+        df = df[columns]
 
-    fig = go.Figure()
-    fig.add_scatter(x=df.index, y=df.iloc[:, 0].to_list(), mode="lines")
-    # fig.add_scatter(x=df.index, y=[df[column].to_list() for column in df.columns], mode="lines")
-    # fig = df.plot(backend='plotly')
+    # fig = go.Figure()
+    # fig.add_scatter(x=df.index, y=df.iloc[:, 0].to_list(), mode="lines")
+    # # fig.add_scatter(x=df.index, y=[df[column].to_list() for column in df.columns], mode="lines")
+    fig = df.plot()
     return fig
-
+ 
 
 def plot_rolling_mean(
     df: pd.DataFrame,
