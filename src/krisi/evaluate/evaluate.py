@@ -39,7 +39,7 @@ def evaluate(
     pacf_res = pacf(predictions, alpha=alpha)
     acf_res = acf(predictions, alpha=alpha)
 
-    summary["ljung_box"] = q_stat(acf_res, len(y))
+    # summary["ljung_box"] = q_stat(acf_res, len(y))
     summary["pacf_res"] = pacf_res
     summary["acf_res"] = acf_res
 
