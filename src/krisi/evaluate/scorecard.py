@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Any
+from typing import Any, Optional
 
 
 class SampleTypes(Enum):
@@ -9,7 +9,7 @@ class SampleTypes(Enum):
 
 
 @dataclass
-class ScoreCard:
+class ScoreCard(dict):
     """Default Identifiers"""
 
     model_name: str
@@ -17,8 +17,13 @@ class ScoreCard:
     sample_type: SampleTypes
 
     """ Score Metrics """
-    ljung_box_score: Optional[int] = None
+    ljung_box_score: Optional[float] = None
+    hearst_exponent: Optional[float] = None
+    aic: Optional[float] = None
+    bic: Optional[float] = None
 
     def update(self, key: str, value: Any) -> None:
-        if hasattr(self, key):
-            setattr(self, key, value)
+        # if hasattr(self, key):
+        setattr(self, key, value)
+
+
