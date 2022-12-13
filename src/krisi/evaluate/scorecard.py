@@ -1,7 +1,8 @@
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from krisi.utils.printing import bold
 
@@ -9,6 +10,19 @@ from krisi.utils.printing import bold
 class SampleTypes(Enum):
     insample = "insample"
     outsample = "outsample"
+
+
+def iterative_length(obj: Iterable) -> List[int]:
+    object_shape = []
+    num_obj = 0
+    for el in obj:
+        if isinstance(el, Iterable) and not isinstance(el, str):
+            object_shape.append(iterative_length(el))
+        else:
+            num_obj += 1
+    if num_obj > 0:
+        object_shape.append(num_obj)
+    return object_shape
 
 
 @dataclass
@@ -49,7 +63,7 @@ class ScoreCard:
             f'{" "*4}\n'.join(
                 [title]
                 + [
-                    f"{str(key):>15s}: {str(value):<15s}"
+                    f"{str(key):>15s}: {f'Iterable of shape: {str(iterative_length(value))}' if isinstance(value, Iterable) and not isinstance(value, str) else str(value):<15s}"
                     for key, value in vars(self).items()
                     if value is not None
                 ]
