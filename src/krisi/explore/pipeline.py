@@ -11,9 +11,9 @@ from krisi.explore.analysis import (
     plot_rolling_mean,
     plot_table,
 )
-from krisi.explore.utils import generating_arima_synthetic_data, make_it_stationary
 from krisi.report.report import Report, plotly_interactive
 from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.utils.data import generating_arima_synthetic_data, make_it_stationary
 
 
 def eda_pipeline(
@@ -21,21 +21,24 @@ def eda_pipeline(
 ):
     report = Report(modes=[DisplayModes.interactive])
 
-    
-    columns:List[str] = [f"{target_col}_{i}" for i in range(5) ]
+    columns: List[str] = [f"{target_col}_{i}" for i in range(5)]
     if df is None:
         df = pd.DataFrame([])
         for column in columns:
-            df[column] = generating_arima_synthetic_data(target_col, nsample=10000).to_frame()
+            df[column] = generating_arima_synthetic_data(
+                target_col, nsample=10000
+            ).to_frame()
 
     if plot:
-        report.add_global_controller(PlotlyInput(
-                            id="synthetic",
-                            type=dcc.Dropdown,
-                            value_name="value",
-                            options=columns,
-                            default_value=columns[0],
-                        ))
+        report.add_global_controller(
+            PlotlyInput(
+                id="synthetic",
+                type=dcc.Dropdown,
+                value_name="value",
+                options=columns,
+                default_value=columns[0],
+            )
+        )
         report.add(
             [
                 # InteractiveFigure(
@@ -50,8 +53,8 @@ def eda_pipeline(
                     id="raw-data",
                     get_figure=plotly_interactive(plot_df, df),
                     title="Synthetic ARIMA data",
-                    global_input_ids = ['synthetic'],
-                    inputs=[]
+                    global_input_ids=["synthetic"],
+                    inputs=[],
                 ),
                 InteractiveFigure(
                     id="data-rolling-mean-std",
@@ -65,7 +68,7 @@ def eda_pipeline(
                             default_value=30,
                         ),
                     ],
-                    global_input_ids = ['synthetic'],
+                    global_input_ids=["synthetic"],
                     title="Rolling means with upper and lower bounds",
                 ),
             ]
