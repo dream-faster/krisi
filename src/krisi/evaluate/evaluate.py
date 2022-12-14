@@ -48,6 +48,7 @@ def evaluate(
     """ Forecast Errors - Regression """
     # mae =
     summary.mse = mean_squared_error(y, predictions, squared=True)
+    summary.mse.hyperparameters = {"alpha": 0.05}
     # rmse = mean_squared_error(y, predictions, squared=False)
 
     """ Forecast Errors - Classification """

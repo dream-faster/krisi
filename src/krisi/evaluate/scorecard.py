@@ -67,14 +67,26 @@ class ScoreCard:
 
     def __setattr__(self, key: str, item: Any) -> None:
         metric = getattr(self, key, None)
+
         if metric is None:
             logging.warning(
                 "No such metric exists, creating a new one.\nConsider using set_new_metric to also define category and information regarding the metric."
             )
-            self.__dict__[key] = MetricSummary(item)
+            if isinstance(item, MetricSummary):
+                self.__dict__[key] = item
+            else:
+                self.__dict__[key] = MetricSummary(item)
         else:
-            metric["metric_result"] = item
-            self.__dict__[key] = metric
+            if isinstance(item, (Tuple, List)):
+                logging.warning(f"Not a valid metric, ignoring setting of {key}")
+            elif isinstance(item, dict):
+                for key_, value_ in item.items():
+                    if key_ in metric.__dict__:
+                        metric[key_] = value_
+                self.__dict__[key] = metric
+            else:
+                metric["metric_result"] = item
+                self.__dict__[key] = metric
 
     def set_new_metric(self, metric_key: str, metric: MetricSummary) -> None:
         self.__dict__[metric_key] = metric
