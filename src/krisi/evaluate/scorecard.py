@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Generic, List, Optional, Tuple, TypeVar, Union
 
-from krisi.utils.printing import bold, iterative_length
+import numpy as np
+
+from krisi.utils.printing import bold, get_term_size, iterative_length
 
 
 class SampleTypes(Enum):
@@ -25,6 +27,7 @@ T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
 
 @dataclass
 class Metric(Generic[T]):
+    name: str
     category: MCats = MCats.unknown
     metric_result: Optional[T] = None
     hyperparameters: Optional[Any] = None
@@ -52,26 +55,48 @@ class ScoreCard:
     sample_type: SampleTypes
 
     """ Score Metrics """
-
     ljung_box_score: Metric[float] = Metric(
+        name="ljung-box-score",
         category=MCats.residual,
         info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
     )
-    mae: Metric[float] = Metric(category=MCats.reg_err, info="Mean Absolute Error")
-    mse: Metric[float] = Metric(category=MCats.reg_err, info="Mean Squared Error")
-    rmse: Metric[float] = Metric(category=MCats.reg_err, info="Root Mean Squared Error")
+    mae: Metric[float] = Metric(
+        name="Mean Absolute Error", category=MCats.reg_err, info="Mean Absolute Error"
+    )
+    mse: Metric[float] = Metric(
+        name="Mean Squared Error", category=MCats.reg_err, info="Mean Squared Error"
+    )
+    rmse: Metric[float] = Metric(
+        name="Root Mean Squared Error",
+        category=MCats.reg_err,
+        info="Root Mean Squared Error",
+    )
+    aic: Metric[float] = Metric(
+        name="Akaike Information Criterion", category=MCats.entropy
+    )
+    bic: Metric[float] = Metric(
+        name="Bayesian Information Criterion", category=MCats.entropy
+    )
+    pacf_res: Metric[Tuple[float, float]] = Metric(
+        name="Partial Autocorrelation", category=MCats.residual
+    )
+    acf_res: Metric[Tuple[float, float]] = Metric(
+        name="Autocorrelation", category=MCats.residual
+    )
+    residuals_mean: Metric[Tuple[float, float]] = Metric(
+        name="Residual Mean", category=MCats.residual
+    )
+    residuals_std: Metric[Tuple[float, float]] = Metric(
+        name="Residual Standard Deviation", category=MCats.residual
+    )
     # hearst_exponent: Metric[float] = Metric(category=MCats.entropy)
-    aic: Metric[float] = Metric(category=MCats.entropy)
-    bic: Metric[float] = Metric(category=MCats.entropy)
-    pacf_res: Metric[Tuple[float, float]] = Metric(category=MCats.residual)
-    acf_res: Metric[Tuple[float, float]] = Metric(category=MCats.residual)
 
     def __init__(
         self, model_name: str, dataset_name: str, sample_type: SampleTypes
     ) -> None:
-        self.model_name = model_name
-        self.dataset_name = dataset_name
-        self.sample_type = sample_type
+        self.__dict__["model_name"] = model_name
+        self.__dict__["dataset_name"] = dataset_name
+        self.__dict__["sample_type"] = sample_type
 
     def __setattr__(self, key: str, item: Any) -> None:
         metric = getattr(self, key, None)
@@ -83,7 +108,7 @@ class ScoreCard:
             if isinstance(item, Metric):
                 self.__dict__[key] = item
             else:
-                self.__dict__[key] = Metric(item)
+                self.__dict__[key] = Metric(name=key, metric_result=item)
         else:
             if isinstance(item, dict):
                 for key_, value_ in item.items():
@@ -115,22 +140,55 @@ class ScoreCard:
         return print_summary(self, repr=True)
 
 
-def print_summary(obj: ScoreCard, repr: bool = False) -> str:
-    title = f"\n\nResult of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
-    title += f"\n{'―'*len(title)}"
-    return (
-        f'{" "*4}\n'.join(
-            [title]
-            + [
-                f"{str(key):>15s}: {f'Iterable of shape: {str(iterative_length(value))}' if isinstance(value, Iterable) and not isinstance(value, str) else str(value):<15s}"
-                for key, value in vars(obj).items()
-                if value is not None
-            ]
+def group_by_categories(flat_list: List[dict[str, Any]]) -> dict:
+    categories = dict()
+    for category in MCats:
+        categories[category] = list(
+            filter(
+                lambda x: x["category"] == category
+                if hasattr(x, "category")
+                else False,
+                flat_list,
+            )
         )
-        + "\n\n"
-    )
+    return categories
 
 
-def print_metric(obj: ScoreCard, repr: bool = False) -> str:
+def print_summary(obj: ScoreCard, repr: bool = False) -> str:
+    divider_len: int = get_term_size()
+    full_str = ""
+    full_str += f"\n\nResult of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
+    full_str += f"\n{'―'*divider_len}"
 
-    return f'{" "*4}\n'.join([f"{key} - {value}" for key, value in vars(obj).items()])
+    categories = group_by_categories(list(vars(obj).values()))
+
+    full_str += f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
+
+    for category, metrics in categories.items():
+        full_str += f"\n\n\n{category.value:>15s}"
+        full_str += f"\n{'.'*divider_len:>15s}"
+        for metric in metrics:
+            full_str += f"\n{str(metric):>15s}"
+
+    return full_str
+
+
+def handle_iterable_printing(obj: Any) -> str:
+    if isinstance(obj, (str, float, int)):
+        return str(obj)
+    elif isinstance(obj, str):
+        return obj
+    elif isinstance(obj, np.ndarray):
+        return f"Shape: {str(obj.shape)}"
+    else:
+        return f"Shape: {str(len(obj))}"
+
+
+def print_metric(obj: Metric, repr: bool = False) -> str:
+    hyperparams = ""
+    if obj.hyperparameters is not None:
+        hyperparams += "".join(
+            [f"{key} - {value}" for key, value in obj.hyperparameters.items()]
+        )
+
+    return f"{obj.name:>30s}: {handle_iterable_printing(obj.metric_result):^15.5s}{hyperparams:>15s}"

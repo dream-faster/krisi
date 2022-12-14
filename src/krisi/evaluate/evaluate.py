@@ -49,8 +49,8 @@ def evaluate(
 
     """ Residual Diagnostics """
     residuals = y - predictions
-    residuals_mean = residuals.mean()
-    residual_std = residuals.std()
+    sc.residuals_mean = residuals.mean()
+    sc.residuals_std = residuals.std()
 
     """ Forecast Errors - Regression """
     sc.mae = mean_absolute_error(y, predictions)
