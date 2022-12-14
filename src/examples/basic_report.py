@@ -13,7 +13,7 @@ train, test = train_test_split(df, test_size=0.2, shuffle=False)
 fit_model(default_arima_model, train)
 
 insample_prediction, outsample_prediction = generate_univariate_predictions(
-    default_arima_model, test, target_col
+    default_arima_model, train, len(test), target_col
 )
 
 

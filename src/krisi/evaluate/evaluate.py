@@ -2,14 +2,15 @@ from typing import Callable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from statsmodels.tsa.stattools import acf, pacf, q_stat
 
 from krisi.evaluate.scorecard import SampleTypes, ScoreCard
 
 
 def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
-    def wrap(*args2, **kwargs2):
-        return func(*args, *args2, **kwargs, **kwargs2)
+    def wrap(y, predictions):
+        return func(y, predictions, *args, **kwargs)
 
     return wrap
 
@@ -35,13 +36,24 @@ def evaluate(
     for score_name, score_function in scoring_functions:
         summary[score_name] = score_function(predictions, y)
 
-    alpha = 0.05
-    pacf_res = pacf(predictions, alpha=alpha)
-    acf_res = acf(predictions, alpha=alpha)
+    # alpha = 0.05
+    # summary.pacf_res = pacf(predictions, alpha=alpha)
+    # summary.acf_res = acf(predictions, alpha=alpha)
 
-    # summary["ljung_box"] = q_stat(acf_res, len(y))
-    summary["pacf_res"] = pacf_res
-    summary["acf_res"] = acf_res
+    """ Residual Diagnostics """
+    residuals = y - predictions
+    residuals_mean = residuals.mean()
+    residual_std = residuals.std()
+
+    """ Forecast Errors - Regression """
+    # mae =
+    summary.mse = mean_squared_error(y, predictions, squared=True)
+    # rmse = mean_squared_error(y, predictions, squared=False)
+
+    """ Forecast Errors - Classification """
+
+    # if sample_type.insample:
+    #     summary["ljung_box"] = q_stat(acf_res, len(predictions))
 
     return summary
 
