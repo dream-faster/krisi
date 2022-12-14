@@ -12,19 +12,20 @@ class SampleTypes(Enum):
     outsample = "outsample"
 
 
-class MetricCats(Enum):
+class MCats(Enum):
     residual = "Residual Diagnostics"
-    classification_error = "Forecast Errors - Classification"
-    regression_error = "Forecast Errors - Regression"
+    entropy = "Information Entropy"
+    class_err = "Forecast Errors - Classification"
+    reg_err = "Forecast Errors - Regression"
     unknown = "Unknown Category"
 
 
-T = TypeVar("T", bound=Union[float, int, str, List])
+T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
 
 
 @dataclass
-class MetricSummary(Generic[T]):
-    category: MetricCats = MetricCats.unknown
+class Metric(Generic[T]):
+    category: MCats = MCats.unknown
     metric_result: Optional[T] = None
     hyperparameters: Optional[Any] = None
     info: str = ""
@@ -34,6 +35,12 @@ class MetricSummary(Generic[T]):
 
     def __getitem__(self, key: str) -> Any:
         return getattr(self, key, "Unknown Field")
+
+    def __str__(self) -> str:
+        return print_metric(self)
+
+    def __repr__(self) -> str:
+        return print_metric(self, repr=True)
 
 
 @dataclass
@@ -46,17 +53,18 @@ class ScoreCard:
 
     """ Score Metrics """
 
-    # ljung_box_score: MetricSummary[float] = MetricSummary(
-    #     category=MetricCats.residual, info="If p is larger than our significance level"
-    # )
-    mse: MetricSummary[float] = MetricSummary(
-        category=MetricCats.regression_error, info="Mean Squared Error"
+    ljung_box_score: Metric[float] = Metric(
+        category=MCats.residual,
+        info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
     )
-    hearst_exponent: Optional[float] = None
-    aic: Optional[float] = None
-    bic: Optional[float] = None
-    pacf_res: Optional[Tuple[float, float]] = None
-    acf_res: Optional[Tuple[float, float]] = None
+    mae: Metric[float] = Metric(category=MCats.reg_err, info="Mean Absolute Error")
+    mse: Metric[float] = Metric(category=MCats.reg_err, info="Mean Squared Error")
+    rmse: Metric[float] = Metric(category=MCats.reg_err, info="Root Mean Squared Error")
+    # hearst_exponent: Metric[float] = Metric(category=MCats.entropy)
+    aic: Metric[float] = Metric(category=MCats.entropy)
+    bic: Metric[float] = Metric(category=MCats.entropy)
+    pacf_res: Metric[Tuple[float, float]] = Metric(category=MCats.residual)
+    acf_res: Metric[Tuple[float, float]] = Metric(category=MCats.residual)
 
     def __init__(
         self, model_name: str, dataset_name: str, sample_type: SampleTypes
@@ -72,23 +80,23 @@ class ScoreCard:
             logging.warning(
                 "No such metric exists, creating a new one.\nConsider using set_new_metric to also define category and information regarding the metric."
             )
-            if isinstance(item, MetricSummary):
+            if isinstance(item, Metric):
                 self.__dict__[key] = item
             else:
-                self.__dict__[key] = MetricSummary(item)
+                self.__dict__[key] = Metric(item)
         else:
-            if isinstance(item, (Tuple, List)):
-                logging.warning(f"Not a valid metric, ignoring setting of {key}")
-            elif isinstance(item, dict):
+            if isinstance(item, dict):
                 for key_, value_ in item.items():
                     if key_ in metric.__dict__:
                         metric[key_] = value_
                 self.__dict__[key] = metric
+            elif isinstance(item, Metric):
+                self.__dict__[key] = item
             else:
                 metric["metric_result"] = item
                 self.__dict__[key] = metric
 
-    def set_new_metric(self, metric_key: str, metric: MetricSummary) -> None:
+    def set_new_metric(self, metric_key: str, metric: Metric) -> None:
         self.__dict__[metric_key] = metric
 
     def __setitem__(self, key: str, item: Any) -> None:
@@ -121,3 +129,8 @@ def print_summary(obj: ScoreCard, repr: bool = False) -> str:
         )
         + "\n\n"
     )
+
+
+def print_metric(obj: ScoreCard, repr: bool = False) -> str:
+
+    return f'{" "*4}\n'.join([f"{key} - {value}" for key, value in vars(obj).items()])
