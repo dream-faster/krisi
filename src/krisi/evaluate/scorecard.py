@@ -19,7 +19,6 @@ class MCats(Enum):
     entropy = "Information Entropy"
     class_err = "Forecast Errors - Classification"
     reg_err = "Forecast Errors - Regression"
-    unknown = "Unknown Category"
 
 
 T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
@@ -28,7 +27,7 @@ T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
 @dataclass
 class Metric(Generic[T]):
     name: str
-    category: MCats = MCats.unknown
+    category: Optional[MCats] = None
     metric_result: Optional[T] = None
     hyperparameters: Optional[Any] = None
     info: str = ""
@@ -44,6 +43,15 @@ class Metric(Generic[T]):
 
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
+
+
+def map_newdict_on_olddict(old_dict: dict, new_dict: dict) -> dict:
+    merged_dict = old_dict.copy()
+    for key_, value_ in new_dict.items():
+        if key_ in old_dict and value_ is not None:
+            merged_dict[key_] = value_
+
+    return merged_dict
 
 
 @dataclass
@@ -83,10 +91,10 @@ class ScoreCard:
     acf_res: Metric[Tuple[float, float]] = Metric(
         name="Autocorrelation", category=MCats.residual
     )
-    residuals_mean: Metric[Tuple[float, float]] = Metric(
+    residuals_mean: Metric[float] = Metric(
         name="Residual Mean", category=MCats.residual
     )
-    residuals_std: Metric[Tuple[float, float]] = Metric(
+    residuals_std: Metric[float] = Metric(
         name="Residual Standard Deviation", category=MCats.residual
     )
     # hearst_exponent: Metric[float] = Metric(category=MCats.entropy)
@@ -111,12 +119,11 @@ class ScoreCard:
                 self.__dict__[key] = Metric(name=key, metric_result=item)
         else:
             if isinstance(item, dict):
-                for key_, value_ in item.items():
-                    if key_ in metric.__dict__:
-                        metric[key_] = value_
-                self.__dict__[key] = metric
+                metric_dict = map_newdict_on_olddict(vars(metric), item)
+                self.__dict__[key] = Metric(**metric_dict)
             elif isinstance(item, Metric):
-                self.__dict__[key] = item
+                metric_dict = map_newdict_on_olddict(vars(metric), vars(item))
+                self.__dict__[key] = Metric(**metric_dict)
             else:
                 metric["metric_result"] = item
                 self.__dict__[key] = metric
@@ -151,6 +158,12 @@ def group_by_categories(flat_list: List[dict[str, Any]]) -> dict:
                 flat_list,
             )
         )
+    categories[None] = list(
+        filter(
+            lambda x: x["category"] == None if hasattr(x, "category") else False,
+            flat_list,
+        )
+    )
     return categories
 
 
@@ -165,7 +178,9 @@ def print_summary(obj: ScoreCard, repr: bool = False) -> str:
     full_str += f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
 
     for category, metrics in categories.items():
-        full_str += f"\n\n\n{category.value:>15s}"
+        full_str += (
+            f"\n\n\n{category.value if category is not None else 'Unknown':>15s}"
+        )
         full_str += f"\n{'.'*divider_len:>15s}"
         for metric in metrics:
             full_str += f"\n{str(metric):>15s}"
@@ -179,9 +194,9 @@ def handle_iterable_printing(obj: Any) -> str:
     elif isinstance(obj, str):
         return obj
     elif isinstance(obj, np.ndarray):
-        return f"Shape: {str(obj.shape)}"
+        return f"List: {str(obj.shape)}"
     else:
-        return f"Shape: {str(len(obj))}"
+        return f"List: {str(len(obj))}"
 
 
 def print_metric(obj: Metric, repr: bool = False) -> str:

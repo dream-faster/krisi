@@ -16,8 +16,7 @@ def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
 
 
 default_scoring_functions = [
-    # ("pacf", pacf, {alpha=0.05}),
-    # ("acf", acf, {alpha=0.05}),
+    ("mse", mean_squared_error, {"squared": True}),
 ]
 
 
@@ -37,7 +36,9 @@ def evaluate(
     for score_name, score_function, score_hyperparameters in scoring_functions:
         func = metric_hoc(score_function, **score_hyperparameters)
         sc[score_name] = Metric(
-            metric_result=func(predictions, y), hyperparameters=score_hyperparameters
+            name=score_name,
+            metric_result=func(predictions, y),
+            hyperparameters=score_hyperparameters,
         )
 
     """ Correlations """
@@ -54,7 +55,7 @@ def evaluate(
 
     """ Forecast Errors - Regression """
     sc.mae = mean_absolute_error(y, predictions)
-    sc.mse = mean_squared_error(y, predictions, squared=True)
+    # sc.mse = mean_squared_error(y, predictions, squared=True)
     sc.rmse = mean_squared_error(y, predictions, squared=False)
 
     """ Forecast Errors - Classification """
