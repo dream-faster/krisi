@@ -77,7 +77,7 @@ class ScoreCard:
             if isinstance(item, Metric):
                 self.__dict__[key] = item
             else:
-                self.__dict__[key] = Metric(name=key, metric_result=item)
+                self.__dict__[key] = Metric(name=key, result=item)
         else:
             if isinstance(item, dict):
                 metric_dict = map_newdict_on_olddict(
@@ -90,7 +90,7 @@ class ScoreCard:
                 )
                 self.__dict__[key] = Metric(**metric_dict)
             else:
-                metric["metric_result"] = item
+                metric["result"] = item
                 self.__dict__[key] = metric
 
     def set_new_metric(self, metric_key: str, metric: Metric) -> None:

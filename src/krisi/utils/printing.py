@@ -1,11 +1,14 @@
 import os
 from collections.abc import Iterable
-from typing import Any, List
+from typing import Any, List, Union
 
 import numpy as np
 from rich import print
+from rich.console import Group
 from rich.layout import Layout
 from rich.panel import Panel
+from rich.pretty import Pretty
+from rich.table import Table
 
 from krisi.utils.iterable_helpers import group_by_categories
 
@@ -16,7 +19,7 @@ def make_layout() -> Layout:
 
     layout.split(
         Layout(name="header", size=3),
-        Layout(name="main", ratio=1),
+        Layout(name="main"),
         Layout(name="footer", size=3),
     )
     # layout["main"].split_row(
@@ -51,7 +54,7 @@ def iterative_length(obj: Iterable) -> List[int]:
 
 def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> Layout:
 
-    title = f"\n\nResult of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
+    title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
 
     layout = make_layout()
     layout["header"].update(Panel(title))
@@ -60,13 +63,39 @@ def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> 
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
-    category_layouts: List[Panel] = []
+    category_layouts: List[Union[Table, Panel]] = []
     for category, metrics in category_groups.items():
-        category_title = f"\n\n\n{category if category is not None else 'Unknown':>15s}"
-        metric = "\n".join([f"{str(metric):>15s}" for metric in metrics])
-        category_layouts.append(
-            Panel(str(metric), title=category_title),
+        category_title = f"{category if category is not None else 'Unknown':>15s}"
+
+        category_layout = Layout(name=category_title, size=3)
+
+        category_layout.split_row(
+            Layout(category_title, ratio=1), Layout(name="metrics", ratio=5)
         )
+
+        category_layout["metrics"].update(
+            Group(
+                *[
+                    Panel(
+                        Group(
+                            metric.name,
+                            Pretty(
+                                iterative_length(metric.result),
+                                max_length=10,
+                                max_depth=2,
+                            )
+                            if isinstance(metric.result, Iterable)
+                            else Pretty(metric.result),
+                            Pretty(metric.hyperparameters),
+                        ),
+                        height=300,
+                    )
+                    for metric in metrics
+                ]
+            )
+        )
+
+        category_layouts.append(category_layout)
 
     layout["main"].split_column(*category_layouts)
 
@@ -91,4 +120,4 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
             [f"{key} - {value}" for key, value in obj.hyperparameters.items()]
         )
 
-    return f"{obj.name:>30s}: {handle_iterable_printing(obj.metric_result):^15.5s}{hyperparams:>15s}"
+    return f"{obj.name:>30s}: {handle_iterable_printing(obj.result):^15.5s}{hyperparams:>15s}"

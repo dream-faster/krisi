@@ -37,7 +37,7 @@ def evaluate(
         func = metric_hoc(score_function, **score_hyperparameters)
         sc[score_name] = Metric(
             name=score_name,
-            metric_result=func(predictions, y),
+            result=func(predictions, y),
             hyperparameters=score_hyperparameters,
         )
 

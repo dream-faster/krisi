@@ -19,7 +19,7 @@ T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
 class Metric(Generic[T]):
     name: str
     category: Optional[MCats] = None
-    metric_result: Optional[T] = None
+    result: Optional[T] = None
     hyperparameters: Optional[Any] = None
     info: str = ""
 
