@@ -86,7 +86,7 @@ class ScoreCard:
         name="Bayesian Information Criterion", category=MCats.entropy
     )
     pacf_res: Metric[Tuple[float, float]] = Metric(
-        name="Partial Autocorrelation", category=MCats.residual
+        name="Partial Autocorrelation of Residuals", category=MCats.residual
     )
     acf_res: Metric[Tuple[float, float]] = Metric(
         name="Autocorrelation", category=MCats.residual
