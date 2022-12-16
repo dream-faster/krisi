@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 def map_newdict_on_olddict(
@@ -10,3 +10,25 @@ def map_newdict_on_olddict(
             merged_dict[key_] = value_
 
     return merged_dict
+
+
+def group_by_categories(
+    flat_list: List[dict[str, Any]], categories: List[str]
+) -> dict[str, "Metric"]:
+    category_groups = dict()
+    for category in categories:
+        category_groups[category] = list(
+            filter(
+                lambda x: x["category"].value == category
+                if hasattr(x, "category")
+                else False,
+                flat_list,
+            )
+        )
+    category_groups[None] = list(
+        filter(
+            lambda x: x["category"].value == None if hasattr(x, "category") else False,
+            flat_list,
+        )
+    )
+    return category_groups

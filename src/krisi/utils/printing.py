@@ -1,8 +1,30 @@
 import os
 from collections.abc import Iterable
-from typing import Any, List, Union
+from typing import Any, List
 
 import numpy as np
+from rich import print
+from rich.layout import Layout
+from rich.panel import Panel
+
+from krisi.utils.iterable_helpers import group_by_categories
+
+
+def make_layout() -> Layout:
+    """Define the layout."""
+    layout = Layout(name="root")
+
+    layout.split(
+        Layout(name="header", size=3),
+        Layout(name="main", ratio=1),
+        Layout(name="footer", size=3),
+    )
+    # layout["main"].split_row(
+    #     Layout(name="side"),
+    #     Layout(name="body", ratio=2, minimum_size=20),
+    # )
+    # layout["side"].split(Layout(name="box1"), Layout(name="box2"))
+    return layout
 
 
 def bold(text: str) -> str:
@@ -27,43 +49,28 @@ def iterative_length(obj: Iterable) -> List[int]:
     return object_shape
 
 
-def group_by_categories(flat_list: List[dict[str, Any]], categories: List[str]) -> dict:
-    category_groups = dict()
-    for category in categories:
-        category_groups[category] = list(
-            filter(
-                lambda x: x["category"].value == category
-                if hasattr(x, "category")
-                else False,
-                flat_list,
-            )
-        )
-    category_groups[None] = list(
-        filter(
-            lambda x: x["category"].value == None if hasattr(x, "category") else False,
-            flat_list,
-        )
-    )
-    return category_groups
+def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> Layout:
 
+    title = f"\n\nResult of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
 
-def print_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> str:
-    divider_len: int = get_term_size()
-    full_str = ""
-    full_str += f"\n\nResult of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
-    full_str += f"\n{'―'*divider_len}"
+    layout = make_layout()
+    layout["header"].update(Panel(title))
+
+    table_header = f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
-    full_str += f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
-
+    category_layouts: List[Panel] = []
     for category, metrics in category_groups.items():
-        full_str += f"\n\n\n{category if category is not None else 'Unknown':>15s}"
-        full_str += f"\n{'.'*divider_len:>15s}"
-        for metric in metrics:
-            full_str += f"\n{str(metric):>15s}"
+        category_title = f"\n\n\n{category if category is not None else 'Unknown':>15s}"
+        metric = "\n".join([f"{str(metric):>15s}" for metric in metrics])
+        category_layouts.append(
+            Panel(str(metric), title=category_title),
+        )
 
-    return full_str
+    layout["main"].split_column(*category_layouts)
+
+    return layout
 
 
 def handle_iterable_printing(obj: Any) -> str:

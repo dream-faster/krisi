@@ -3,9 +3,11 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Tuple
 
+from rich import print
+
 from krisi.evaluate.metric import MCats, Metric
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
-from krisi.utils.printing import print_summary
+from krisi.utils.printing import get_summary
 
 
 class SampleTypes(Enum):
@@ -104,7 +106,9 @@ class ScoreCard:
         setattr(self, key, None)
 
     def __str__(self) -> str:
-        return print_summary(self, categories=[el.value for el in MCats])
+        print(get_summary(self, categories=[el.value for el in MCats]))
+        return ""
 
     def __repr__(self) -> str:
-        return print_summary(self, repr=True, categories=[el.value for el in MCats])
+        print(get_summary(self, repr=True, categories=[el.value for el in MCats]))
+        return ""
