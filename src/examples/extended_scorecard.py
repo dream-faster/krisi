@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics import mean_squared_error
 
 from krisi.evaluate import Metric, MetricCategories, SampleTypes, ScoreCard
 
@@ -9,8 +8,7 @@ sc = ScoreCard(
     sample_type=SampleTypes.insample,
 )
 
-target, predictions = np.random.rand(1000), np.random.rand(1000)
-
+target, predictions = np.random.rand(100), np.random.rand(100)
 
 """ Predefined metrics """
 for metric in sc.get_default_metrics():
@@ -30,7 +28,7 @@ sc["yet_another_metric"] = Metric(
     hyperparameters={"hyper_1": 5.0},
 )
 
-# updating a metric
+# Updating a metric
 sc.yet_another_metric = dict(info="Giving description to a metric")
 
 """ Print scorecard summary """

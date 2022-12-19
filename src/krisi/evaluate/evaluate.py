@@ -3,7 +3,7 @@ from typing import Any, Callable, Tuple, Union
 import pandas as pd
 
 from krisi.evaluate.scorecard import ScoreCard
-from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
+from krisi.evaluate.type import Predictions, SampleTypes, Targets
 
 
 def evaluate(
@@ -18,7 +18,6 @@ def evaluate(
         model_name=model_name, dataset_name=dataset_name, sample_type=sample_type
     )
 
-    """ Custom Metrics """
     for metric in sc.get_default_metrics():
         if metric.restrict_to_sample is sample_type:
             continue

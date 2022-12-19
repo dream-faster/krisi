@@ -11,6 +11,10 @@ from krisi.utils.iterable_helpers import map_newdict_on_olddict
 from krisi.utils.printing import get_summary
 
 
+def strip_builtin_functions(dict_to_strip: dict) -> dict:
+    return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
+
+
 @dataclass
 class ScoreCard:
     """Default Identifiers"""
@@ -53,17 +57,13 @@ class ScoreCard:
         else:
             if isinstance(item, dict):
                 metric_dict = map_newdict_on_olddict(
-                    vars(metric), item, exclude=["name"]
+                    strip_builtin_functions(vars(metric)), item, exclude=["name"]
                 )
                 self.__dict__[key] = Metric(**metric_dict)
             elif isinstance(item, Metric):
                 metric_dict = map_newdict_on_olddict(
-                    {
-                        key_: value_
-                        for key_, value_ in vars(metric).items()
-                        if key_[:2] != "__"
-                    },
-                    vars(item),
+                    strip_builtin_functions(vars(metric)),
+                    strip_builtin_functions(vars(item)),
                     exclude=["name"],
                 )
                 self.__dict__[key] = Metric(**metric_dict)
