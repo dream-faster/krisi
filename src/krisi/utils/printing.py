@@ -6,9 +6,11 @@ import numpy as np
 from rich import print
 from rich.console import Group
 from rich.layout import Layout
+from rich.padding import Padding
 from rich.panel import Panel
 from rich.pretty import Pretty
 from rich.table import Table
+from rich.text import Text
 
 from krisi.utils.iterable_helpers import group_by_categories
 
@@ -30,8 +32,8 @@ def make_layout() -> Layout:
     return layout
 
 
-def bold(text: str) -> str:
-    return f"\033[1m{text}\033[0m"
+def bold(text: str, rich: bool = False) -> str:
+    return f"[bold]{text}[/bold]" if rich else f"\033[1m{text}\033[0m"
 
 
 def get_term_size() -> int:
@@ -57,7 +59,7 @@ def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
 
     layout = make_layout()
-    layout["header"].update(Panel(title))
+    layout["header"].update(Panel(Text.from_ansi(title, justify="center")))
 
     table_header = f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
 
@@ -67,33 +69,32 @@ def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> 
     for category, metrics in category_groups.items():
         category_title = f"{category if category is not None else 'Unknown':>15s}"
 
-        category_layout = Layout(name=category_title, size=3)
+        category_layout = Layout(name=category_title, minimum_size=3)
 
         category_layout.split_row(
-            Layout(category_title, ratio=1), Layout(name="metrics", ratio=5)
+            Layout(category_title, ratio=1, minimum_size=3),
+            Layout(name="metrics", ratio=5, minimum_size=3),
         )
 
-        category_layout["metrics"].update(
-            Group(
-                *[
-                    Panel(
-                        Group(
-                            metric.name,
-                            Pretty(
-                                iterative_length(metric.result),
-                                max_length=10,
-                                max_depth=2,
-                            )
-                            if isinstance(metric.result, Iterable)
-                            else Pretty(metric.result),
-                            Pretty(metric.hyperparameters),
-                        ),
-                        height=300,
-                    )
-                    for metric in metrics
-                ]
-            )
+        table = Table(
+            title="", show_edge=False, show_footer=False, show_header=False, expand=True
         )
+
+        table.add_column(
+            "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
+        )
+        table.add_column("Result", style="magenta", width=2)
+        table.add_column("Hyperparameters", justify="right", style="green", width=5)
+
+        for metric in metrics:
+            if not isinstance(metric.result, Iterable):
+                table.add_row(
+                    metric.name,
+                    Pretty(metric.result),
+                    Pretty(metric.hyperparameters),
+                )
+
+        category_layout["metrics"].update(table)
 
         category_layouts.append(category_layout)
 
