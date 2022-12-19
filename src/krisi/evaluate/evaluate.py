@@ -5,12 +5,6 @@ import pandas as pd
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
 
-# def metric_hoc(func: MetricFunction, *args, **kwargs) -> Callable:
-#     def wrap(y: Targets, predictions: Predictions) -> Any:
-#         return func(y, predictions, *args, **kwargs)
-
-#     return wrap
-
 
 def evaluate(
     model_name: str,
