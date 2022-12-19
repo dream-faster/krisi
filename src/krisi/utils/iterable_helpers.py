@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Callable, Iterable, List, Optional, Union
 
 
 def map_newdict_on_olddict(
@@ -32,3 +32,21 @@ def group_by_categories(
         )
     )
     return category_groups
+
+
+def type_converter(type_to_ensure: Any) -> Callable:
+    def ensure_format(
+        obj_s: Union[List[Any], Any]
+    ) -> Union[List[type_to_ensure], type_to_ensure]:
+        if isinstance(obj_s, Iterable) and not isinstance(obj_s, str):
+            return [
+                type_to_ensure(el) if not isinstance(el, type_to_ensure) else el
+                for el in obj_s
+            ]
+        else:
+            if isinstance(obj_s, type_to_ensure):
+                return obj_s
+            else:
+                return type_to_ensure(obj_s)
+
+    return ensure_format

@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any, Tuple
 
 from rich import print
+from rich.pretty import Pretty
 
 from krisi.evaluate.metric import MCats, Metric
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
@@ -106,9 +107,12 @@ class ScoreCard:
         setattr(self, key, None)
 
     def __str__(self) -> str:
-        print(get_summary(self, categories=[el.value for el in MCats]))
+        print(Pretty(self.__dict__))
         return ""
 
     def __repr__(self) -> str:
-        print(get_summary(self, repr=True, categories=[el.value for el in MCats]))
+        print(Pretty(self.__dict__))
         return ""
+
+    def print_summary(self) -> None:
+        print(get_summary(self, repr=True, categories=[el.value for el in MCats]))

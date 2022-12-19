@@ -43,10 +43,13 @@ def evaluate(
 
     """ Correlations """
     alpha = 0.05
-    sc.pacf_res = pacf(predictions, alpha=alpha)
-    sc.pacf_res.hyperparameters = {"alpha": alpha}
-    sc.acf_res = acf(predictions, alpha=alpha)
-    sc.acf_res.hyperparameters = {"alpha": alpha}
+    sc.pacf_res = {
+        "result": pacf(predictions, alpha=alpha),
+        "hyperparameters": {"alpha": alpha},
+    }
+    # sc.pacf_res.hyperparameters = {"alpha": alpha}
+    # sc.acf_res = acf(predictions, alpha=alpha)
+    # sc.acf_res.hyperparameters = {"alpha": alpha}
 
     """ Residual Diagnostics """
     residuals = y - predictions
@@ -73,7 +76,7 @@ def evaluate_in_out_sample(
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
     outsample_predictions: pd.Series,
-    scoring_functions: List[Tuple[str, Callable]] = default_scoring_functions,
+    scoring_functions: List[Tuple[str, Callable, dict]] = default_scoring_functions,
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = evaluate(

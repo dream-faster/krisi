@@ -1,9 +1,9 @@
 import os
 from collections.abc import Iterable
-from typing import Any, List, Union
+from typing import Any, List, Optional, Union
 
 import numpy as np
-from rich import print
+from rich import box, print
 from rich.console import Group
 from rich.layout import Layout
 from rich.padding import Padding
@@ -20,19 +20,14 @@ def make_layout() -> Layout:
     layout = Layout(name="root")
 
     layout.split(
-        Layout(name="header", size=3),
+        # Layout(name="header", size=3),
         Layout(name="main"),
-        Layout(name="footer", size=3),
+        # Layout(name="footer", size=3),
     )
-    # layout["main"].split_row(
-    #     Layout(name="side"),
-    #     Layout(name="body", ratio=2, minimum_size=20),
-    # )
-    # layout["side"].split(Layout(name="box1"), Layout(name="box2"))
     return layout
 
 
-def bold(text: str, rich: bool = False) -> str:
+def bold(text: str, rich: bool = True) -> str:
     return f"[bold]{text}[/bold]" if rich else f"\033[1m{text}\033[0m"
 
 
@@ -54,37 +49,50 @@ def iterative_length(obj: Iterable) -> List[int]:
     return object_shape
 
 
-def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> Layout:
+def get_summary(
+    obj: "ScoreCard", categories: List[str], repr: bool = False
+) -> Union[Panel, Layout]:
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
 
     layout = make_layout()
-    layout["header"].update(Panel(Text.from_ansi(title, justify="center")))
 
     table_header = f"\n{'name':^30s}| {'result':^15s}| {'hyperparams':^15s}"
+    # layout["header"].update(Panel(Text.from_ansi(title, justify="center")))
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
     category_layouts: List[Union[Table, Panel]] = []
     for category, metrics in category_groups.items():
+        if metrics is None or len(metrics) < 1:
+            continue
         category_title = f"{category if category is not None else 'Unknown':>15s}"
 
         category_layout = Layout(name=category_title, minimum_size=3)
 
         category_layout.split_row(
-            Layout(category_title, ratio=1, minimum_size=3),
+            Layout(
+                Panel(category_title, padding=1, box=box.MINIMAL),
+                ratio=1,
+                minimum_size=3,
+            ),
             Layout(name="metrics", ratio=5, minimum_size=3),
         )
 
         table = Table(
-            title="", show_edge=False, show_footer=False, show_header=False, expand=True
+            title="",
+            # show_edge=False,
+            show_footer=False,
+            show_header=False,
+            expand=True,
+            box=box.ASCII2,
         )
 
         table.add_column(
             "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
         )
         table.add_column("Result", style="magenta", width=2)
-        table.add_column("Hyperparameters", justify="right", style="green", width=5)
+        table.add_column("Hyperparameters", style="green", width=5)
 
         for metric in metrics:
             if not isinstance(metric.result, Iterable):
@@ -94,17 +102,19 @@ def get_summary(obj: "ScoreCard", categories: List[str], repr: bool = False) -> 
                     Pretty(metric.hyperparameters),
                 )
 
-        category_layout["metrics"].update(table)
+        category_layout["metrics"].update(Panel(table, padding=0, box=box.MINIMAL))
 
         category_layouts.append(category_layout)
 
     layout["main"].split_column(*category_layouts)
 
-    return layout
+    return Panel(layout, title=title, padding=3)
 
 
-def handle_iterable_printing(obj: Any) -> str:
-    if isinstance(obj, (str, float, int)):
+def handle_iterable_printing(obj: Any) -> Optional[str]:
+    if obj is None:
+        return "None"
+    elif isinstance(obj, (str, float, int)):
         return str(obj)
     elif isinstance(obj, str):
         return obj

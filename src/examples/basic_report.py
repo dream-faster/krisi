@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 
 from krisi.evaluate import ScoreCard, evaluate_in_out_sample
 from krisi.utils.data import generating_arima_synthetic_data
+from krisi.utils.iterable_helpers import type_converter
 from krisi.utils.models import default_arima_model
 from krisi.utils.runner import fit_model, generate_univariate_predictions
 
@@ -10,12 +11,13 @@ target_col = "arima_synthetic"
 df = generating_arima_synthetic_data(target_col).to_frame(name=target_col)
 train, test = train_test_split(df, test_size=0.2, shuffle=False)
 
+train, test = type_converter(pd.DataFrame)([train, test])
+
 fit_model(default_arima_model, train)
 
 insample_prediction, outsample_prediction = generate_univariate_predictions(
     default_arima_model, train, len(test), target_col
 )
-
 
 report_insample, report_outsample = evaluate_in_out_sample(
     model_name="default_arima_model",
@@ -27,3 +29,4 @@ report_insample, report_outsample = evaluate_in_out_sample(
 )
 
 print(report_insample)
+report_outsample.print_summary()
