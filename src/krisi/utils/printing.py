@@ -64,7 +64,11 @@ def get_summary(
 
     category_layouts: List[Union[Table, Panel]] = []
     for category, metrics in category_groups.items():
-        if metrics is None or len(metrics) < 1:
+        if (
+            metrics is None
+            or len(metrics) < 1
+            or all([metric.result is None for metric in metrics])
+        ):
             continue
         category_title = f"{category if category is not None else 'Unknown':>15s}"
 
@@ -97,9 +101,11 @@ def get_summary(
             table.add_column("Info", width=3)
 
         for metric in metrics:
+            if metric.result is None:
+                continue
             metric_summarized = [
-                f"{metric.name if metric.full_name is None else metric.full_name} ({metric.name})",
-                Pretty(metric.result)
+                f"{metric.name} ({metric.key})",
+                Pretty(round(metric.result, 3))
                 if not isinstance(metric.result, Iterable)
                 else Pretty("Result is an Iterable"),
                 Pretty(metric.hyperparameters),
@@ -139,4 +145,4 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
             [f"{key} - {value}" for key, value in obj.hyperparameters.items()]
         )
 
-    return f"{obj.full_name if isinstance(obj.full_name, str) else obj.name:>30s} ({obj.name}): {handle_iterable_printing(obj.result):^15.5s}{hyperparams:>15s}"
+    return f"{obj.name:>30s} ({obj.key}): {handle_iterable_printing(obj.result):^15.5s}{hyperparams:>15s}"

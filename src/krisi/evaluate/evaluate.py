@@ -5,12 +5,11 @@ import pandas as pd
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
 
+# def metric_hoc(func: MetricFunction, *args, **kwargs) -> Callable:
+#     def wrap(y: Targets, predictions: Predictions) -> Any:
+#         return func(y, predictions, *args, **kwargs)
 
-def metric_hoc(func: MetricFunction, *args, **kwargs) -> Callable:
-    def wrap(y: Targets, predictions: Predictions) -> Any:
-        return func(y, predictions, *args, **kwargs)
-
-    return wrap
+#     return wrap
 
 
 def evaluate(
@@ -27,15 +26,9 @@ def evaluate(
 
     """ Custom Metrics """
     for metric in sc.get_default_metrics():
-        if (
-            metric.restrict_to_sample is not None
-            and metric.restrict_to_sample is sample_type
-        ):
+        if metric.restrict_to_sample is sample_type:
             continue
-
-        wrapped_func = metric_hoc(metric.func, **metric.hyperparameters)
-        metric.result = wrapped_func(y, predictions)
-        sc[metric.name] = metric
+        sc[metric.key] = metric.evaluate(y, predictions)
 
     return sc
 

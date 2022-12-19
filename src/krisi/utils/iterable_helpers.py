@@ -50,3 +50,8 @@ def type_converter(type_to_ensure: Any) -> Callable:
                 return type_to_ensure(obj_s)
 
     return ensure_format
+
+
+def string_to_id(s: str) -> str:
+    s = "".join(filter(lambda c: str.isidentifier(c) or str.isdecimal(c), s))
+    return s
