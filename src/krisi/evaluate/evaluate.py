@@ -1,12 +1,8 @@
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable, Tuple, Union
 
-import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-from statsmodels.tsa.stattools import acf, pacf, q_stat
 
-from krisi.evaluate.library.default_metrics import default_metrics
-from krisi.evaluate.scorecard import Metric, ScoreCard
+from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
 
 
@@ -23,7 +19,6 @@ def evaluate(
     sample_type: SampleTypes,
     y: Targets,
     predictions: Predictions,
-    default_metrics: List[Metric] = default_metrics,
 ) -> ScoreCard:
 
     sc = ScoreCard(
@@ -31,14 +26,16 @@ def evaluate(
     )
 
     """ Custom Metrics """
-    for metric in default_metrics:
+    for metric in sc.get_default_metrics():
         if (
             metric.restrict_to_sample is not None
-            and metric.restrict_to_sample is not sample_type
+            and metric.restrict_to_sample is sample_type
         ):
-            wrapped_func = metric_hoc(metric.func, **metric.hyperparameters)
-            metric.result = wrapped_func(y, predictions)
-            sc[metric.name] = metric
+            continue
+
+        wrapped_func = metric_hoc(metric.func, **metric.hyperparameters)
+        metric.result = wrapped_func(y, predictions)
+        sc[metric.name] = metric
 
     return sc
 
@@ -50,7 +47,6 @@ def evaluate_in_out_sample(
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
     outsample_predictions: pd.Series,
-    default_metrics: List[Metric] = default_metrics,
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = evaluate(
@@ -59,7 +55,6 @@ def evaluate_in_out_sample(
         SampleTypes.insample,
         y_insample,
         insample_predictions,
-        default_metrics=default_metrics,
     )
     outsample_summary = evaluate(
         model_name,
@@ -67,7 +62,6 @@ def evaluate_in_out_sample(
         SampleTypes.outsample,
         y_outsample,
         outsample_predictions,
-        default_metrics=default_metrics,
     )
 
     return insample_summary, outsample_summary

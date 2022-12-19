@@ -1,9 +1,10 @@
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-from krisi.evaluate import MCats, Metric, SampleTypes
 from krisi.evaluate.library.metric_functions import ljung_box
+from krisi.evaluate.metric import MCats, Metric
+from krisi.evaluate.type import SampleTypes
 
-default_metrics = [
+predefined_default_metrics = [
     Metric[float](
         name="mae",
         full_name="Mean Absolute Error",

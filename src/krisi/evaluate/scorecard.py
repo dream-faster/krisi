@@ -1,11 +1,11 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, List, Tuple
 
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.evaluate.library.default_metrics import default_metrics
+from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import MCats, Metric
 from krisi.evaluate.type import SampleTypes
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
@@ -19,56 +19,19 @@ class ScoreCard:
     model_name: str
     dataset_name: str
     sample_type: SampleTypes
-
-    """ Score Metrics """
-    # ljung_box_score: Metric[float] = Metric(
-    #     name="ljung-box-score",
-    #     category=MCats.residual,
-    #     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
-    # )
-    # mae: Metric[float] = Metric(
-    #     name="Mean Absolute Error", category=MCats.reg_err, info="Mean Absolute Error"
-    # )
-    # mse: Metric[float] = Metric(
-    #     name="Mean Squared Error", category=MCats.reg_err, info="Mean Squared Error"
-    # )
-    # rmse: Metric[float] = Metric(
-    #     name="Root Mean Squared Error",
-    #     category=MCats.reg_err,
-    #     info="Root Mean Squared Error",
-    # )
-    # aic: Metric[float] = Metric(
-    #     name="Akaike Information Criterion", category=MCats.entropy
-    # )
-    # bic: Metric[float] = Metric(
-    #     name="Bayesian Information Criterion", category=MCats.entropy
-    # )
-    # pacf_res: Metric[Tuple[float, float]] = Metric(
-    #     name="Partial Autocorrelation", category=MCats.residual
-    # )
-    # acf_res: Metric[Tuple[float, float]] = Metric(
-    #     name="Autocorrelation", category=MCats.residual
-    # )
-    # residuals_mean: Metric[float] = Metric(
-    #     name="Residual Mean", category=MCats.residual
-    # )
-    # residuals_std: Metric[float] = Metric(
-    #     name="Residual Standard Deviation", category=MCats.residual
-    # )
+    default_metrics: List[Metric[Any]]
 
     def __init__(
         self,
         model_name: str,
         dataset_name: str,
         sample_type: SampleTypes,
-        default_metrics: List[Metric] = default_metrics,
+        default_metrics: List[Metric] = predefined_default_metrics,
     ) -> None:
         self.__dict__["model_name"] = model_name
         self.__dict__["dataset_name"] = dataset_name
         self.__dict__["sample_type"] = sample_type
-
-        for metric in default_metrics:
-            self.__dict__[metric.name] = metric
+        self.__dict__["default_metrics"] = default_metrics
 
     def __setattr__(self, key: str, item: Any) -> None:
         metric = getattr(self, key, None)
@@ -96,6 +59,9 @@ class ScoreCard:
             else:
                 metric["result"] = item
                 self.__dict__[key] = metric
+
+    def get_default_metrics(self) -> List[Metric]:
+        return self.default_metrics
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
