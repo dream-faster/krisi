@@ -11,9 +11,9 @@ from krisi.explore.analysis import (
     plot_rolling_mean,
     plot_table,
 )
-from krisi.report.report import Report, plotly_interactive
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.utils.data import generating_arima_synthetic_data, make_it_stationary
+from krisi.vizualise.report import Report, plotly_interactive
+from krisi.vizualise.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def eda_pipeline(

@@ -4,9 +4,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from krisi.report.interactive import run_app
-from krisi.report.static import create_pdf_report
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.vizualise.interactive import run_app
+from krisi.vizualise.static import create_pdf_report
+from krisi.vizualise.types_ import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 def plotly_interactive(
@@ -63,8 +63,10 @@ class Report:
             self.figures += figures
         else:
             self.figures.append(figures)
-            
-    def add_global_controller(self, controller: Union[PlotlyInput, List[PlotlyInput]]) -> None:
+
+    def add_global_controller(
+        self, controller: Union[PlotlyInput, List[PlotlyInput]]
+    ) -> None:
         if isinstance(controller, List):
             self.global_controllers += controller
         else:
