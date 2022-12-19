@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, List, Optional, Tuple, TypeVar, Union
 
+from krisi.evaluate.type import MetricFunction, SampleTypes
 from krisi.utils.printing import print_metric
 
 
@@ -10,6 +11,7 @@ class MCats(Enum):
     entropy = "Information Entropy"
     class_err = "Forecast Errors - Classification"
     reg_err = "Forecast Errors - Regression"
+    unknown = "Unknown"
 
 
 T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
@@ -18,10 +20,13 @@ T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
 @dataclass
 class Metric(Generic[T]):
     name: str
+    full_name: str = ""
     category: Optional[MCats] = None
     result: Optional[T] = None
-    hyperparameters: Optional[Any] = None
+    hyperparameters: dict = field(default_factory=dict)
+    func: MetricFunction = lambda x, y: None
     info: str = ""
+    restrict_to_sample: Optional[SampleTypes] = None
 
     def __setitem__(self, key: str, item: Any) -> None:
         setattr(self, key, item)

@@ -1,70 +1,44 @@
-from typing import Callable, List, Tuple, Union
+from typing import Any, Callable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from statsmodels.tsa.stattools import acf, pacf, q_stat
 
-from krisi.evaluate.scorecard import Metric, SampleTypes, ScoreCard
+from krisi.evaluate.library.default_metrics import default_metrics
+from krisi.evaluate.scorecard import Metric, ScoreCard
+from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
 
 
-def metric_hoc(func: Callable, *args, **kwargs) -> Callable:
-    def wrap(y, predictions):
+def metric_hoc(func: MetricFunction, *args, **kwargs) -> Callable:
+    def wrap(y: Targets, predictions: Predictions) -> Any:
         return func(y, predictions, *args, **kwargs)
 
     return wrap
-
-
-default_scoring_functions = [
-    ("mse", mean_squared_error, {"squared": True}),
-]
 
 
 def evaluate(
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
-    y: pd.Series,
-    predictions: Union[np.ndarray, pd.Series],
-    scoring_functions: List[Tuple[str, Callable, dict]] = default_scoring_functions,
+    y: Targets,
+    predictions: Predictions,
+    default_metrics: List[Metric] = default_metrics,
 ) -> ScoreCard:
+
     sc = ScoreCard(
         model_name=model_name, dataset_name=dataset_name, sample_type=sample_type
     )
 
     """ Custom Metrics """
-    for score_name, score_function, score_hyperparameters in scoring_functions:
-        func = metric_hoc(score_function, **score_hyperparameters)
-        sc[score_name] = Metric(
-            name=score_name,
-            result=func(predictions, y),
-            hyperparameters=score_hyperparameters,
-        )
-
-    """ Correlations """
-    alpha = 0.05
-    sc.pacf_res = {
-        "result": pacf(predictions, alpha=alpha),
-        "hyperparameters": {"alpha": alpha},
-    }
-    # sc.pacf_res.hyperparameters = {"alpha": alpha}
-    # sc.acf_res = acf(predictions, alpha=alpha)
-    # sc.acf_res.hyperparameters = {"alpha": alpha}
-
-    """ Residual Diagnostics """
-    residuals = y - predictions
-    sc.residuals_mean = residuals.mean()
-    sc.residuals_std = residuals.std()
-
-    """ Forecast Errors - Regression """
-    sc.mae = mean_absolute_error(y, predictions)
-    # sc.mse = mean_squared_error(y, predictions, squared=True)
-    sc.rmse = mean_squared_error(y, predictions, squared=False)
-
-    """ Forecast Errors - Classification """
-
-    # if sample_type.insample:
-    #     summary["ljung_box"] = q_stat(acf_res, len(predictions))
+    for metric in default_metrics:
+        if (
+            metric.restrict_to_sample is not None
+            and metric.restrict_to_sample is not sample_type
+        ):
+            wrapped_func = metric_hoc(metric.func, **metric.hyperparameters)
+            metric.result = wrapped_func(y, predictions)
+            sc[metric.name] = metric
 
     return sc
 
@@ -76,7 +50,7 @@ def evaluate_in_out_sample(
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
     outsample_predictions: pd.Series,
-    scoring_functions: List[Tuple[str, Callable, dict]] = default_scoring_functions,
+    default_metrics: List[Metric] = default_metrics,
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = evaluate(
@@ -85,7 +59,7 @@ def evaluate_in_out_sample(
         SampleTypes.insample,
         y_insample,
         insample_predictions,
-        scoring_functions=scoring_functions,
+        default_metrics=default_metrics,
     )
     outsample_summary = evaluate(
         model_name,
@@ -93,7 +67,7 @@ def evaluate_in_out_sample(
         SampleTypes.outsample,
         y_outsample,
         outsample_predictions,
-        scoring_functions=scoring_functions,
+        default_metrics=default_metrics,
     )
 
     return insample_summary, outsample_summary

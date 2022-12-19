@@ -50,7 +50,7 @@ def iterative_length(obj: Iterable) -> List[int]:
 
 
 def get_summary(
-    obj: "ScoreCard", categories: List[str], repr: bool = False
+    obj: "ScoreCard", categories: List[str], repr: bool = False, with_info: bool = False
 ) -> Union[Panel, Layout]:
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
@@ -92,15 +92,23 @@ def get_summary(
             "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
         )
         table.add_column("Result", style="magenta", width=2)
-        table.add_column("Hyperparameters", style="green", width=5)
+        table.add_column("Hyperparameters", style="green", width=3)
+        if with_info:
+            table.add_column("Info", width=3)
 
         for metric in metrics:
-            if not isinstance(metric.result, Iterable):
-                table.add_row(
-                    metric.name,
-                    Pretty(metric.result),
-                    Pretty(metric.hyperparameters),
-                )
+            metric_summarized = [
+                metric.name,
+                Pretty(metric.result)
+                if not isinstance(metric.result, Iterable)
+                else Pretty("Result is an Iterable"),
+                Pretty(metric.hyperparameters),
+                Pretty(metric.info),
+            ]
+            metric_summarized = (
+                metric_summarized if with_info else metric_summarized[:-1]
+            )
+            table.add_row(*metric_summarized)
 
         category_layout["metrics"].update(Panel(table, padding=0, box=box.MINIMAL))
 
