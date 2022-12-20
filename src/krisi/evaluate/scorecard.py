@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, List
 
@@ -39,7 +40,7 @@ class ScoreCard:
         ]
 
         for metric in default_metrics:
-            self.__dict__[metric.key] = metric
+            self.__dict__[metric.key] = deepcopy(metric)
 
     def __setattr__(self, key: str, item: Any) -> None:
         metric = getattr(self, key, None)
