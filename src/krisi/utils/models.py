@@ -12,7 +12,7 @@ from sktime.forecasting.base import ForecastingHorizon
 from sktime.forecasting.naive import NaiveForecaster
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 
-from all_types import InSamplePredictions, OutSamplePredictions, X, y
+from krisi.utils.modeling_types import InSamplePredictions, OutSamplePredictions, X, y
 
 
 class Model(ABC):
