@@ -4,23 +4,23 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
+  - pytest
+  - numpy=1.22.4
   - numba=0.53.1
-  - statsmodels==0.12.1
-  - fastparquet
-  - seaborn
-  - black
-  - ipython
-  - ipykernel
-  - scipy
-  - tqdm
-  - numpy
   - pandas
   - matplotlib
-  - pytest
-  - missingno
+  - tqdm
+  - statsmodels==0.12.1
   - rich
-  - pip
   - scikit-learn
+  # - fastparquet
+  # - seaborn
+  # - black
+  # - ipython
+  # - ipykernel
+  # - scipy
+  # - missingno
+  # - pip
   # - pip:
     
 
