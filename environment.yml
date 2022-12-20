@@ -21,6 +21,6 @@ dependencies:
   - rich
   - pip
   - pip:
-    - sklearn
+    - scikit-learn
 
 prefix: /opt/homebrew/Caskroom/mambaforge/base/envs/krisi
