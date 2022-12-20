@@ -20,7 +20,8 @@ dependencies:
   - missingno
   - rich
   - pip
-  - pip:
-    - scikit-learn
+  - scikit-learn
+  # - pip:
+    
 
 prefix: /opt/homebrew/Caskroom/mambaforge/base/envs/krisi
