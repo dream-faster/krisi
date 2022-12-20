@@ -21,7 +21,7 @@ def evaluate(
     for metric in sc.get_default_metrics():
         if metric.restrict_to_sample is sample_type:
             continue
-        sc[metric.key] = metric.evaluate(y, predictions)
+        metric.evaluate(y, predictions)
 
     return sc
 
