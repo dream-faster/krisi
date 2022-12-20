@@ -8,7 +8,7 @@
           "name": "Run pipeline",
           "type": "python",
           "request": "launch",
-          "module": "extract_data",
+          "module": "src.examples.basic_report",
       }
   ]
 }

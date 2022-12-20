@@ -1,16 +1,18 @@
-import logging
 from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Tuple
+from typing import Any, List
 
-from krisi.evaluate.metric import MCats, Metric
+from rich import print
+from rich.pretty import Pretty
+
+from krisi.evaluate.library.default_metrics import predefined_default_metrics
+from krisi.evaluate.metric import Metric, MetricCategories
+from krisi.evaluate.type import SampleTypes
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
-from krisi.utils.printing import print_summary
+from krisi.utils.printing import get_summary
 
 
-class SampleTypes(Enum):
-    insample = "insample"
-    outsample = "outsample"
+def strip_builtin_functions(dict_to_strip: dict) -> dict:
+    return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
 
 
 @dataclass
@@ -20,79 +22,57 @@ class ScoreCard:
     model_name: str
     dataset_name: str
     sample_type: SampleTypes
-
-    """ Score Metrics """
-    ljung_box_score: Metric[float] = Metric(
-        name="ljung-box-score",
-        category=MCats.residual,
-        info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
-    )
-    mae: Metric[float] = Metric(
-        name="Mean Absolute Error", category=MCats.reg_err, info="Mean Absolute Error"
-    )
-    mse: Metric[float] = Metric(
-        name="Mean Squared Error", category=MCats.reg_err, info="Mean Squared Error"
-    )
-    rmse: Metric[float] = Metric(
-        name="Root Mean Squared Error",
-        category=MCats.reg_err,
-        info="Root Mean Squared Error",
-    )
-    aic: Metric[float] = Metric(
-        name="Akaike Information Criterion", category=MCats.entropy
-    )
-    bic: Metric[float] = Metric(
-        name="Bayesian Information Criterion", category=MCats.entropy
-    )
-    pacf_res: Metric[Tuple[float, float]] = Metric(
-        name="Partial Autocorrelation", category=MCats.residual
-    )
-    acf_res: Metric[Tuple[float, float]] = Metric(
-        name="Autocorrelation", category=MCats.residual
-    )
-    residuals_mean: Metric[float] = Metric(
-        name="Residual Mean", category=MCats.residual
-    )
-    residuals_std: Metric[float] = Metric(
-        name="Residual Standard Deviation", category=MCats.residual
-    )
-    # hearst_exponent: Metric[float] = Metric(category=MCats.entropy)
+    default_metrics_keys: List[str]
 
     def __init__(
-        self, model_name: str, dataset_name: str, sample_type: SampleTypes
+        self,
+        model_name: str,
+        dataset_name: str,
+        sample_type: SampleTypes,
+        default_metrics: List[Metric] = predefined_default_metrics,
     ) -> None:
         self.__dict__["model_name"] = model_name
         self.__dict__["dataset_name"] = dataset_name
         self.__dict__["sample_type"] = sample_type
+        self.__dict__["default_metrics_keys"] = [
+            metric.key for metric in default_metrics
+        ]
+
+        for metric in default_metrics:
+            self.__dict__[metric.key] = metric
 
     def __setattr__(self, key: str, item: Any) -> None:
         metric = getattr(self, key, None)
 
         if metric is None:
-            logging.warning(
-                "No such metric exists, creating a new one.\nConsider using set_new_metric to also define category and information regarding the metric."
-            )
-            if isinstance(item, Metric):
+            if isinstance(item, dict):
+                self.__dict__[key] = Metric(key=key, **item)
+            elif isinstance(item, Metric):
+                item["key"] = key
                 self.__dict__[key] = item
             else:
-                self.__dict__[key] = Metric(name=key, metric_result=item)
+                self.__dict__[key] = Metric(
+                    name=key, key=key, result=item, category=MetricCategories.unknown
+                )
         else:
             if isinstance(item, dict):
                 metric_dict = map_newdict_on_olddict(
-                    vars(metric), item, exclude=["name"]
+                    strip_builtin_functions(vars(metric)), item, exclude=["name"]
                 )
                 self.__dict__[key] = Metric(**metric_dict)
             elif isinstance(item, Metric):
                 metric_dict = map_newdict_on_olddict(
-                    vars(metric), vars(item), exclude=["name"]
+                    strip_builtin_functions(vars(metric)),
+                    strip_builtin_functions(vars(item)),
+                    exclude=["name"],
                 )
                 self.__dict__[key] = Metric(**metric_dict)
             else:
-                metric["metric_result"] = item
+                metric["result"] = item
                 self.__dict__[key] = metric
 
-    def set_new_metric(self, metric_key: str, metric: Metric) -> None:
-        self.__dict__[metric_key] = metric
+    def get_default_metrics(self) -> List[Metric]:
+        return [self.__dict__[key] for key in self.default_metrics_keys]
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
@@ -104,7 +84,19 @@ class ScoreCard:
         setattr(self, key, None)
 
     def __str__(self) -> str:
-        return print_summary(self, categories=[el.value for el in MCats])
+        print(Pretty(self.__dict__))
+        return ""
 
     def __repr__(self) -> str:
-        return print_summary(self, repr=True, categories=[el.value for el in MCats])
+        print(Pretty(self.__dict__))
+        return ""
+
+    def print_summary(self, with_info: bool = False) -> None:
+        print(
+            get_summary(
+                self,
+                repr=True,
+                categories=[el.value for el in MetricCategories],
+                with_info=with_info,
+            )
+        )

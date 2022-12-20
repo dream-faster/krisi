@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Callable, Iterable, List, Optional, Union
 
 
 def map_newdict_on_olddict(
@@ -10,3 +10,48 @@ def map_newdict_on_olddict(
             merged_dict[key_] = value_
 
     return merged_dict
+
+
+def group_by_categories(
+    flat_list: List[dict[str, Any]], categories: List[str]
+) -> dict[str, "Metric"]:
+    category_groups = dict()
+    for category in categories:
+        category_groups[category] = list(
+            filter(
+                lambda x: x["category"].value == category
+                if hasattr(x, "category")
+                else False,
+                flat_list,
+            )
+        )
+    category_groups[None] = list(
+        filter(
+            lambda x: x["category"].value == None if hasattr(x, "category") else False,
+            flat_list,
+        )
+    )
+    return category_groups
+
+
+def type_converter(type_to_ensure: Any) -> Callable:
+    def ensure_format(
+        obj_s: Union[List[Any], Any]
+    ) -> Union[List[type_to_ensure], type_to_ensure]:
+        if isinstance(obj_s, Iterable) and not isinstance(obj_s, str):
+            return [
+                type_to_ensure(el) if not isinstance(el, type_to_ensure) else el
+                for el in obj_s
+            ]
+        else:
+            if isinstance(obj_s, type_to_ensure):
+                return obj_s
+            else:
+                return type_to_ensure(obj_s)
+
+    return ensure_format
+
+
+def string_to_id(s: str) -> str:
+    s = "".join(filter(lambda c: str.isidentifier(c) or str.isdecimal(c), s))
+    return s
