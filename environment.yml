@@ -18,6 +18,7 @@ dependencies:
   - matplotlib
   - pytest
   - missingno
-  - pip
+  - rich
+  # - pip
 
 prefix: /opt/homebrew/Caskroom/mambaforge/base/envs/krisi
