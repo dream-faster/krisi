@@ -3,15 +3,21 @@ channels:
   - pyg
   - conda-forge
 dependencies:
+  # Base libraries
   - python=3.9
   - pytest
   - numpy=1.22.4
   - numba=0.53.1
   - pandas
+  
+  # Plotting libraries
   - matplotlib
-  - tqdm
-  - statsmodels==0.12.1
   - rich
+  - tqdm
+
+  # TS and Modeling libraries
+  - statsmodels==0.12.1
+  - sktime
   - scikit-learn
   # - fastparquet
   # - seaborn
