@@ -25,7 +25,7 @@ sc["yet_another_metric"] = Metric(
     name="A new, own Metric",
     category=MetricCategories.residual,
     result=calculated_metric_example * 3.0,
-    hyperparameters={"hyper_1": 5.0},
+    parameters={"hyper_1": 5.0},
 )
 
 # Updating a metric

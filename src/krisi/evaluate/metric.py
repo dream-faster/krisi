@@ -24,7 +24,7 @@ class Metric(Generic[T]):
     key: str = ""
     category: Optional[MetricCategories] = None
     result: Optional[T] = None
-    hyperparameters: dict = field(default_factory=dict)
+    parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
@@ -49,4 +49,4 @@ class Metric(Generic[T]):
         if self.result is not None:
             raise ValueError("This metric already contains a result.")
         else:
-            self.result = self.func(y, prediction, **self.hyperparameters)
+            self.result = self.func(y, prediction, **self.parameters)

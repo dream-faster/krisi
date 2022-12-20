@@ -96,7 +96,7 @@ def get_summary(
             "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
         )
         table.add_column("Result", style="magenta", width=2)
-        table.add_column("Hyperparameters", style="green", width=3)
+        table.add_column("parameters", style="green", width=3)
         if with_info:
             table.add_column("Info", width=3)
 
@@ -108,7 +108,7 @@ def get_summary(
                 Pretty(round(metric.result, 3))
                 if not isinstance(metric.result, Iterable)
                 else Pretty("Result is an Iterable"),
-                Pretty(metric.hyperparameters),
+                Pretty(metric.parameters),
                 Pretty(metric.info),
             ]
             metric_summarized = (
@@ -140,9 +140,9 @@ def handle_iterable_printing(obj: Any) -> Optional[str]:
 
 def print_metric(obj: "Metric", repr: bool = False) -> str:
     hyperparams = ""
-    if obj.hyperparameters is not None:
+    if obj.parameters is not None:
         hyperparams += "".join(
-            [f"{key} - {value}" for key, value in obj.hyperparameters.items()]
+            [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
 
     return f"{obj.name:>30s} ({obj.key}): {handle_iterable_printing(obj.result):^15.5s}{hyperparams:>15s}"

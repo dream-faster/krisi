@@ -15,14 +15,14 @@ predefined_default_metrics = [
         name="Mean Squared Error",
         key="mse",
         category=MetricCategories.reg_err,
-        hyperparameters={"squared": True},
+        parameters={"squared": True},
         func=mean_squared_error,
     ),
     Metric[float](
         name="Root Mean Squared Error",
         key="rmse",
         category=MetricCategories.reg_err,
-        hyperparameters={"squared": False},
+        parameters={"squared": False},
         func=mean_squared_error,
     ),
     Metric[float](
@@ -37,7 +37,7 @@ predefined_default_metrics = [
         category=MetricCategories.residual,
         func=lambda y, pred: (y - pred).std(),
     ),
-    Metric(
+    Metric[float](
         name="Ljung Box Statistics",
         key="ljung_box_statistics",
         category=MetricCategories.residual,
