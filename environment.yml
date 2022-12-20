@@ -19,7 +19,8 @@ dependencies:
   - pytest
   - missingno
   - rich
-  - sklearn
-  # - pip
+  - pip
+  - pip:
+    - sklearn
 
 prefix: /opt/homebrew/Caskroom/mambaforge/base/envs/krisi
