@@ -92,7 +92,7 @@ class ScoreCard:
         print(Pretty(self.__dict__))
         return ""
 
-    def print_summary(self, with_info: bool = False) -> None:
+    def print_summary(self, with_info: bool = False) -> "ScoreCard":
         print(
             get_summary(
                 self,
@@ -101,3 +101,4 @@ class ScoreCard:
                 with_info=with_info,
             )
         )
+        return self

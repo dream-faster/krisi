@@ -8,7 +8,7 @@
           "name": "Run pipeline",
           "type": "python",
           "request": "launch",
-          "module": "src.examples.basic_report",
+          "module": "krisi.examples.basic_report",
       }
   ]
 }
