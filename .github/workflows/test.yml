@@ -11,7 +11,7 @@ jobs:
           python-version: 3.9
           environment-file: environment.yml
           mamba-version: "*"
-          activate-environment: nlp
+          activate-environment: krisi
           auto-update-conda: false
           auto-activate-base: false
           show-channel-urls: true
