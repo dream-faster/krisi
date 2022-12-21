@@ -1,5 +1,7 @@
+import numbers
 import os
 from collections.abc import Iterable
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 import numpy as np
@@ -74,9 +76,15 @@ def __create_metric_table(metrics: List["Metric"], with_info) -> Table:
     for metric in metrics:
         if metric.result is None:
             continue
+
+        result = deepcopy(metric.result)
+        if isinstance(metric.result, Exception):
+            result = str(result)
+        elif isinstance(metric, numbers.Number):
+            result = round(result, 3)
         metric_summarized = [
             f"{metric.name} ({metric.key})",
-            Pretty(round(metric.result, 3))
+            Pretty(result)
             if not isinstance(metric.result, Iterable)
             else Pretty("Result is an Iterable"),
             Pretty(metric.parameters),
