@@ -9,7 +9,7 @@ MResultGeneric = TypeVar("MResultGeneric", bound=Union[float, int, str, List, Tu
 
 Predictions = Union[np.ndarray, pd.Series]
 Targets = Union[np.ndarray, pd.Series]
-MetricFunction = Callable[..., MResultGeneric]
+MetricFunction = Callable[[Predictions, Targets], MResultGeneric]
 
 
 class MetricCategories(Enum):

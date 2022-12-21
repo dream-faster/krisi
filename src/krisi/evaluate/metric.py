@@ -19,7 +19,7 @@ class Metric(Generic[MResultGeneric]):
     name: str
     key: str = ""
     category: Optional[MetricCategories] = None
-    result: Optional[Union[MResultGeneric, List[MResultGeneric]]] = None
+    result: Optional[Union[Exception, MResultGeneric, List[MResultGeneric]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
     info: str = ""
@@ -42,12 +42,26 @@ class Metric(Generic[MResultGeneric]):
         return print_metric(self, repr=True)
 
     def evaluate(self, y: Targets, prediction: Predictions) -> None:
-        self.__set_result(self.func(y, prediction, **self.parameters))
+        try:
+            result = self.func(y, prediction, **self.parameters)
+        except Exception as e:
+            result = e
+        self.__set_result(result)
 
     def evaluate_over_time(self, y: Targets, prediction: Predictions) -> None:
-        self.__set_result([self.func(y[:i], prediction[:i]) for i in range(len(y))])
+        try:
+            result_over_time = [
+                self.func(y[:i], prediction[:i], **self.parameters)
+                for i in range(len(y))
+            ]
+        except Exception as e:
+            result_over_time = e
 
-    def __set_result(self, result: Union[MResultGeneric, List[MResultGeneric]]):
+        self.__set_result(result_over_time)
+
+    def __set_result(
+        self, result: Union[Exception, MResultGeneric, List[MResultGeneric]]
+    ):
         if self.result is not None:
             raise ValueError("This metric already contains a result.")
         else:
