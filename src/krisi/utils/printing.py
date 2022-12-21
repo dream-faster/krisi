@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 import numpy as np
+import plotext as plx
 from rich import box, print
 from rich.console import Group
 from rich.layout import Layout
@@ -14,6 +15,7 @@ from rich.pretty import Pretty
 from rich.table import Table
 from rich.text import Text
 
+from krisi.utils.console_plot import plotextMixin
 from krisi.utils.iterable_helpers import group_by_categories
 
 if TYPE_CHECKING:
@@ -55,6 +57,46 @@ def iterative_length(obj: Iterable) -> List[int]:
     return object_shape
 
 
+def line_plot_rolling(data, width, height, title):
+    plx.clf()
+
+    plx.plot(data, marker="fhd")
+    plx.plotsize(width, 8)
+    # plx.xaxes(1, 0)
+    # plx.yaxes(1, 0)
+    # plx.title(title)
+    plx.theme("dark")
+    # plx.ylim(-1, 1)
+
+    return plx.build()
+
+
+def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
+    result = deepcopy(metric.result)
+    if isinstance(result, Exception):
+        result = str(result)
+    elif isinstance(result, float):
+        result = round(result, 3)
+
+    if isinstance(result, Iterable):
+        return plotextMixin(result, line_plot_rolling, title=metric.name)
+        # Pretty("Result is an Iterable"),
+    else:
+        return Pretty(result, max_depth=2, max_length=3)
+
+
+def __create_metric(metric: "Metric", with_info: bool) -> List[str]:
+    metric_summarized = [
+        f"{metric.name} ({metric.key})",
+        __display_result(metric),
+        Pretty(metric.parameters),
+        Pretty(metric.info),
+    ]
+    metric_summarized = metric_summarized if with_info else metric_summarized[:-1]
+
+    return metric_summarized
+
+
 def __create_metric_table(
     title: str, metrics: List["Metric"], with_info: bool
 ) -> Layout:
@@ -68,31 +110,17 @@ def __create_metric_table(
     )
 
     table.add_column(
-        "Metric Name", justify="right", style="cyan", width=4, no_wrap=False
+        "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
     )
-    table.add_column("Result", style="magenta", width=1)
-    table.add_column("parameters", style="green", width=2)
+    table.add_column("Result", style="magenta", width=5)
+    table.add_column("parameters", style="green", width=1)
     if with_info:
         table.add_column("Info", width=3)
 
     for metric in metrics:
         if metric.result is None:
             continue
-
-        result = deepcopy(metric.result)
-        if isinstance(result, Exception):
-            result = str(result)
-        elif isinstance(result, numbers.Number):
-            result = round(result, 3)
-        metric_summarized = [
-            f"{metric.name} ({metric.key})",
-            Pretty(result, max_depth=2, max_length=3),
-            # if not isinstance(metric.result, Iterable)
-            # else Pretty("Result is an Iterable"),
-            Pretty(metric.parameters),
-            Pretty(metric.info),
-        ]
-        metric_summarized = metric_summarized if with_info else metric_summarized[:-1]
+        metric_summarized = __create_metric(metric, with_info)
         table.add_row(*metric_summarized)
 
     return Layout(table)
@@ -125,8 +153,6 @@ def get_summary(
             if not __metrics_empty_in_category(metrics)
         ]
     )
-
-    # layout["main"].split_column(*metric_tables)
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
     return Panel(metric_tables, title=title, padding=3, box=box.ASCII2)
