@@ -1,13 +1,14 @@
 from copy import deepcopy
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any, List
 
 from rich import print
 from rich.pretty import Pretty
 
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
-from krisi.evaluate.metric import Metric, MetricCategories
-from krisi.evaluate.type import SampleTypes
+from krisi.evaluate.metric import Metric
+from krisi.evaluate.type import CalculationTypes, MetricCategories, SampleTypes
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
 from krisi.utils.printing import get_summary
 
@@ -23,6 +24,7 @@ class ScoreCard:
     model_name: str
     dataset_name: str
     sample_type: SampleTypes
+    calculation_type: CalculationTypes
     default_metrics_keys: List[str]
 
     def __init__(
@@ -30,6 +32,7 @@ class ScoreCard:
         model_name: str,
         dataset_name: str,
         sample_type: SampleTypes,
+        calculation_type: CalculationTypes = CalculationTypes.single,
         default_metrics: List[Metric] = predefined_default_metrics,
     ) -> None:
         self.__dict__["model_name"] = model_name
@@ -38,6 +41,7 @@ class ScoreCard:
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]
+        self.__dict__["calculation_type"] = calculation_type
 
         for metric in default_metrics:
             self.__dict__[metric.key] = deepcopy(metric)

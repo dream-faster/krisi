@@ -64,10 +64,10 @@ def __create_metric_table(metrics: List["Metric"], with_info) -> Table:
     )
 
     table.add_column(
-        "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
+        "Metric Name", justify="right", style="cyan", width=4, no_wrap=False
     )
-    table.add_column("Result", style="magenta", width=2)
-    table.add_column("parameters", style="green", width=3)
+    table.add_column("Result", style="magenta", width=1)
+    table.add_column("parameters", style="green", width=2)
     if with_info:
         table.add_column("Info", width=3)
 

@@ -1,27 +1,35 @@
-from typing import Any, Callable, Tuple, Union
+from typing import Tuple
 
 import pandas as pd
 
 from krisi.evaluate.scorecard import ScoreCard
-from krisi.evaluate.type import Predictions, SampleTypes, Targets
+from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
 
 
 def evaluate(
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
+    calculation_type: CalculationTypes,
     y: Targets,
     predictions: Predictions,
 ) -> ScoreCard:
 
     sc = ScoreCard(
-        model_name=model_name, dataset_name=dataset_name, sample_type=sample_type
+        model_name=model_name,
+        dataset_name=dataset_name,
+        sample_type=sample_type,
+        calculation_type=calculation_type,
     )
 
     for metric in sc.get_default_metrics():
         if metric.restrict_to_sample is sample_type:
             continue
-        metric.evaluate(y, predictions)
+
+        if calculation_type == CalculationTypes.single:
+            metric.evaluate(y, predictions)
+        else:
+            metric.evaluate_over_time(y, predictions)
 
     return sc
 
@@ -29,6 +37,7 @@ def evaluate(
 def evaluate_in_out_sample(
     model_name: str,
     dataset_name: str,
+    calculation_type: CalculationTypes,
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
@@ -39,6 +48,7 @@ def evaluate_in_out_sample(
         model_name,
         dataset_name,
         SampleTypes.insample,
+        calculation_type,
         y_insample,
         insample_predictions,
     )
@@ -46,6 +56,7 @@ def evaluate_in_out_sample(
         model_name,
         dataset_name,
         SampleTypes.outsample,
+        calculation_type,
         y_outsample,
         outsample_predictions,
     )

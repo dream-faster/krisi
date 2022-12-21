@@ -1,8 +1,12 @@
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    mean_squared_log_error,
+)
 
 from krisi.evaluate.library.metric_functions import ljung_box
-from krisi.evaluate.metric import Metric, MetricCategories
-from krisi.evaluate.type import SampleTypes
+from krisi.evaluate.metric import Metric
+from krisi.evaluate.type import MetricCategories, SampleTypes
 
 predefined_default_metrics = [
     Metric[float](
@@ -24,6 +28,13 @@ predefined_default_metrics = [
         category=MetricCategories.reg_err,
         parameters={"squared": False},
         func=mean_squared_error,
+    ),
+    Metric[float](
+        name="Root Mean Squared Log Error",
+        key="rmsle",
+        category=MetricCategories.reg_err,
+        parameters={"squared": False},
+        func=mean_squared_log_error,
     ),
     Metric[float](
         name="Mean of the Residuals",

@@ -1,4 +1,4 @@
 from .evaluate import evaluate, evaluate_in_out_sample
-from .metric import Metric, MetricCategories
+from .metric import Metric
 from .scorecard import ScoreCard
-from .type import SampleTypes
+from .type import MetricCategories, SampleTypes
