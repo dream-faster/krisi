@@ -60,8 +60,8 @@ def iterative_length(obj: Iterable) -> List[int]:
 def line_plot_rolling(data, width, height, title):
     plx.clf()
 
-    plx.plot(data, marker="fhd")
-    plx.plotsize(width, 8)
+    plx.plot(data, marker="hd")
+    plx.plotsize(width, 10)
     # plx.xaxes(1, 0)
     # plx.yaxes(1, 0)
     # plx.title(title)
