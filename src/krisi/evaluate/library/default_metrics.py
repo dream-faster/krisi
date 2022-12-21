@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn.metrics import (
     mean_absolute_error,
     mean_squared_error,
@@ -48,7 +49,7 @@ predefined_default_metrics = [
         category=MetricCategories.residual,
         func=lambda y, pred: (y - pred).std(),
     ),
-    Metric[float](
+    Metric[pd.DataFrame](
         name="Ljung Box Statistics",
         key="ljung_box_statistics",
         category=MetricCategories.residual,
@@ -57,38 +58,3 @@ predefined_default_metrics = [
         restrict_to_sample=SampleTypes.insample,
     ),
 ]
-
-# ljung_box_score: Metric[float] = Metric(
-#     name="ljung-box-score",
-#     category=MetricCategories.residual,
-#     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
-# )
-# mae: Metric[float] = Metric(
-#     name="Mean Absolute Error", category=MetricCategories.reg_err, info="Mean Absolute Error"
-# )
-# mse: Metric[float] = Metric(
-#     name="Mean Squared Error", category=MetricCategories.reg_err, info="Mean Squared Error"
-# )
-# rmse: Metric[float] = Metric(
-#     name="Root Mean Squared Error",
-#     category=MetricCategories.reg_err,
-#     info="Root Mean Squared Error",
-# )
-# aic: Metric[float] = Metric(
-#     name="Akaike Information Criterion", category=MetricCategories.entropy
-# )
-# bic: Metric[float] = Metric(
-#     name="Bayesian Information Criterion", category=MetricCategories.entropy
-# )
-# pacf_res: Metric[Tuple[float, float]] = Metric(
-#     name="Partial Autocorrelation", category=MetricCategories.residual
-# )
-# acf_res: Metric[Tuple[float, float]] = Metric(
-#     name="Autocorrelation", category=MetricCategories.residual
-# )
-# residuals_mean: Metric[float] = Metric(
-#     name="Residual Mean", category=MetricCategories.residual
-# )
-# residuals_std: Metric[float] = Metric(
-#     name="Residual Standard Deviation", category=MetricCategories.residual
-# )

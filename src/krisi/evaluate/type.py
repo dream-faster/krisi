@@ -4,7 +4,9 @@ from typing import Any, Callable, List, Tuple, TypeVar, Union
 import numpy as np
 import pandas as pd
 
-MResultGeneric = TypeVar("MResultGeneric", bound=Union[float, int, str, List, Tuple])
+MResultGeneric = TypeVar(
+    "MResultGeneric", bound=Union[float, int, str, List, Tuple, pd.DataFrame]
+)
 
 
 Predictions = Union[np.ndarray, pd.Series]

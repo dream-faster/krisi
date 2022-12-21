@@ -55,9 +55,11 @@ def iterative_length(obj: Iterable) -> List[int]:
     return object_shape
 
 
-def __create_metric_table(metrics: List["Metric"], with_info) -> Table:
+def __create_metric_table(
+    title: str, metrics: List["Metric"], with_info: bool
+) -> Table:
     table = Table(
-        title="",
+        title=title,
         # show_edge=False,
         show_footer=False,
         show_header=False,
@@ -78,45 +80,22 @@ def __create_metric_table(metrics: List["Metric"], with_info) -> Table:
             continue
 
         result = deepcopy(metric.result)
-        if isinstance(metric.result, Exception):
+        if isinstance(result, Exception):
             result = str(result)
-        elif isinstance(metric, numbers.Number):
+        elif isinstance(result, numbers.Number):
             result = round(result, 3)
         metric_summarized = [
             f"{metric.name} ({metric.key})",
-            Pretty(result)
-            if not isinstance(metric.result, Iterable)
-            else Pretty("Result is an Iterable"),
+            Pretty(result, max_depth=2, max_length=3),
+            # if not isinstance(metric.result, Iterable)
+            # else Pretty("Result is an Iterable"),
             Pretty(metric.parameters),
             Pretty(metric.info),
         ]
         metric_summarized = metric_summarized if with_info else metric_summarized[:-1]
         table.add_row(*metric_summarized)
 
-    return table
-
-
-def __create_category_panel(
-    category: str, metrics: List["Metric"], with_info: bool
-) -> Layout:
-    category_title = f"{category if category is not None else 'Unknown':>15s}"
-
-    category_layout = Layout(name=category_title, minimum_size=3)
-
-    category_layout.split_row(
-        Layout(
-            Panel(category_title, padding=1, box=box.MINIMAL),
-            ratio=1,
-            minimum_size=3,
-        ),
-        Layout(name="metrics", ratio=5, minimum_size=3),
-    )
-
-    table = __create_metric_table(metrics, with_info)
-
-    category_layout["metrics"].update(Panel(table, padding=0, box=box.MINIMAL))
-
-    return category_layout
+    return Layout(table)
 
 
 def __metrics_empty_in_category(metrics: List["Metric"]) -> bool:
@@ -135,13 +114,17 @@ def get_summary(
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
-    category_layouts: List[Layout] = [
-        __create_category_panel(category, metrics, with_info)
+    metric_tables = [
+        __create_metric_table(
+            f"{category if category is not None else 'Unknown':>15s}",
+            metrics,
+            with_info,
+        )
         for category, metrics in category_groups.items()
         if not __metrics_empty_in_category(metrics)
     ]
 
-    layout["main"].split_column(*category_layouts)
+    layout["main"].split_column(*metric_tables)
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
     return Panel(layout, title=title, padding=3, box=box.ASCII2)
@@ -167,4 +150,4 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
 
-    return f"{obj.name:>30s} ({obj.key}): {handle_iterable_printing(obj.result):^15.5s}{hyperparams:>15s}"
+    return f"{obj.name:>30s} ({obj.key}): {obj.result:^15.5s}{hyperparams:>15s}"

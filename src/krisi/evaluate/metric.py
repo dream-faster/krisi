@@ -41,18 +41,18 @@ class Metric(Generic[MResultGeneric]):
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
 
-    def evaluate(self, y: Targets, prediction: Predictions) -> None:
+    def evaluate(self, y: Targets, predictions: Predictions) -> None:
         try:
-            result = self.func(y, prediction, **self.parameters)
+            result = self.func(y, predictions, **self.parameters)
         except Exception as e:
             result = e
         self.__set_result(result)
 
-    def evaluate_over_time(self, y: Targets, prediction: Predictions) -> None:
+    def evaluate_over_time(self, y: Targets, predictions: Predictions) -> None:
         try:
             result_over_time = [
-                self.func(y[:i], prediction[:i], **self.parameters)
-                for i in range(len(y))
+                self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
+                for i in range(len(y) - 1)
             ]
         except Exception as e:
             result_over_time = e
