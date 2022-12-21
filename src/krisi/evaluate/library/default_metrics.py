@@ -5,7 +5,7 @@ from sklearn.metrics import (
     mean_squared_log_error,
 )
 
-from krisi.evaluate.library.metric_functions import ljung_box
+from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories, SampleTypes
 
