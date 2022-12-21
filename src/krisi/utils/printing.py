@@ -57,7 +57,7 @@ def iterative_length(obj: Iterable) -> List[int]:
 
 def __create_metric_table(
     title: str, metrics: List["Metric"], with_info: bool
-) -> Table:
+) -> Layout:
     table = Table(
         title=title,
         # show_edge=False,
@@ -114,20 +114,22 @@ def get_summary(
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
-    metric_tables = [
-        __create_metric_table(
-            f"{category if category is not None else 'Unknown':>15s}",
-            metrics,
-            with_info,
-        )
-        for category, metrics in category_groups.items()
-        if not __metrics_empty_in_category(metrics)
-    ]
+    metric_tables = Group(
+        *[
+            __create_metric_table(
+                f"{category if category is not None else 'Unknown':>15s}",
+                metrics,
+                with_info,
+            )
+            for category, metrics in category_groups.items()
+            if not __metrics_empty_in_category(metrics)
+        ]
+    )
 
-    layout["main"].split_column(*metric_tables)
+    # layout["main"].split_column(*metric_tables)
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
-    return Panel(layout, title=title, padding=3, box=box.ASCII2)
+    return Panel(metric_tables, title=title, padding=3, box=box.ASCII2)
 
 
 def handle_iterable_printing(obj: Any) -> Optional[str]:
