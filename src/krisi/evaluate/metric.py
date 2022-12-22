@@ -52,37 +52,32 @@ class Metric(Generic[MResultGeneric]):
             result = e
         self.__set_result(result)
 
-    def evaluate_over_time(self, y: Targets, predictions: Predictions) -> None:
+    def evaluate_over_time(
+        self, y: Targets, predictions: Predictions, window: Optional[int] = None
+    ) -> None:
         try:
-            result_over_time = [
-                self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
-                for i in range(len(y) - 1)
-            ]
+            if window:
+                result_over_time = [
+                    self.func(
+                        y[i : i + window],
+                        predictions[i : i + window],
+                        **self.parameters
+                    )
+                    for i in range(0, len(y) - 1, window)
+                ]
+            else:
+                # expanding
+                result_over_time = [
+                    self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
+                    for i in range(len(y) - 1)
+                ]
         except Exception as e:
             result_over_time = e
 
         self.__set_result(result_over_time)
 
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
-        def display_time_series(
-            data: List[MResultGeneric] = self.result, width: Optional[float] = None
-        ):
-            df = pd.DataFrame(data, columns=[self.name])
-            df["iteration"] = list(range(len(data)))
-            fig = px.line(
-                df,
-                x="iteration",
-                y=self.name,
-                width=width,
-            )
-            return fig
-
-        if isinstance(self.result, Exception) or self.result is None:
-            return None
-        elif isiterable(self.result):
-            return InteractiveFigure(self.key, get_figure=display_time_series)
-        else:
-            return InteractiveFigure(self.key, get_figure=display_time_series)
+        return create_diagram(self)
 
     def __set_result(
         self, result: Union[Exception, MResultGeneric, List[MResultGeneric]]
@@ -91,3 +86,25 @@ class Metric(Generic[MResultGeneric]):
             raise ValueError("This metric already contains a result.")
         else:
             self.result = result
+
+
+def create_diagram(self: Metric) -> Optional[InteractiveFigure]:
+    def display_time_series(
+        data: List[MResultGeneric] = self.result, width: Optional[float] = None
+    ):
+        df = pd.DataFrame(data, columns=[self.name])
+        df["iteration"] = list(range(len(data)))
+        fig = px.line(
+            df,
+            x="iteration",
+            y=self.name,
+            width=width,
+        )
+        return fig
+
+    if isinstance(self.result, Exception) or self.result is None:
+        return None
+    elif isiterable(self.result):
+        return InteractiveFigure(self.key, get_figure=display_time_series)
+    else:
+        return InteractiveFigure(self.key, get_figure=display_time_series)
