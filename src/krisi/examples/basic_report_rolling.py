@@ -11,7 +11,7 @@ from krisi.utils.models import default_arima_model
 from krisi.utils.runner import fit_model, generate_univariate_predictions
 
 
-def basic_report() -> Tuple[ScoreCard, ScoreCard]:
+def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
     """Create syntethic Data"""
     target_col = "arima_synthetic"
     df = generating_arima_synthetic_data(target_col).to_frame(name=target_col)
@@ -47,4 +47,4 @@ def basic_report() -> Tuple[ScoreCard, ScoreCard]:
 
 
 if __name__ == "__main__":
-    basic_report()
+    basic_report_rolling()

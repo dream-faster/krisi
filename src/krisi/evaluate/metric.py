@@ -2,6 +2,9 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, List, Optional, Tuple, TypeVar, Union
 
+import pandas as pd
+import plotly.express as px
+
 from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
@@ -10,7 +13,8 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
-from krisi.utils.iterable_helpers import string_to_id
+from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.utils.iterable_helpers import isiterable, string_to_id
 from krisi.utils.printing import print_metric
 
 
@@ -58,6 +62,27 @@ class Metric(Generic[MResultGeneric]):
             result_over_time = e
 
         self.__set_result(result_over_time)
+
+    def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
+        def display_time_series(
+            data: List[MResultGeneric] = self.result, width: Optional[float] = None
+        ):
+            df = pd.DataFrame(data, columns=["date"])
+            df["iteration"] = len(data)
+            fig = px.line(
+                df,
+                x="iteration",
+                y="date",
+                width=width,
+            )
+            return fig
+
+        if isinstance(self.result, Exception) or self.result is None:
+            return None
+        elif isiterable(self.result):
+            return InteractiveFigure(self.key, get_figure=display_time_series)
+        else:
+            return InteractiveFigure(self.key, get_figure=display_time_series)
 
     def __set_result(
         self, result: Union[Exception, MResultGeneric, List[MResultGeneric]]

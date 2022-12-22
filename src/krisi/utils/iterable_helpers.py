@@ -55,3 +55,10 @@ def type_converter(type_to_ensure: Any) -> Callable:
 def string_to_id(s: str) -> str:
     s = "".join(filter(lambda c: str.isidentifier(c) or str.isdecimal(c), s))
     return s
+
+
+def isiterable(obj: Any) -> bool:
+    if isinstance(obj, Iterable) and not isinstance(obj, str):
+        return True
+    else:
+        return False

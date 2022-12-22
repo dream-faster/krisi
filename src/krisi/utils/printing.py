@@ -16,7 +16,7 @@ from rich.table import Table
 from rich.text import Text
 
 from krisi.utils.console_plot import plotextMixin
-from krisi.utils.iterable_helpers import group_by_categories
+from krisi.utils.iterable_helpers import group_by_categories, isiterable
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -69,13 +69,6 @@ def line_plot_rolling(data, width, height, title):
     # plx.ylim(-1, 1)
 
     return plx.build()
-
-
-def isiterable(obj: Any) -> bool:
-    if isinstance(obj, Iterable) and not isinstance(obj, str):
-        return True
-    else:
-        return False
 
 
 def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
