@@ -9,14 +9,5 @@ for metric in insample_report.get_default_metrics():
 
 report = Report(modes=[DisplayModes.pdf])
 
-report.add(
-    [
-        diagram
-        for diagram in [
-            metric.get_diagram_over_time()
-            for metric in insample_report.get_default_metrics()
-        ]
-        if diagram is not None
-    ]
-)
+report.add(insample_report.get_rolling_diagrams())
 report.generate_launch()
