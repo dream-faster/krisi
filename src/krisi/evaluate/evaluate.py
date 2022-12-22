@@ -29,7 +29,7 @@ def evaluate(
         if calculation_type == CalculationTypes.single:
             metric.evaluate(y, predictions)
         else:
-            metric.evaluate_over_time(y, predictions)
+            metric.evaluate_over_time(y, predictions, window=10)
 
     return sc
 

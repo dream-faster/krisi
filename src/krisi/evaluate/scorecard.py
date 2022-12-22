@@ -9,6 +9,7 @@ from rich.pretty import Pretty
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import CalculationTypes, MetricCategories, SampleTypes
+from krisi.report.types_ import InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
 from krisi.utils.printing import get_summary
 
@@ -106,3 +107,12 @@ class ScoreCard:
             )
         )
         return self
+
+    def get_rolling_diagrams(self) -> List[InteractiveFigure]:
+        return [
+            diagram
+            for diagram in [
+                metric.get_diagram_over_time() for metric in self.get_default_metrics()
+            ]
+            if diagram is not None
+        ]
