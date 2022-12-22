@@ -32,6 +32,7 @@ dependencies = [
   "tqdm",
   "plotext",
   "plotly",
+  "dash",
 
   #TS and Modeling libraries
   "statsmodels ==0.12.1",

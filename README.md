@@ -59,7 +59,16 @@ The project was entire built in ``python``
 
 
 
-### Install mopi (default)
+### Install krisi (default)
+Install from git directly
+
+-
+    ```
+    pip install https://github.com/dream-faster/archive/krisi.zip
+    ```
+
+OR
+
 1. Clone the project by running
     ```
     git clone https://github.com/dream-faster/krisi.git
@@ -67,10 +76,11 @@ The project was entire built in ``python``
 
 2. Navigate to the project root directory
 
-3. Build the project by executing 
+3. Install krisi by executing 
     ```
     pip install -e .
     ```
+
 
 ### Clone project
 
