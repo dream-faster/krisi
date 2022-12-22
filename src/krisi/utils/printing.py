@@ -71,6 +71,13 @@ def line_plot_rolling(data, width, height, title):
     return plx.build()
 
 
+def isiterable(obj: Any) -> bool:
+    if isinstance(obj, Iterable) and not isinstance(obj, str):
+        return True
+    else:
+        return False
+
+
 def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
     result = deepcopy(metric.result)
     if isinstance(result, Exception):
@@ -78,9 +85,12 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
     elif isinstance(result, float):
         result = round(result, 3)
 
-    if isinstance(result, Iterable):
-        return plotextMixin(result, line_plot_rolling, title=metric.name)
-        # Pretty("Result is an Iterable"),
+    if isiterable(result):
+        if isiterable(result[0]):
+            return Pretty("Result is a complex Iterable")
+        else:
+            # Create a Console Plot
+            return plotextMixin(result, line_plot_rolling, title=metric.name)
     else:
         return Pretty(result, max_depth=2, max_length=3)
 
