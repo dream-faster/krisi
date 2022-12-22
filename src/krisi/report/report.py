@@ -97,6 +97,4 @@ if __name__ == "__main__":
             ),
         ]
     )
-
-    report = Report(modes=[DisplayModes.interactive])
     report.generate_launch()

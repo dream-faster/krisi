@@ -20,16 +20,22 @@ classifiers = [
 ]
 
 dependencies = [
-  # "numpy",
-  # "pandas",
-  # "matplotlib",
-  # "tqdm",
-  # "pyarrow>=3.0",
-  # "dash",
-  # "plotly",
-  # "missingno",
-  # "seaborn",
-  # "statsmodels==0.12.1"
+  # Base libraries
+  "pytest",
+  "numpy ==1.22.4",
+  "numba ==0.53.1",
+  "pandas",
+
+  #Plotting libraries
+  "matplotlib",
+  "rich",
+  "tqdm",
+  "plotext",
+
+  #TS and Modeling libraries
+  "statsmodels ==0.12.1",
+  "sktime",
+  "scikit-learn"
   
   # -- Dev Dependencies --
   # "pyright",

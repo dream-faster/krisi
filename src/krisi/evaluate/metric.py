@@ -2,28 +2,24 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, List, Optional, Tuple, TypeVar, Union
 
-from krisi.evaluate.type import MetricFunction, Predictions, SampleTypes, Targets
+from krisi.evaluate.type import (
+    MetricCategories,
+    MetricFunction,
+    MResultGeneric,
+    Predictions,
+    SampleTypes,
+    Targets,
+)
 from krisi.utils.iterable_helpers import string_to_id
 from krisi.utils.printing import print_metric
 
 
-class MetricCategories(Enum):
-    residual = "Residual Diagnostics"
-    entropy = "Information Entropy"
-    class_err = "Forecast Errors - Classification"
-    reg_err = "Forecast Errors - Regression"
-    unknown = "Unknown"
-
-
-T = TypeVar("T", bound=Union[float, int, str, List, Tuple])
-
-
 @dataclass
-class Metric(Generic[T]):
+class Metric(Generic[MResultGeneric]):
     name: str
     key: str = ""
     category: Optional[MetricCategories] = None
-    result: Optional[T] = None
+    result: Optional[Union[Exception, MResultGeneric, List[MResultGeneric]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
     info: str = ""
@@ -45,8 +41,28 @@ class Metric(Generic[T]):
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
 
-    def evaluate(self, y: Targets, prediction: Predictions) -> None:
+    def evaluate(self, y: Targets, predictions: Predictions) -> None:
+        try:
+            result = self.func(y, predictions, **self.parameters)
+        except Exception as e:
+            result = e
+        self.__set_result(result)
+
+    def evaluate_over_time(self, y: Targets, predictions: Predictions) -> None:
+        try:
+            result_over_time = [
+                self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
+                for i in range(len(y) - 1)
+            ]
+        except Exception as e:
+            result_over_time = e
+
+        self.__set_result(result_over_time)
+
+    def __set_result(
+        self, result: Union[Exception, MResultGeneric, List[MResultGeneric]]
+    ):
         if self.result is not None:
             raise ValueError("This metric already contains a result.")
         else:
-            self.result = self.func(y, prediction, **self.parameters)
+            self.result = result
