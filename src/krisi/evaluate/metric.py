@@ -67,12 +67,12 @@ class Metric(Generic[MResultGeneric]):
         def display_time_series(
             data: List[MResultGeneric] = self.result, width: Optional[float] = None
         ):
-            df = pd.DataFrame(data, columns=["date"])
-            df["iteration"] = len(data)
+            df = pd.DataFrame(data, columns=[self.name])
+            df["iteration"] = list(range(len(data)))
             fig = px.line(
                 df,
                 x="iteration",
-                y="date",
+                y=self.name,
                 width=width,
             )
             return fig
