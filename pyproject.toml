@@ -22,8 +22,8 @@ classifiers = [
 dependencies = [
   # Base libraries
   "pytest",
-  "numpy=1.22.4",
-  "numba=0.53.1",
+  "numpy==1.22.4",
+  "numba==0.53.1",
   "pandas",
 
   #Plotting libraries

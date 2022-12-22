@@ -17,7 +17,7 @@ dependencies:
   - plotext
 
   # TS and Modeling libraries
-  - statsmodels==0.12.1
+  - statsmodels=0.12.1
   - sktime
   - scikit-learn
   # - fastparquet
