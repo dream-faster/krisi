@@ -6,34 +6,12 @@ import plotly.graph_objects as go
 
 from krisi.report.interactive import run_app
 from krisi.report.static import create_pdf_report
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
-
-
-def plotly_interactive(
-    plot_function: Callable,
-    data_source: Union[pd.DataFrame, pd.Series],
-    *args,
-    **kwargs
-) -> Callable:
-    default_args = args
-    default_kwargs = kwargs
-
-    def wrapper(*args, **kwargs) -> go.Figure:
-        width = kwargs.pop("width", None)
-        title = kwargs.pop("title", "")
-
-        for key, value in default_kwargs.items():
-            if key not in kwargs:
-                kwargs[key] = value
-
-        fig = plot_function(data_source, *args, **kwargs)
-
-        fig.update_layout(width=width)
-        if title is not None:
-            fig.update_layout(title=title)
-        return fig
-
-    return wrapper
+from krisi.report.type import (
+    DisplayModes,
+    InteractiveFigure,
+    PlotlyInput,
+    plotly_interactive,
+)
 
 
 class Report:

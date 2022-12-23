@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 import numpy as np
+import pandas as pd
 import plotext as plx
 from rich import box, print
 from rich.console import Group
@@ -79,7 +80,9 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
         result = round(result, 3)
 
     if isiterable(result):
-        if isiterable(result[0]):
+        if isinstance(result, (pd.Series, pd.DataFrame)):
+            return Pretty(result)
+        elif isiterable(result[0]):
             return Pretty("Result is a complex Iterable")
         else:
             # Create a Console Plot
@@ -154,11 +157,11 @@ def get_summary(
             )
             for category, metrics in category_groups.items()
             if not __metrics_empty_in_category(metrics)
-        ]
+        ],
     )
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
-    return Panel(metric_tables, title=title, padding=3, box=box.ASCII2)
+    return Panel(metric_tables, title=title, padding=1, box=box.ASCII2, expand=True)
 
 
 def handle_iterable_printing(obj: Any) -> Optional[str]:

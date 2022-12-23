@@ -12,7 +12,7 @@ from krisi.analyse.analysis import (
     plot_table,
 )
 from krisi.report.report import Report, plotly_interactive
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.utils.data import generating_arima_synthetic_data, make_it_stationary
 
 

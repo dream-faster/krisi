@@ -12,7 +12,8 @@ sc = ScoreCard(
 target, predictions = np.random.rand(1000), np.random.rand(1000)
 
 """ A predefined metrics """
-sc.mse = mean_squared_error(target, predictions, squared=True)
+for metric in sc.get_default_metrics():
+    metric.evaluate(target, predictions)
 
 """ Adding a new metric """
 sc["own_metric"] = (target - predictions).mean()

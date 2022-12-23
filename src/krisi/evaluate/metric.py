@@ -13,7 +13,13 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.type import (
+    DisplayModes,
+    InteractiveFigure,
+    PlotFunction,
+    PlotlyInput,
+    plotly_interactive,
+)
 from krisi.utils.iterable_helpers import isiterable, string_to_id
 from krisi.utils.printing import print_metric
 
@@ -26,6 +32,7 @@ class Metric(Generic[MResultGeneric]):
     result: Optional[Union[Exception, MResultGeneric, List[MResultGeneric]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
+    plot_func: Optional[PlotFunction] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
 
@@ -88,23 +95,14 @@ class Metric(Generic[MResultGeneric]):
             self.result = result
 
 
-def create_diagram(self: Metric) -> Optional[InteractiveFigure]:
-    def display_time_series(
-        data: List[MResultGeneric] = self.result, width: Optional[float] = None
-    ):
-        df = pd.DataFrame(data, columns=[self.name])
-        df["iteration"] = list(range(len(data)))
-        fig = px.line(
-            df,
-            x="iteration",
-            y=self.name,
-            width=width,
-        )
-        return fig
+def create_diagram(obj: Metric) -> Optional[InteractiveFigure]:
 
-    if isinstance(self.result, Exception) or self.result is None:
+    if isinstance(obj.result, Exception) or obj.result is None:
         return None
-    elif isiterable(self.result):
-        return InteractiveFigure(self.key, get_figure=display_time_series)
+    elif isiterable(obj.result) and obj.plot_func is not None:
+        return InteractiveFigure(
+            obj.key,
+            get_figure=plotly_interactive(obj.plot_func, obj.result, name=obj.name),
+        )
     else:
-        return InteractiveFigure(self.key, get_figure=display_time_series)
+        return None

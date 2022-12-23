@@ -9,7 +9,7 @@ from rich.pretty import Pretty
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import CalculationTypes, MetricCategories, SampleTypes
-from krisi.report.types_ import InteractiveFigure
+from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
 from krisi.utils.printing import get_summary
 
