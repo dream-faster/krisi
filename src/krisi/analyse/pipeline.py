@@ -19,7 +19,9 @@ from krisi.utils.data import generating_arima_synthetic_data, make_it_stationary
 def eda_pipeline(
     df: Optional[pd.DataFrame] = None, target_col: str = "target", plot: bool = False
 ):
-    report = Report(modes=[DisplayModes.interactive])
+    report = Report(
+        title=f"EDA report on {target_col}", modes=[DisplayModes.interactive]
+    )
 
     columns: List[str] = [f"{target_col}_{i}" for i in range(5)]
     if df is None:

@@ -15,11 +15,13 @@ from krisi.report.type import (
 
 
 class Report:
+    title: str
     display_modes = DisplayModes
     figure_type = InteractiveFigure
     plotly_input = PlotlyInput
 
-    def __init__(self, modes: List[DisplayModes]) -> None:
+    def __init__(self, title: str, modes: List[DisplayModes]) -> None:
+        self.title = title
         self.modes = modes
         self.figures: List[InteractiveFigure] = []
         self.global_controllers: List[PlotlyInput] = []
@@ -27,7 +29,8 @@ class Report:
     def generate_launch(self):
         if DisplayModes.pdf in self.modes:
             create_pdf_report(
-                [figure.get_figure(width=900.0) for figure in self.figures]
+                [figure.get_figure(width=900.0) for figure in self.figures],
+                title=self.title,
             )
 
         if DisplayModes.interactive in self.modes:
@@ -60,7 +63,7 @@ if __name__ == "__main__":
         fig = px.line(df, x="date", y=ticker, width=width)
         return fig
 
-    report = Report(modes=[DisplayModes.interactive])
+    report = Report(title=f"Report on Apple", modes=[DisplayModes.interactive])
     report.add(
         [
             InteractiveFigure(

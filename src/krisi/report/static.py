@@ -13,7 +13,7 @@ def figure_to_base64(figures):
 
 
 def create_html_report(
-    template_file: str, images_html: str, title: str = "Time Series Report!!"
+    template_file: str, images_html: str, title: str = "Time Series Report"
 ) -> str:
     import pkgutil
 
@@ -39,8 +39,8 @@ def convert_html_to_pdf(source_html: str, output_path: str, report_name: str):
     return pisa_status.err
 
 
-def create_pdf_report(figures: List, path: str = "output"):
+def create_pdf_report(figures: List, path: str = "output", title: str = ""):
     [fig.update_layout(width=900.0) for fig in figures]
     images_html = figure_to_base64(figures)
-    report_html = create_html_report(f"template.html", images_html)
+    report_html = create_html_report(f"template.html", images_html, title)
     convert_html_to_pdf(report_html, path, report_name="report.pdf")
