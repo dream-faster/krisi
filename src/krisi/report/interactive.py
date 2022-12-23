@@ -2,18 +2,25 @@ from typing import List, Optional
 
 from dash import Dash, Input, Output, dcc, html
 
-from .types_ import InteractiveFigure, PlotlyInput
+from .type import InteractiveFigure, PlotlyInput
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
 
-def block(graph: dcc.Graph, title: Optional[html.P]=None, controllers: Optional[html.Div]=None) -> html.Div:
+def block(
+    graph: dcc.Graph,
+    title: Optional[html.P] = None,
+    controllers: Optional[html.Div] = None,
+) -> html.Div:
     return html.Div(
         children=[graph, title, controllers],
         className="flex flex-row flex-wrap w-full min-h-[450px]",
     )
- 
-def run_app(components: List[InteractiveFigure], global_controllers: List[PlotlyInput]) -> None:
+
+
+def run_app(
+    components: List[InteractiveFigure], global_controllers: List[PlotlyInput]
+) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
 
@@ -24,23 +31,25 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
                 "Stock price analysis",
                 className="py-3 text-5xl font-bold text-gray-800",
             ),
-            html.Div(children=[
-                input_.type(
-                    className="w-full h-full min-w-[150px] flex justify-center align-center",
-                    id=input_.id,
-                    options=input_.options,
-                    value=input_.default_value,
-                    clearable=False,
-                )
-                for input_ in global_controllers
-            ]),
+            html.Div(
+                children=[
+                    input_.type(
+                        className="w-full h-full min-w-[150px] flex justify-center align-center",
+                        id=input_.id,
+                        options=input_.options,
+                        value=input_.default_value,
+                        clearable=False,
+                    )
+                    for input_ in global_controllers
+                ]
+            ),
             html.Div(
                 children=[
                     *[
                         block(
-                            graph = dcc.Graph(id=component.id),
-                            title = None,#html.P("Select rolling window:"),
-                            controllers = html.Div(
+                            graph=dcc.Graph(id=component.id),
+                            title=None,  # html.P("Select rolling window:"),
+                            controllers=html.Div(
                                 className="w-full h-full flex align-center",
                                 children=[
                                     input_.type(
@@ -52,9 +61,10 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
                                     )
                                     for input_ in component.inputs
                                 ],
-                            ) 
+                            ),
                         )
-                        if len(component.inputs) > 0 or len(component.global_input_ids) > 0
+                        if len(component.inputs) > 0
+                        or len(component.global_input_ids) > 0
                         else dcc.Graph(
                             className="w-full h-full flex align-center",
                             id=component.id,
@@ -72,7 +82,8 @@ def run_app(components: List[InteractiveFigure], global_controllers: List[Plotly
         if len(component.inputs) > 0 or len(component.global_input_ids) > 0:
             app.callback(
                 Output(component.id, "figure"),
-                [Input(input_.id, input_.value_name) for input_ in component.inputs] + [Input(input_id, "value") for input_id in component.global_input_ids],
+                [Input(input_.id, input_.value_name) for input_ in component.inputs]
+                + [Input(input_id, "value") for input_id in component.global_input_ids],
             )(component.get_figure)
 
     app.run_server(debug=True, threaded=True)

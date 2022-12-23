@@ -3,6 +3,7 @@ from typing import Any, Callable, List, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 
 MResultGeneric = TypeVar(
     "MResultGeneric", bound=Union[float, int, str, List, Tuple, pd.DataFrame]

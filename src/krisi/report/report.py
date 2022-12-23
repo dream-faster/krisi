@@ -6,42 +6,22 @@ import plotly.graph_objects as go
 
 from krisi.report.interactive import run_app
 from krisi.report.static import create_pdf_report
-from krisi.report.types_ import DisplayModes, InteractiveFigure, PlotlyInput
-
-
-def plotly_interactive(
-    plot_function: Callable,
-    data_source: Union[pd.DataFrame, pd.Series],
-    *args,
-    **kwargs
-) -> Callable:
-    default_args = args
-    default_kwargs = kwargs
-
-    def wrapper(*args, **kwargs) -> go.Figure:
-        width = kwargs.pop("width", None)
-        title = kwargs.pop("title", "")
-
-        for key, value in default_kwargs.items():
-            if key not in kwargs:
-                kwargs[key] = value
-
-        fig = plot_function(data_source, *args, **kwargs)
-
-        fig.update_layout(width=width)
-        if title is not None:
-            fig.update_layout(title=title)
-        return fig
-
-    return wrapper
+from krisi.report.type import (
+    DisplayModes,
+    InteractiveFigure,
+    PlotlyInput,
+    plotly_interactive,
+)
 
 
 class Report:
+    title: str
     display_modes = DisplayModes
     figure_type = InteractiveFigure
     plotly_input = PlotlyInput
 
-    def __init__(self, modes: List[DisplayModes]) -> None:
+    def __init__(self, title: str, modes: List[DisplayModes]) -> None:
+        self.title = title
         self.modes = modes
         self.figures: List[InteractiveFigure] = []
         self.global_controllers: List[PlotlyInput] = []
@@ -49,7 +29,8 @@ class Report:
     def generate_launch(self):
         if DisplayModes.pdf in self.modes:
             create_pdf_report(
-                [figure.get_figure(width=900.0) for figure in self.figures]
+                [figure.get_figure(width=900.0) for figure in self.figures],
+                title=self.title,
             )
 
         if DisplayModes.interactive in self.modes:
@@ -82,7 +63,7 @@ if __name__ == "__main__":
         fig = px.line(df, x="date", y=ticker, width=width)
         return fig
 
-    report = Report(modes=[DisplayModes.interactive])
+    report = Report(title=f"Report on Apple", modes=[DisplayModes.interactive])
     report.add(
         [
             InteractiveFigure(
