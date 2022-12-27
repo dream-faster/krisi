@@ -6,7 +6,7 @@ dependencies:
   # Base libraries
   - python=3.9
   - pytest
-  - numpy
+  - numpy<=1.24
   - pandas
   - numba
   
