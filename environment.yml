@@ -8,6 +8,7 @@ dependencies:
   - pytest
   - numpy
   - pandas
+  - numba
   
   # Plotting libraries
   - matplotlib
