@@ -53,6 +53,10 @@ class Metric(Generic[MResultGeneric]):
         return print_metric(self, repr=True)
 
     def evaluate(self, y: Targets, predictions: Predictions) -> None:
+        assert len(y) == len(
+            predictions
+        ), f"Target length {len(y)} should match predictions length {len(predictions)}"
+
         try:
             result = self.func(y, predictions, **self.parameters)
         except Exception as e:
@@ -68,7 +72,7 @@ class Metric(Generic[MResultGeneric]):
                     self.func(
                         y[i : i + window],
                         predictions[i : i + window],
-                        **self.parameters
+                        **self.parameters,
                     )
                     for i in range(0, len(y) - 1, window)
                 ]
