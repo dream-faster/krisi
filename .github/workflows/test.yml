@@ -1,4 +1,4 @@
-name: run test and pipeline
+name: Run test pipeline
 on: [push]
 jobs:
   run:

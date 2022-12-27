@@ -10,6 +10,8 @@ Welcome to Krisi - Powerful Forecasting Evaluation!
 Krisi offers a simple Scorcard and generates powerful results all while using a *simple* and
 *intuitive* API.
 
+Check out the :doc:`usage` section for further information.
+
 .. note::
 
    This project is under active development.
