@@ -3,6 +3,7 @@ from sklearn.metrics import (
     mean_absolute_error,
     mean_squared_error,
     mean_squared_log_error,
+    mean_absolute_percentage_error,
 )
 
 from krisi.evaluate.library.diagrams import display_time_series
@@ -16,6 +17,13 @@ predefined_default_metrics = [
         key="mae",
         category=MetricCategories.reg_err,
         func=mean_absolute_error,
+        plot_func=display_time_series,
+    ),
+    Metric[float](
+        name="Mean Absolute Percentage Error",
+        key="mape",
+        category=MetricCategories.reg_err,
+        func=mean_absolute_percentage_error,
         plot_func=display_time_series,
     ),
     Metric[float](

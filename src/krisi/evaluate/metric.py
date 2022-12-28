@@ -8,7 +8,7 @@ import plotly.express as px
 from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
-    MResultGeneric,
+    MetricResult,
     Predictions,
     SampleTypes,
     Targets,
@@ -25,11 +25,11 @@ from krisi.utils.printing import print_metric
 
 
 @dataclass
-class Metric(Generic[MResultGeneric]):
+class Metric(Generic[MetricResult]):
     name: str
     key: str = ""
     category: Optional[MetricCategories] = None
-    result: Optional[Union[Exception, MResultGeneric, List[MResultGeneric]]] = None
+    result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
     plot_func: Optional[PlotFunction] = None
@@ -87,7 +87,7 @@ class Metric(Generic[MResultGeneric]):
         return create_diagram(self)
 
     def __set_result(
-        self, result: Union[Exception, MResultGeneric, List[MResultGeneric]]
+        self, result: Union[Exception, MetricResult, List[MetricResult]]
     ):
         if self.result is not None:
             raise ValueError("This metric already contains a result.")
