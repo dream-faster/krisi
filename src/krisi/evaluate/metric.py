@@ -37,7 +37,7 @@ class Metric(Generic[MetricResult]):
     restrict_to_sample: Optional[SampleTypes] = None
 
     def __post_init__(self):
-        if self.key is "":
+        if self.key == "":
             self.key = string_to_id(self.name)
 
     def __setitem__(self, key: str, item: Any) -> None:
