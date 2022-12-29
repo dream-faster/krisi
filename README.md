@@ -54,7 +54,6 @@ The project was entire built in ``python``
 
 ### Prerequisites
 
-* ``conda``, 
 * ``python >= 3.7`` and ``pip``
 
 
@@ -64,7 +63,7 @@ Install from git directly
 
 -
     ```
-    pip install https://github.com/dream-faster/archive/krisi.zip
+    pip install https://github.com/dream-faster/krisi/archive/main.zip 
     ```
 
 OR
@@ -82,8 +81,6 @@ OR
     ```
 
 
-### Clone project
+### DEVELOPMENT
 
-1. The repo comes with a conda env file, enter `mamba env create` to install all dependencies
-
-2. We use isort + black for formatting
+We use isort + black for formatting
