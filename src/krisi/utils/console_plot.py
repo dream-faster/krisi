@@ -11,7 +11,7 @@ from rich.text import Text
 
 
 class plotextMixin(JupyterMixin):
-    def __init__(self, data, plotting_function,title=""):
+    def __init__(self, data, plotting_function, title=""):
         self.decoder = AnsiDecoder()
         self.title = title
         self.data = data
