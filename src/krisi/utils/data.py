@@ -1,7 +1,7 @@
 from typing import List
-import pandas as pd
-import numpy as np
 
+import numpy as np
+import pandas as pd
 from statsmodels.tsa.arima_process import ArmaProcess
 
 

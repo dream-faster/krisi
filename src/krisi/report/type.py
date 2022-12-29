@@ -5,6 +5,7 @@ from typing import Any, Callable, List, Literal, Optional, Union
 import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc
+
 from krisi.evaluate.type import MetricResult
 
 PlotFunction = Callable[

@@ -90,9 +90,7 @@ class Metric(Generic[MetricResult]):
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
         return create_diagram(self)
 
-    def __set_result(
-        self, result: Union[Exception, MetricResult, List[MetricResult]]
-    ):
+    def __set_result(self, result: Union[Exception, MetricResult, List[MetricResult]]):
         if self.result is not None:
             raise ValueError("This metric already contains a result.")
         else:
