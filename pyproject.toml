@@ -14,7 +14,13 @@ readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.9"
 classifiers = [
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
 ]
@@ -26,7 +32,7 @@ dependencies = [
   "pandas",
 
   #Plotting libraries
-  "matplotlib",
+  # "matplotlib",
   "rich",
   "tqdm",
   "plotext",
@@ -36,21 +42,70 @@ dependencies = [
   #TS and Modeling libraries
   "statsmodels >=0.12.1",
   "scikit-learn"
-  
-  # -- Dev Dependencies --
-  # "pyright",
-  # "black",
-  # "ipython",
-  # "notebook",
-  # "ipykernel",
-  # "pydeps",
-  # "pytest",
-  # "isort"
 ]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [project.urls]
-"Homepage" = "https://github.com/dream-faster/krisi"
-"Bug Tracker" = "https://github.com/dream-faster/krisi/issues"
+Documentation = "https://dream-faster.github.io/krisi"
+Issues = "https://github.com/dream-faster/krisi/issues"
+Source = "https://github.com/dream-faster/krisi"
+
+[tool.hatch.version]
+path = "src/drift/__init__.py"
+
+
+[project.optional-dependencies]
+quality = [
+  "black~=22.10.0",
+  "flake8~=4.0.1",
+  "isort~=5.10.1",
+  "pre-commit~=2.20.0",
+
+]
+tests = [
+  "pytest~=7.1.2",
+]
+
+[tool.hatch.envs.quality]
+dependencies = [
+  "krisi[quality]"
+]
+detached = true
+
+[tool.hatch.envs.quality.scripts]
+check = [
+  "flake8 src tests",
+  "black --check --diff --preview src tests",
+  "isort --check-only --diff src tests",
+]
+format = [
+  "isort src tests",
+  "black --preview src tests",
+  "check",
+]
+
+
+[tool.hatch.envs.test]
+dependencies = ["krisi[tests]"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest tests/ --durations 0 -s"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310"]
+
+[tool.isort]
+profile = "black"
+
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+  "/.devcontainer",
+  "/.pre-commit-config.yaml",
+  "/.gitignore",
+  "/tests",
+]
