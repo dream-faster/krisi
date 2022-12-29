@@ -8,4 +8,3 @@ InSamplePredictions = Union[np.ndarray, pd.Series]
 OutSamplePredictions = Union[np.ndarray, pd.Series]
 y = Union[np.ndarray, pd.Series]
 X = Union[np.ndarray, pd.DataFrame]
- 
