@@ -55,7 +55,7 @@ def evaluate_in_out_sample(
     outsample_summary = evaluate(
         model_name,
         dataset_name,
-        SampleTypes.outsample,
+        SampleTypes.outofsample,
         calculation_type,
         y_outsample,
         outsample_predictions,

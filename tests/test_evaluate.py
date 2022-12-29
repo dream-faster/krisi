@@ -8,8 +8,8 @@ def test_scorecard():
         report_insample.sample_type == SampleTypes.insample
     ), f"Wrong sample type {report_insample.sample_type} =/= SampleTypes.insample"
     assert (
-        report_outsample.sample_type == SampleTypes.outsample
-    ), f"Wrong sample type {report_outsample.sample_type} =/= SampleTypes.outsample"
+        report_outsample.sample_type == SampleTypes.outofsample
+    ), f"Wrong sample type {report_outsample.sample_type} =/= SampleTypes.outofsample"
 
     assert any(
         [metric.result is not None for metric in report_insample.get_default_metrics()]
