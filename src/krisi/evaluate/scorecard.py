@@ -25,7 +25,6 @@ class ScoreCard:
     model_name: str
     dataset_name: str
     sample_type: SampleTypes
-    calculation_type: CalculationTypes
     default_metrics_keys: List[str]
 
     def __init__(

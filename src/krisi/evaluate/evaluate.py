@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -7,14 +7,20 @@ from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targ
 
 
 def evaluate(
-    model_name: str,
-    dataset_name: str,
-    sample_type: SampleTypes,
-    calculation_types: List[CalculationTypes],
     y: Targets,
     predictions: Predictions,
+    model_name: str = "Unknown model",
+    dataset_name: Optional[str] = None,
+    sample_type: SampleTypes = SampleTypes.outofsample,
+    calculation_types: List[Union[CalculationTypes, str]] = [
+        CalculationTypes.single,
+        CalculationTypes.rolling,
+    ],
     window: int = 30,
 ) -> ScoreCard:
+
+    if dataset_name is None and isinstance(y, (pd.Series, pd.DataFrame)):
+        dataset_name = y.columns[0]
 
     sc = ScoreCard(
         model_name=model_name,
@@ -27,9 +33,15 @@ def evaluate(
             continue
 
         for calculation_type in calculation_types:
-            if calculation_type == CalculationTypes.single:
+            if (
+                calculation_type == CalculationTypes.single
+                or calculation_type == CalculationTypes.single.value
+            ):
                 metric.evaluate(y, predictions)
-            if calculation_type == CalculationTypes.rolling:
+            if (
+                calculation_type == CalculationTypes.rolling
+                or calculation_type == CalculationTypes.rolling.value
+            ):
                 metric.evaluate_over_time(y, predictions, window=window)
 
     return sc
@@ -38,7 +50,7 @@ def evaluate(
 def evaluate_in_out_sample(
     model_name: str,
     dataset_name: str,
-    calculation_types: List[CalculationTypes],
+    calculation_types: List[Union[CalculationTypes, str]],
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
