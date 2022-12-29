@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import itertools
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
-import numpy as np
-import pandas as pd
-from sktime.forecasting.base import ForecastingHorizon
-from sktime.forecasting.naive import NaiveForecaster
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 
 from krisi.utils.modeling_types import InSamplePredictions, OutSamplePredictions, X, y
@@ -46,36 +41,6 @@ class NaiveForecasterConfig:
     sp: int = 1  # Seasonal periodicity
 
 
-class NaiveForecasterWrapper(Model):
-
-    name: str = ""
-    strategy_types = StrategyTypes
-
-    def __init__(self, config: NaiveForecasterConfig) -> None:
-        self.model = NaiveForecaster(
-            strategy=config.strategy.value,
-            sp=config.sp,
-            window_length=config.window_length,
-        )
-        self.config = config
-
-    def fit(self, X: X, y: y) -> None:
-        self.model.fit(X)
-
-    def predict_in_sample(self, X: X) -> InSamplePredictions:
-        fh = ForecastingHorizon([x + 1 for x in range(len(X))], is_relative=False)
-        fh = fh.to_relative(cutoff=len(X))
-        return self.model.predict(fh=fh)
-
-    def predict(self, X: X) -> OutSamplePredictions:
-        fh = (
-            self.config.fh
-            if self.config.fh is not None
-            else ForecastingHorizon([x + 1 for x in range(len(X))], is_relative=True)
-        )
-        return self.model.predict(fh=fh)
-
-
 @dataclass
 class ArimaConfig:
     """
@@ -110,7 +75,4 @@ class ArimaWrapper(Model):
             raise ValueError("Model has to be fitted first")
 
 
-default_naive_model = NaiveForecasterWrapper(
-    NaiveForecasterConfig(strategy=NaiveForecasterWrapper.strategy_types.last)
-)
 default_arima_model = ArimaWrapper(ArimaConfig(order=(1, 0, 1)))
