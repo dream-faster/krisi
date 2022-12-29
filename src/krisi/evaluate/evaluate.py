@@ -48,30 +48,33 @@ def evaluate(
 
 
 def evaluate_in_out_sample(
-    model_name: str,
-    dataset_name: str,
-    calculation_types: List[Union[CalculationTypes, str]],
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
     outsample_predictions: pd.Series,
+    model_name: str = "Unknown model",
+    dataset_name: Optional[str] = None,
+    calculation_types: List[Union[CalculationTypes, str]] = [
+        CalculationTypes.single,
+        CalculationTypes.rolling,
+    ],
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = evaluate(
+        y_insample,
+        insample_predictions,
         model_name,
         dataset_name,
         SampleTypes.insample,
         calculation_types,
-        y_insample,
-        insample_predictions,
     )
     outsample_summary = evaluate(
+        y_outsample,
+        outsample_predictions,
         model_name,
         dataset_name,
         SampleTypes.outofsample,
         calculation_types,
-        y_outsample,
-        outsample_predictions,
     )
 
     return insample_summary, outsample_summary
