@@ -5,14 +5,14 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-MResultGeneric = TypeVar(
-    "MResultGeneric", bound=Union[float, int, str, List, Tuple, pd.DataFrame]
+MetricResult = TypeVar(
+    "MetricResult", bound=Union[float, int, str, List, Tuple, pd.DataFrame]
 )
 
 
 Predictions = Union[np.ndarray, pd.Series]
 Targets = Union[np.ndarray, pd.Series]
-MetricFunction = Callable[[Predictions, Targets], MResultGeneric]
+MetricFunction = Callable[[Predictions, Targets], MetricResult]
 
 
 class MetricCategories(Enum):
