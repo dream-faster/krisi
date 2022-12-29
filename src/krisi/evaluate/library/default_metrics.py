@@ -1,9 +1,9 @@
 import pandas as pd
 from sklearn.metrics import (
     mean_absolute_error,
+    mean_absolute_percentage_error,
     mean_squared_error,
     mean_squared_log_error,
-    mean_absolute_percentage_error,
 )
 
 from krisi.evaluate.library.diagrams import display_time_series
