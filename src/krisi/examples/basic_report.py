@@ -32,7 +32,7 @@ def basic_report() -> Tuple[ScoreCard, ScoreCard]:
     report_insample, report_outsample = evaluate_in_out_sample(
         model_name="default_arima_model",
         dataset_name="synthetic_arima",
-        calculation_type=CalculationTypes.single,
+        calculation_types=[CalculationTypes.single],
         y_insample=train[target_col],
         insample_predictions=insample_prediction,
         y_outsample=test[target_col],

@@ -1,7 +1,7 @@
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, List
+from typing import Any, List, Optional
 
 from rich import print
 from rich.pretty import Pretty
@@ -31,9 +31,8 @@ class ScoreCard:
     def __init__(
         self,
         model_name: str,
-        dataset_name: str,
-        sample_type: SampleTypes,
-        calculation_type: CalculationTypes = CalculationTypes.single,
+        dataset_name: Optional[str] = None,
+        sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: List[Metric] = predefined_default_metrics,
     ) -> None:
         self.__dict__["model_name"] = model_name
@@ -42,7 +41,6 @@ class ScoreCard:
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]
-        self.__dict__["calculation_type"] = calculation_type
 
         for metric in default_metrics:
             self.__dict__[metric.key] = deepcopy(metric)

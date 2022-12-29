@@ -30,6 +30,9 @@ class Metric(Generic[MetricResult]):
     key: str = ""
     category: Optional[MetricCategories] = None
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
+    result_over_time: Optional[
+        Union[Exception, MetricResult, List[MetricResult]]
+    ] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
     plot_func: Optional[PlotFunction] = None
@@ -61,7 +64,7 @@ class Metric(Generic[MetricResult]):
             result = self.func(y, predictions, **self.parameters)
         except Exception as e:
             result = e
-        self.__set_result(result)
+        self.__safe_set(result, key="result")
 
     def evaluate_over_time(
         self, y: Targets, predictions: Predictions, window: Optional[int] = None
@@ -85,16 +88,18 @@ class Metric(Generic[MetricResult]):
         except Exception as e:
             result_over_time = e
 
-        self.__set_result(result_over_time)
+        self.__safe_set(result_over_time, key="result_over_time")
 
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
         return create_diagram(self)
 
-    def __set_result(self, result: Union[Exception, MetricResult, List[MetricResult]]):
-        if self.result is not None:
+    def __safe_set(
+        self, result: Union[Exception, MetricResult, List[MetricResult]], key: str
+    ):
+        if self.__dict__[key] is not None:
             raise ValueError("This metric already contains a result.")
         else:
-            self.result = result
+            self.__dict__[key] = result
 
 
 def create_diagram(obj: Metric) -> Optional[InteractiveFigure]:

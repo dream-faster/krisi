@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Tuple
 
 import pandas as pd
 
@@ -10,26 +10,27 @@ def evaluate(
     model_name: str,
     dataset_name: str,
     sample_type: SampleTypes,
-    calculation_type: CalculationTypes,
+    calculation_types: List[CalculationTypes],
     y: Targets,
     predictions: Predictions,
+    window: int = 30,
 ) -> ScoreCard:
 
     sc = ScoreCard(
         model_name=model_name,
         dataset_name=dataset_name,
         sample_type=sample_type,
-        calculation_type=calculation_type,
     )
 
     for metric in sc.get_default_metrics():
         if metric.restrict_to_sample is sample_type:
             continue
 
-        if calculation_type == CalculationTypes.single:
-            metric.evaluate(y, predictions)
-        else:
-            metric.evaluate_over_time(y, predictions, window=10)
+        for calculation_type in calculation_types:
+            if calculation_type == CalculationTypes.single:
+                metric.evaluate(y, predictions)
+            if calculation_type == CalculationTypes.rolling:
+                metric.evaluate_over_time(y, predictions, window=window)
 
     return sc
 
@@ -37,7 +38,7 @@ def evaluate(
 def evaluate_in_out_sample(
     model_name: str,
     dataset_name: str,
-    calculation_type: CalculationTypes,
+    calculation_types: List[CalculationTypes],
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
@@ -48,7 +49,7 @@ def evaluate_in_out_sample(
         model_name,
         dataset_name,
         SampleTypes.insample,
-        calculation_type,
+        calculation_types,
         y_insample,
         insample_predictions,
     )
@@ -56,7 +57,7 @@ def evaluate_in_out_sample(
         model_name,
         dataset_name,
         SampleTypes.outofsample,
-        calculation_type,
+        calculation_types,
         y_outsample,
         outsample_predictions,
     )
