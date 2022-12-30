@@ -19,8 +19,8 @@ def evaluate(
     window: int = 30,
 ) -> ScoreCard:
 
-    if dataset_name is None and isinstance(y, (pd.Series, pd.DataFrame)):
-        dataset_name = y.columns[0]
+    if dataset_name is None and isinstance(y, pd.Series):
+        dataset_name = y.name
 
     sc = ScoreCard(
         model_name=model_name,
