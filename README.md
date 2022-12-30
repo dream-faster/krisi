@@ -1,4 +1,4 @@
-# krisi - Time-Series Reporting
+
 
 <p align="center">
   <a href="https://github.com/psf/black"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/sphinx.yml?logo=readthedocs"></a>
@@ -9,28 +9,34 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/dream-faster/krisi">
-    <img src="docs/logo.png" alt="Logo" width="160" >
+  <a href="https://dream-faster.github.io/krisi/">
+    <img src="docs/logo.svg" alt="Logo" width="90" >
   </a>
 
-<h3 align="center">{ krisi }</h3>
+<h3 align="center"> <b>(/creesee/)</b></h3>
   <p align="center">
-    🧑‍⚖️ Testing, Reporting and EDA framework for Time Series Analysis
+    Testing and Reporting Framework for Time Series Analysis
     <br />
-    <a href="https://github.com/dream-faster/krisi"><strong>Explore the docs »</strong></a>
-    <a href="https://github.com/dream-faster/krisi">View Demo</a>
-    <a href="https://github.com/dream-faster/krisi/src/mopi/library/examples">Check Examples</a>
+    <a href="https://github.com/dream-faster/krisi">View Demo ~</a>
+    <a href="https://github.com/dream-faster/krisi/tree/main/src/krisi/examples">Check Examples ~</a>
+    <a href="https://dream-faster.github.io/krisi/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
 
+Krisi is a Scoring library for Time-Series Forecasting. It calculates, stores and vizualises the performance of your predictions!
+
+Krisi is from the ground-up extensible and lightweight. 
+
 <!-- GETTING STARTED -->
 ## Installation
+---
 
 The project was entire built in ``python``
 
 ### Prerequisites
 
 * ``python >= 3.7`` and ``pip``
+
 
 
 
