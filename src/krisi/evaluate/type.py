@@ -25,7 +25,7 @@ class MetricCategories(Enum):
 
 class SampleTypes(Enum):
     insample = "insample"
-    outsample = "outsample"
+    outofsample = "outofsample"
 
 
 class CalculationTypes(Enum):

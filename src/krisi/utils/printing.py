@@ -24,18 +24,6 @@ if TYPE_CHECKING:
     from krisi.evaluate.scorecard import ScoreCard
 
 
-def make_layout() -> Layout:
-    """Define the layout."""
-    layout = Layout(name="main")
-
-    # layout.split(
-    #     # Layout(name="header", size=3),
-    #     Layout(name="main"),
-    #     # Layout(name="footer", size=3),
-    # )
-    return layout
-
-
 def bold(text: str, rich: bool = True) -> str:
     return f"[bold]{text}[/bold]" if rich else f"\033[1m{text}\033[0m"
 
@@ -60,14 +48,9 @@ def iterative_length(obj: Iterable) -> List[int]:
 
 def line_plot_rolling(data, width, height, title):
     plx.clf()
-
     plx.plot(data, marker="hd")
     plx.plotsize(width, 10)
-    # plx.xaxes(1, 0)
-    # plx.yaxes(1, 0)
-    # plx.title(title)
     plx.theme("dark")
-    # plx.ylim(-1, 1)
 
     return plx.build()
 
@@ -144,8 +127,6 @@ def get_summary(
     obj: "ScoreCard", categories: List[str], repr: bool = False, with_info: bool = False
 ) -> Union[Panel, Layout]:
 
-    layout = make_layout()
-
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
     metric_tables = Group(
@@ -184,4 +165,4 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
 
-    return f"{obj.name:>30s} ({obj.key}): {obj.result:^15.5s}{hyperparams:>15s}"
+    return f"{obj.name:>30s} ({obj.key}): {obj.result:^15.5}{hyperparams:>15s}"

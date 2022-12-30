@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -7,58 +7,74 @@ from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targ
 
 
 def evaluate(
-    model_name: str,
-    dataset_name: str,
-    sample_type: SampleTypes,
-    calculation_type: CalculationTypes,
     y: Targets,
     predictions: Predictions,
+    model_name: str = "Unknown model",
+    dataset_name: Optional[str] = None,
+    sample_type: SampleTypes = SampleTypes.outofsample,
+    calculation_types: List[Union[CalculationTypes, str]] = [
+        CalculationTypes.single,
+        CalculationTypes.rolling,
+    ],
+    window: int = 30,
 ) -> ScoreCard:
+
+    if dataset_name is None and isinstance(y, pd.Series):
+        dataset_name = y.name
 
     sc = ScoreCard(
         model_name=model_name,
         dataset_name=dataset_name,
         sample_type=sample_type,
-        calculation_type=calculation_type,
     )
 
     for metric in sc.get_default_metrics():
         if metric.restrict_to_sample is sample_type:
             continue
 
-        if calculation_type == CalculationTypes.single:
-            metric.evaluate(y, predictions)
-        else:
-            metric.evaluate_over_time(y, predictions, window=10)
+        for calculation_type in calculation_types:
+            if (
+                calculation_type == CalculationTypes.single
+                or calculation_type == CalculationTypes.single.value
+            ):
+                metric.evaluate(y, predictions)
+            if (
+                calculation_type == CalculationTypes.rolling
+                or calculation_type == CalculationTypes.rolling.value
+            ):
+                metric.evaluate_over_time(y, predictions, window=window)
 
     return sc
 
 
 def evaluate_in_out_sample(
-    model_name: str,
-    dataset_name: str,
-    calculation_type: CalculationTypes,
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
     outsample_predictions: pd.Series,
+    model_name: str = "Unknown model",
+    dataset_name: Optional[str] = None,
+    calculation_types: List[Union[CalculationTypes, str]] = [
+        CalculationTypes.single,
+        CalculationTypes.rolling,
+    ],
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = evaluate(
+        y_insample,
+        insample_predictions,
         model_name,
         dataset_name,
         SampleTypes.insample,
-        calculation_type,
-        y_insample,
-        insample_predictions,
+        calculation_types,
     )
     outsample_summary = evaluate(
-        model_name,
-        dataset_name,
-        SampleTypes.outsample,
-        calculation_type,
         y_outsample,
         outsample_predictions,
+        model_name,
+        dataset_name,
+        SampleTypes.outofsample,
+        calculation_types,
     )
 
     return insample_summary, outsample_summary
