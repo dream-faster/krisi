@@ -1,7 +1,7 @@
 
 
 <p align="center">
-  <a href="https://github.com/psf/black"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/sphinx.yml?logo=readthedocs"></a>
+  <a href="https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/sphinx.yml"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/sphinx.yml?logo=readthedocs"></a>
   <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
@@ -17,37 +17,42 @@
   <p align="center">
     Testing and Reporting Framework for Time Series Analysis
     <br />
-    <a href="https://github.com/dream-faster/krisi">View Demo ~</a>
-    <a href="https://github.com/dream-faster/krisi/tree/main/src/krisi/examples">Check Examples ~</a>
+    <a href="https://github.com/dream-faster/krisi">View Demo</a>  ~
+    <a href="https://github.com/dream-faster/krisi/tree/main/src/krisi/examples">Check Examples</a> ~
     <a href="https://dream-faster.github.io/krisi/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
+<br />
 
 Krisi is a Scoring library for Time-Series Forecasting. It calculates, stores and vizualises the performance of your predictions!
 
-Krisi is from the ground-up extensible and lightweight. 
+Krisi is from the ground-up extensible and lightweight and comes with the fundmental metrics for regression and classification (wip).
 
-<!-- GETTING STARTED -->
+It can generate reports in:
+- static pdf
+- interactive html 
+- pretty formatted for console.
+  
+<br/>
+<br/>
+  
+
+
 ## Installation
 ---
 
-The project was entire built in ``python``
+The project was entire built in ``python``. 
 
-### Prerequisites
+Prerequisites
 
 * ``python >= 3.7`` and ``pip``
 
 
-
-
-
-### Install krisi (default)
 Install from git directly
 
--
-    ```
-    pip install https://github.com/dream-faster/krisi/archive/main.zip 
-    ```
+```
+pip install https://github.com/dream-faster/krisi/archive/main.zip 
+```
 
 OR
 
@@ -62,11 +67,40 @@ OR
     ```
     pip install -e .
     ```
+<br/>
+<br/>
 
-## ⚡ Quickstart
+## Quickstart
+---
+```python
+from krisi.evaluate import ScoreCard
+
+sc = ScoreCard("<your_model_name>")
+
+# Generating random target and predictions for demonstration purposes
+target, predictions = np.random.rand(1000), np.random.rand(1000)
+
+# Calculate predefined metrics
+for metric in sc.get_default_metrics():
+    metric.evaluate(target, predictions)
+
+# Add a new metric
+sc["own_metric"] = (target - predictions).mean()
+
+# Print the result
+sc.print_summary()
+
+```
 
 
 
-### DEVELOPMENT
 
-We use isort + black for formatting
+<br/>
+<br/>
+
+## Contribution
+---
+
+The project uses ``isort`` and ``black`` for formatting.
+
+Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
