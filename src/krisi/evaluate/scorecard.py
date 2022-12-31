@@ -91,14 +91,16 @@ class ScoreCard:
     def get_custom_metrics(self) -> List[Metric]:
         return [self.__dict__[key] for key in self.custom_metrics_keys]
 
+    def get_all_metrics(self, defaults: bool = True) -> List[Metric]:
+        if defaults:
+            return self.get_default_metrics() + self.get_custom_metrics()
+        else:
+            return self.get_custom_metrics()
+
     def evaluate(
         self, y: Targets, predictions: Predictions, defaults: bool = True
     ) -> None:
-        if defaults:
-            for metric in self.get_default_metrics():
-                if metric.restrict_to_sample is not self.sample_type:
-                    metric.evaluate(y, predictions)
-        for metric in self.get_custom_metrics():
+        for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate(y, predictions)
 
@@ -106,14 +108,12 @@ class ScoreCard:
         self,
         y: Targets,
         predictions: Predictions,
-        window: Optional[int] = None,
         defaults: bool = True,
+        window: Optional[int] = None,
     ) -> None:
-        if defaults:
-            for metric in self.get_default_metrics():
+        for metric in self.get_all_metrics(defaults=defaults):
+            if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate_over_time(y, predictions, window=window)
-        for metric in self.get_custom_metrics():
-            metric.evaluate(y, predictions)
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
