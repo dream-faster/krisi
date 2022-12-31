@@ -28,21 +28,17 @@ def evaluate(
         sample_type=sample_type,
     )
 
-    for metric in sc.get_default_metrics():
-        if metric.restrict_to_sample is sample_type:
-            continue
-
-        for calculation_type in calculation_types:
-            if (
-                calculation_type == CalculationTypes.single
-                or calculation_type == CalculationTypes.single.value
-            ):
-                metric.evaluate(y, predictions)
-            if (
-                calculation_type == CalculationTypes.rolling
-                or calculation_type == CalculationTypes.rolling.value
-            ):
-                metric.evaluate_over_time(y, predictions, window=window)
+    for calculation_type in calculation_types:
+        if (
+            calculation_type == CalculationTypes.single
+            or calculation_type == CalculationTypes.single.value
+        ):
+            sc.evaluate(y, predictions)
+        if (
+            calculation_type == CalculationTypes.rolling
+            or calculation_type == CalculationTypes.rolling.value
+        ):
+            sc.evaluate_over_time(y, predictions, window=window)
 
     return sc
 
