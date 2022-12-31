@@ -34,7 +34,7 @@ It can generate reports in:
 - pretty formatted for console.
   
 <br/>
-<br/>
+
   
 
 
@@ -67,7 +67,6 @@ OR
     ```
     pip install -e .
     ```
-<br/>
 <br/>
 
 ## Quickstart
@@ -165,7 +164,7 @@ calculated_metric_example = (target - predictions).mean()
 # Adding a simple new metric (a float)
 # As a Dictionary:
 sc["metric_barebones"] = calculated_metric_example
-# An an Object assignment:
+# As an Object assignment:
 sc.another_metric_barebones = calculated_metric_example * 2.0
 
 
@@ -186,7 +185,7 @@ sc.print_summary(with_info=True)
 
 
 <br/>
-<br/>
+
 
 
 ## Default Metrics
@@ -207,7 +206,7 @@ Contributors are continously adding new default metrics, press watch to keep tra
 - Mean Squared Error
 - Root Mean Squared Error
 - Root Mean Squared Log Error
-
+<br/>
 
 ## Contribution
 
