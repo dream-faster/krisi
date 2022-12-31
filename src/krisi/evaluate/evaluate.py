@@ -2,6 +2,7 @@ from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
+from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
 
@@ -11,6 +12,7 @@ def evaluate(
     predictions: Predictions,
     model_name: str = "Unknown model",
     dataset_name: Optional[str] = None,
+    custom_metrics: List[Metric] = [],
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
@@ -26,23 +28,20 @@ def evaluate(
         model_name=model_name,
         dataset_name=dataset_name,
         sample_type=sample_type,
+        custom_metrics=custom_metrics,
     )
 
-    for metric in sc.get_default_metrics():
-        if metric.restrict_to_sample is sample_type:
-            continue
-
-        for calculation_type in calculation_types:
-            if (
-                calculation_type == CalculationTypes.single
-                or calculation_type == CalculationTypes.single.value
-            ):
-                metric.evaluate(y, predictions)
-            if (
-                calculation_type == CalculationTypes.rolling
-                or calculation_type == CalculationTypes.rolling.value
-            ):
-                metric.evaluate_over_time(y, predictions, window=window)
+    for calculation_type in calculation_types:
+        if (
+            calculation_type == CalculationTypes.single
+            or calculation_type == CalculationTypes.single.value
+        ):
+            sc.evaluate(y, predictions)
+        if (
+            calculation_type == CalculationTypes.rolling
+            or calculation_type == CalculationTypes.rolling.value
+        ):
+            sc.evaluate_over_time(y, predictions, window=window)
 
     return sc
 
@@ -54,6 +53,7 @@ def evaluate_in_out_sample(
     outsample_predictions: pd.Series,
     model_name: str = "Unknown model",
     dataset_name: Optional[str] = None,
+    custom_metrics: List[Metric] = [],
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
         CalculationTypes.rolling,
@@ -65,6 +65,7 @@ def evaluate_in_out_sample(
         insample_predictions,
         model_name,
         dataset_name,
+        custom_metrics,
         SampleTypes.insample,
         calculation_types,
     )
@@ -73,6 +74,7 @@ def evaluate_in_out_sample(
         outsample_predictions,
         model_name,
         dataset_name,
+        custom_metrics,
         SampleTypes.outofsample,
         calculation_types,
     )

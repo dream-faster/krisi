@@ -8,7 +8,13 @@ from rich.pretty import Pretty
 
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import CalculationTypes, MetricCategories, SampleTypes
+from krisi.evaluate.type import (
+    CalculationTypes,
+    MetricCategories,
+    Predictions,
+    SampleTypes,
+    Targets,
+)
 from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict
 from krisi.utils.printing import get_summary
@@ -26,6 +32,7 @@ class ScoreCard:
     dataset_name: str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
+    custom_metrics_keys: List[str]
 
     def __init__(
         self,
@@ -33,6 +40,7 @@ class ScoreCard:
         dataset_name: Optional[str] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: List[Metric] = predefined_default_metrics,
+        custom_metrics: List[Metric] = [],
     ) -> None:
         self.__dict__["model_name"] = model_name
         self.__dict__["dataset_name"] = dataset_name
@@ -40,8 +48,11 @@ class ScoreCard:
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]
+        self.__dict__["custom_metrics_keys"] = [metric.key for metric in custom_metrics]
 
         for metric in default_metrics:
+            self.__dict__[metric.key] = deepcopy(metric)
+        for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
 
     def __setattr__(self, key: str, item: Any) -> None:
@@ -76,6 +87,33 @@ class ScoreCard:
 
     def get_default_metrics(self) -> List[Metric]:
         return [self.__dict__[key] for key in self.default_metrics_keys]
+
+    def get_custom_metrics(self) -> List[Metric]:
+        return [self.__dict__[key] for key in self.custom_metrics_keys]
+
+    def get_all_metrics(self, defaults: bool = True) -> List[Metric]:
+        if defaults:
+            return self.get_default_metrics() + self.get_custom_metrics()
+        else:
+            return self.get_custom_metrics()
+
+    def evaluate(
+        self, y: Targets, predictions: Predictions, defaults: bool = True
+    ) -> None:
+        for metric in self.get_all_metrics(defaults=defaults):
+            if metric.restrict_to_sample is not self.sample_type:
+                metric.evaluate(y, predictions)
+
+    def evaluate_over_time(
+        self,
+        y: Targets,
+        predictions: Predictions,
+        defaults: bool = True,
+        window: Optional[int] = None,
+    ) -> None:
+        for metric in self.get_all_metrics(defaults=defaults):
+            if metric.restrict_to_sample is not self.sample_type:
+                metric.evaluate_over_time(y, predictions, window=window)
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)

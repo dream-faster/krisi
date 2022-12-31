@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import Iterable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
