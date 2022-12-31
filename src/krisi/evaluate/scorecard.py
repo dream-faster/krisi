@@ -89,7 +89,17 @@ class ScoreCard:
         return [self.__dict__[key] for key in self.default_metrics_keys]
 
     def get_custom_metrics(self) -> List[Metric]:
-        return [self.__dict__[key] for key in self.custom_metrics_keys]
+        predifined_custom_metrics = [
+            self.__dict__[key] for key in self.custom_metrics_keys
+        ]
+        modified_custom_metrics = [
+            value
+            for key, value in self.__dict__.items()
+            if key not in self.custom_metrics_keys + self.default_metrics_keys
+            and hasattr(value, "key")
+        ]
+
+        return predifined_custom_metrics + modified_custom_metrics
 
     def get_all_metrics(self, defaults: bool = True) -> List[Metric]:
         if defaults:
@@ -99,10 +109,12 @@ class ScoreCard:
 
     def evaluate(
         self, y: Targets, predictions: Predictions, defaults: bool = True
-    ) -> None:
+    ) -> "ScoreCard":
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate(y, predictions)
+
+        return self
 
     def evaluate_over_time(
         self,
@@ -110,10 +122,11 @@ class ScoreCard:
         predictions: Predictions,
         defaults: bool = True,
         window: Optional[int] = None,
-    ) -> None:
+    ) -> "ScoreCard":
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate_over_time(y, predictions, window=window)
+        return self
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
@@ -132,22 +145,33 @@ class ScoreCard:
         print(Pretty(self.__dict__))
         return ""
 
-    def print_summary(self, with_info: bool = False) -> "ScoreCard":
-        print(
-            get_summary(
+    def print_summary(
+        self, with_info: bool = False, extended: bool = False
+    ) -> "ScoreCard":
+        if extended:
+            summary = get_summary(
                 self,
                 repr=True,
                 categories=[el.value for el in MetricCategories],
                 with_info=with_info,
             )
-        )
+        else:
+            summary = f"\n".join(
+                [
+                    f"{metric.name:>40s} - {metric.result:<15.5}"
+                    for metric in self.get_all_metrics()
+                    if isinstance(metric.result, (float, int))
+                ]
+            )
+
+        print(summary)
         return self
 
     def get_rolling_diagrams(self) -> List[InteractiveFigure]:
         return [
             diagram
             for diagram in [
-                metric.get_diagram_over_time() for metric in self.get_default_metrics()
+                metric.get_diagram_over_time() for metric in self.get_all_metrics()
             ]
             if diagram is not None
         ]
