@@ -147,7 +147,7 @@ class ScoreCard:
         return [
             diagram
             for diagram in [
-                metric.get_diagram_over_time() for metric in self.get_default_metrics()
+                metric.get_diagram_over_time() for metric in self.get_all_metrics()
             ]
             if diagram is not None
         ]
