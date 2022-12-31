@@ -1,10 +1,7 @@
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Generic, List, Optional, Union
 
-import pandas as pd
-import plotly.express as px
-
+from krisi.evaluate.assertions import check_valid_pred_target
 from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
@@ -13,13 +10,7 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
-from krisi.report.type import (
-    DisplayModes,
-    InteractiveFigure,
-    PlotFunction,
-    PlotlyInput,
-    plotly_interactive,
-)
+from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
 from krisi.utils.iterable_helpers import isiterable, string_to_id
 from krisi.utils.printing import print_metric
 
@@ -56,9 +47,7 @@ class Metric(Generic[MetricResult]):
         return print_metric(self, repr=True)
 
     def evaluate(self, y: Targets, predictions: Predictions) -> None:
-        assert len(y) == len(
-            predictions
-        ), f"Target length {len(y)} should match predictions length {len(predictions)}"
+        check_valid_pred_target(y, predictions)
 
         try:
             result = self.func(y, predictions, **self.parameters)
