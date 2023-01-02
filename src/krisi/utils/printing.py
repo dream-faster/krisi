@@ -56,7 +56,11 @@ def line_plot_rolling(data, width, height, title):
 
 
 def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
-    result = deepcopy(metric.result)
+    if metric.result is None:
+        result = deepcopy(metric.result_over_time)
+    else:
+        result = deepcopy(metric.result)
+
     if isinstance(result, Exception):
         result = str(result)
     elif isinstance(result, float):
@@ -87,44 +91,48 @@ def __create_metric(metric: "Metric", with_info: bool) -> List[str]:
 
 
 def __create_metric_table(
-    title: str, metrics: List["Metric"], with_info: bool
-) -> Layout:
+    title: str, metrics: List["Metric"], with_info: bool, show_header: bool = False
+) -> Table:
     table = Table(
         title=title,
         # show_edge=False,
         show_footer=False,
-        show_header=False,
+        show_lines=True,
+        show_header=show_header,
         expand=True,
-        box=box.ASCII2,
+        box=box.ROUNDED,
     )
 
     table.add_column(
         "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
     )
     table.add_column("Result", style="magenta", width=5)
-    table.add_column("parameters", style="green", width=1)
+    table.add_column("Parameters", style="green", width=1)
     if with_info:
         table.add_column("Info", width=3)
 
     for metric in metrics:
-        if metric.result is None:
+        if metric.result is None and metric.result_over_time is None:
             continue
         metric_summarized = __create_metric(metric, with_info)
         table.add_row(*metric_summarized)
 
-    return Layout(table)
+    return table
 
 
 def __metrics_empty_in_category(metrics: List["Metric"]) -> bool:
     return (
         metrics is None
         or len(metrics) < 1
-        or all([metric.result is None for metric in metrics])
+        or (
+            all([metric.result is None for metric in metrics])
+            and all([metric.result_over_time is None for metric in metrics])
+        )
     )
 
 
 def get_summary(
-    obj: "ScoreCard", categories: List[str], repr: bool = False, with_info: bool = False
+    obj: "ScoreCard", categories: List[str], repr: bool = True, with_info: bool = False
 ) -> Union[Panel, Layout]:
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
@@ -132,17 +140,18 @@ def get_summary(
     metric_tables = Group(
         *[
             __create_metric_table(
-                f"{category if category is not None else 'Unknown':>15s}",
+                f"{category if category is not None else 'Unknown Category':>15s}",
                 metrics,
                 with_info,
+                show_header=True if index == 0 else False,
             )
-            for category, metrics in category_groups.items()
+            for index, (category, metrics) in enumerate(category_groups.items())
             if not __metrics_empty_in_category(metrics)
         ],
     )
 
     title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
-    return Panel(metric_tables, title=title, padding=1, box=box.ASCII2, expand=True)
+    return Panel(metric_tables, title=title, padding=1, box=box.HEAVY_EDGE, expand=True)
 
 
 def handle_iterable_printing(obj: Any) -> Optional[str]:
@@ -164,5 +173,11 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         hyperparams += "".join(
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
+    if obj.result is None and obj.result_over_time is not None:
+        result_ = (
+            "[" + ", ".join([f"{result:<0.5}" for result in obj.result_over_time]) + "]"
+        )
+    else:
+        result_ = f"{obj.result:<15.5}"
 
-    return f"{obj.name:>30s} ({obj.key}): {obj.result:^15.5}{hyperparams:>15s}"
+    return f"{obj.name:>40s} ({obj.key}): {result_}{hyperparams:>15s}"
