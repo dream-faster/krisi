@@ -35,7 +35,14 @@ It can generate reports in:
   
 <br/>
 
+## Krisi tries to solve
 
+- Reporting attached to modelling (Darts, Statsmodel)
+- Extendability
+- Rolling window based evaluation
+- Lightweight (few dependcies)
+
+<br/>
 
 ## Installation
 
@@ -80,8 +87,7 @@ sc = ScoreCard("<your_model_name>")
 target, predictions = np.random.rand(1000), np.random.rand(1000)
 
 # Calculate predefined metrics
-for metric in sc.get_default_metrics():
-    metric.evaluate(target, predictions)
+sc.evaluate(target, predictions, defaults=True)
 
 # Add a new metric
 sc["own_metric"] = (target - predictions).mean()
@@ -206,6 +212,9 @@ Contributors are continously adding new default metrics, press watch to keep tra
 - Mean Squared Error
 - Root Mean Squared Error
 - Root Mean Squared Log Error
+
+
+
 
 
 ## Contribution

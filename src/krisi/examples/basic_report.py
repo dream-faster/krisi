@@ -41,7 +41,7 @@ def basic_report() -> Tuple[ScoreCard, ScoreCard]:
 
     """ Console log Reports """
     print(report_outsample)
-    report_insample.print_summary()
+    report_insample.print_summary(extended=True)
 
     return report_insample, report_outsample
 

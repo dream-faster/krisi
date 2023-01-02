@@ -11,8 +11,7 @@ sc = ScoreCard(
 target, predictions = np.random.rand(100), np.random.rand(100)
 
 """ Predefined metrics """
-for metric in sc.get_default_metrics():
-    metric.evaluate(target, predictions)
+sc.evaluate(target, predictions, defaults=True)
 
 """ Adding a new metric """
 calculated_metric_example = (target - predictions).mean()
@@ -32,4 +31,4 @@ sc["yet_another_metric"] = Metric(
 sc.yet_another_metric = dict(info="Giving description to a metric")
 
 """ Print scorecard summary """
-sc.print_summary(with_info=True)
+sc.print_summary(with_info=True, extended=True)
