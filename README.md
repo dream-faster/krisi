@@ -29,25 +29,38 @@ Krisi is a Scoring library for Time-Series Forecasting. It calculates, stores an
 Krisi is from the ground-up extensible and lightweight and comes with the fundmental metrics for regression and classification (wip).
 
 It can generate reports in:
-- static pdf
-- interactive html 
-- pretty formatted for console.
+- static **PDF** (with ``plotly``)
+- interactive **HTML** (with ``plotly``)
+- pretty formatted for **console** (with ``rich`` and ``plotext``)
+
+<br/>
+
+<div>
+  <img src="docs/pdf_example.png" alt="PDF Example" width="200" >
+  <img src="docs/console_example.png" alt="Logo" width="290" >
+
+</div>
   
 <br/>
 
-## Krisi tries to solve
+## Krisi solves the following problems
 
-- Reporting attached to modelling (Darts, Statsmodel)
-- Extendability
-- Rolling window based evaluation
-- Lightweight (few dependcies)
+- Most TS libraries attach reporting to modelling (eg.: Darts, Statsmodel) <br/> **→ Krisi is independent of any modelling method or library.**
+- Scorecard extendability only works by subclass <br/>
+**→ Krisi supports easy configuration of custom metrics along with an extensive library of predefined metrics.**
+- Rolling window based evaluation <br/>
+**→ Krisi supports evaluating metrics over time.**
+- Lightweight (few dependcies)<br/>
+**→ Krisi has few hard dependencies (only core libarries, eg.: sklearn and plotting libraries).**
+- Visualisation results is hardcoded to an option<br/>
+**→ With Krisi you can decide to share and interactive HTML, a static PDF or quickly look at results pretty printed to the console.**
 
 <br/>
 
 ## Installation
 
 
-The project was entire built in ``python``. 
+The project was entirely built in ``python``. 
 
 Prerequisites
 
@@ -56,23 +69,8 @@ Prerequisites
 
 Install from git directly
 
-```
-pip install https://github.com/dream-faster/krisi/archive/main.zip 
-```
+*  ``pip install https://github.com/dream-faster/krisi/archive/main.zip ``
 
-OR
-
-1. Clone the project by running
-    ```
-    git clone https://github.com/dream-faster/krisi.git
-    ```
-
-2. Navigate to the project root directory
-
-3. Install krisi by executing 
-    ```
-    pip install -e .
-    ```
 <br/>
 
 ## Quickstart
@@ -97,61 +95,41 @@ sc.print_summary()
 ```
 Outputs:
 ```
-+- Result of <your_model_name> on <your_dataset_name> tested on-+
-|                                                               |
-|                     Residual Diagnostics                      |
-| +--------------+-------------------------------+------------+ |
-| |  Mean of the | 0.012                         | {}         | |
-| |    Residuals |                               |            | |
-| | (residuals_… |                               |            | |
-| |     Standard | 0.393                         | {}         | |
-| | Deviation of |                               |            | |
-| |          the |                               |            | |
-| |    Residuals |                               |            | |
-| | (residuals_… |                               |            | |
-| |    Ljung Box |       lb_stat  lb_pvalue      | {}         | |
-| |   Statistics | 1    2.068069   0.150412      |            | |
-| | (ljung_box_… | 2    5.813866   0.054643      |            | |
-| |              | 3    5.819907   0.120709      |            | |
-| |              | 4    7.725251   0.102177      |            | |
-| |              | 5   11.398585   0.044026      |            | |
-| |              | 6   13.214052   0.039760      |            | |
-| |              | 7   13.508170   0.060653      |            | |
-| |              | 8   16.192656   0.039704      |            | |
-| |              | 9   16.300064   0.060874      |            | |
-| |              | 10  16.390463   0.088987      |            | |
-| +--------------+-------------------------------+------------+ |
-|                                                               |
-|                 Forecast Errors - Regression                  |
-| +--------------+-------------------------------+------------+ |
-| |         Mean | 0.318                         | {}         | |
-| |     Absolute |                               |            | |
-| |  Error (mae) |                               |            | |
-| |         Mean | 2.599                         | {}         | |
-| |     Absolute |                               |            | |
-| |   Percentage |                               |            | |
-| | Error (mape) |                               |            | |
-| | Mean Squared | 0.155                         | {          | |
-| |  Error (mse) |                               |     'squa… | |
-| |              |                               | True       | |
-| |              |                               | }          | |
-| |    Root Mean | 0.393                         | {          | |
-| |      Squared |                               |     'squa… | |
-| | Error (rmse) |                               | False      | |
-| |              |                               | }          | |
-| |    Root Mean | 0.269                         | {          | |
-| |  Squared Log |                               |     'squa… | |
-| |        Error |                               | False      | |
-| |      (rmsle) |                               | }          | |
-| +--------------+-------------------------------+------------+ |
-|                                                               |
-|                                Unknown                        |
-| +--------------+-------------------------------+------------+ |
-| |   own_metric | 0.012                         | {}         | |
-| | (own_metric) |                               |            | |
-| +--------------+-------------------------------+------------+ |
-|                                                               |
-+---------------------------------------------------------------+
+┏━━━━━━━━━━━━━━━━━━━━━━━━ Result of <your_model_name> on <your_dataset_name> tested on insample ━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                                                                                                                        ┃
+┃                                                  Residual Diagnostics                                                  ┃
+┃ ╭───────────────────────────┬─────────────────────────────────────────────────────────────┬──────────────────────────╮ ┃
+┃ │               Metric Name │ Result                                                      │ Parameters               │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │     Mean of the Residuals │ 0.007                                                       │ {}                       │ ┃
+┃ │          (residuals_mean) │                                                             │                          │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │ Standard Deviation of the │ 0.409                                                       │ {}                       │ ┃
+┃ │ Residuals (residuals_std) │                                                             │                          │ ┃
+┃ ╰───────────────────────────┴─────────────────────────────────────────────────────────────┴──────────────────────────╯ ┃
+┃                                              Forecast Errors - Regression                                              ┃
+┃ ╭───────────────────────────┬─────────────────────────────────────────────────────────────┬──────────────────────────╮ ┃
+┃ │ Mean Absolute Error (mae) │ 0.332                                                       │ {}                       │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │  Mean Absolute Percentage │ 2.85                                                        │ {}                       │ ┃
+┃ │              Error (mape) │                                                             │                          │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │  Mean Squared Error (mse) │ 0.168                                                       │ {'squared': True}        │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │   Root Mean Squared Error │ 0.41                                                        │ {'squared': False}       │ ┃
+┃ │                    (rmse) │                                                             │                          │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │     Root Mean Squared Log │ 0.281                                                       │ {'squared': False}       │ ┃
+┃ │             Error (rmsle) │                                                             │                          │ ┃
+┃ ├───────────────────────────┼─────────────────────────────────────────────────────────────┼──────────────────────────┤ ┃
+┃ │            R-squared (r2) │ -0.923                                                      │ {}                       │ ┃
+┃ ╰───────────────────────────┴─────────────────────────────────────────────────────────────┴──────────────────────────╯ ┃
+┃                                                            Unknown                                                     ┃
+┃ ╭───────────────────────────┬─────────────────────────────────────────────────────────────┬──────────────────────────╮ ┃
+┃ │   own_metric (own_metric) │ 0.007                                                       │ {}                       │ ┃
+┃ ╰───────────────────────────┴─────────────────────────────────────────────────────────────┴──────────────────────────╯ ┃
+┃                                                                                                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
 Creating more sophisticated ``Metric``s with metadata. 
@@ -188,7 +166,72 @@ sc.metric_barebones = dict(info="Giving description to a metric")
 # Print a pretty summary to the console
 sc.print_summary(with_info=True)
 ```
-
+Outputs:
+```
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Result of <your_model_name> on <your_dataset_name> tested on insample ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                                                                                                                                 ┃
+┃                                                      Residual Diagnostics                                                       ┃
+┃ ╭─────────────────────┬────────────────────────────────────────────────┬────────────────────┬─────────────────────────────────╮ ┃
+┃ │         Metric Name │ Result                                         │ Parameters         │ Info                            │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │         Mean of the │ 0.035                                          │ {}                 │ ''                              │ ┃
+┃ │           Residuals │                                                │                    │                                 │ ┃
+┃ │    (residuals_mean) │                                                │                    │                                 │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │  Standard Deviation │ 0.42                                           │ {}                 │ ''                              │ ┃
+┃ │    of the Residuals │                                                │                    │                                 │ ┃
+┃ │     (residuals_std) │                                                │                    │                                 │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │   A new, own Metric │ 0.105                                          │ {'hyper_1': 5.0}   │ 'Giving description to a        │ ┃
+┃ │ (yet_another_metri… │                                                │                    │ metric'                         │ ┃
+┃ ╰─────────────────────┴────────────────────────────────────────────────┴────────────────────┴─────────────────────────────────╯ ┃
+┃                                                  Forecast Errors - Regression                                                   ┃
+┃ ╭─────────────────────┬────────────────────────────────────────────────┬────────────────────┬─────────────────────────────────╮ ┃
+┃ │ Mean Absolute Error │ 0.35                                           │ {}                 │ '(Mean absolute error)          │ ┃
+┃ │               (mae) │                                                │                    │ represents the difference       │ ┃
+┃ │                     │                                                │                    │ between the original and        │ ┃
+┃ │                     │                                                │                    │ predicted values extracted by   │ ┃
+┃ │                     │                                                │                    │ averaged the absolute           │ ┃
+┃ │                     │                                                │                    │ difference over the data set.'  │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │       Mean Absolute │ 2.543                                          │ {}                 │ ''                              │ ┃
+┃ │    Percentage Error │                                                │                    │                                 │ ┃
+┃ │              (mape) │                                                │                    │                                 │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │  Mean Squared Error │ 0.178                                          │ {'squared': True}  │ '(Mean Squared Error)           │ ┃
+┃ │               (mse) │                                                │                    │ represents the difference       │ ┃
+┃ │                     │                                                │                    │ between the original and        │ ┃
+┃ │                     │                                                │                    │ predicted values extracted by   │ ┃
+┃ │                     │                                                │                    │ squared the average difference  │ ┃
+┃ │                     │                                                │                    │ over the data set.'             │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │   Root Mean Squared │ 0.421                                          │ {'squared': False} │ '(Root Mean Squared Error) is   │ ┃
+┃ │        Error (rmse) │                                                │                    │ the error rate by the square    │ ┃
+┃ │                     │                                                │                    │ root of Mean Squared Error.'    │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │   Root Mean Squared │ 0.29                                           │ {'squared': False} │ ''                              │ ┃
+┃ │   Log Error (rmsle) │                                                │                    │                                 │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │      R-squared (r2) │ -1.28                                          │ {}                 │ '(Coefficient of determination) │ ┃
+┃ │                     │                                                │                    │ represents the coefficient of   │ ┃
+┃ │                     │                                                │                    │ how well the values fit         │ ┃
+┃ │                     │                                                │                    │ compared to the original        │ ┃
+┃ │                     │                                                │                    │ values. The value from 0 to 1   │ ┃
+┃ │                     │                                                │                    │ interpreted as percentages. The │ ┃
+┃ │                     │                                                │                    │ higher the value is, the better │ ┃
+┃ │                     │                                                │                    │ the model is.'                  │ ┃
+┃ ╰─────────────────────┴────────────────────────────────────────────────┴────────────────────┴─────────────────────────────────╯ ┃
+┃                                                                 Unknown                                                         ┃
+┃ ╭─────────────────────┬────────────────────────────────────────────────┬────────────────────┬─────────────────────────────────╮ ┃
+┃ │          own_metric │ 0.035                                          │ {}                 │ ''                              │ ┃
+┃ │        (own_metric) │                                                │                    │                                 │ ┃
+┃ ├─────────────────────┼────────────────────────────────────────────────┼────────────────────┼─────────────────────────────────┤ ┃
+┃ │      another_metric │ 0.07                                           │ {}                 │ ''                              │ ┃
+┃ │    (another_metric) │                                                │                    │                                 │ ┃
+┃ ╰─────────────────────┴────────────────────────────────────────────────┴────────────────────┴─────────────────────────────────╯ ┃
+┃                                                                                                                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
 
 
 <br/>
