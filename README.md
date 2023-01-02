@@ -29,16 +29,16 @@ Krisi is a Scoring library for Time-Series Forecasting. It calculates, stores an
 Krisi is from the ground-up extensible and lightweight and comes with the fundmental metrics for regression and classification (wip).
 
 It can generate reports in:
-- static pdf (with ``plotly``)
-- interactive html (with ``plotly``)
-- pretty formatted for console (with ``rich`` and ``plotext``)
+- static **PDF** (with ``plotly``)
+- interactive **HTML** (with ``plotly``)
+- pretty formatted for **console** (with ``rich`` and ``plotext``)
 
 <br/>
 
 <div>
-  <img src="docs/pdf_example.png" alt="PDF Example" width="300" >
-  <img src="docs/logo.svg" alt="Logo" width="90" >
-  <img src="docs/logo.svg" alt="Logo" width="90" >
+  <img src="docs/pdf_example.png" alt="PDF Example" width="200" >
+  <img src="docs/console_example.png" alt="Logo" width="290" >
+
 </div>
   
 <br/>
