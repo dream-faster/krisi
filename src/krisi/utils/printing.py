@@ -88,7 +88,7 @@ def __create_metric(metric: "Metric", with_info: bool) -> List[str]:
 
 def __create_metric_table(
     title: str, metrics: List["Metric"], with_info: bool
-) -> Layout:
+) -> Table:
     table = Table(
         title=title,
         # show_edge=False,
@@ -113,7 +113,7 @@ def __create_metric_table(
         metric_summarized = __create_metric(metric, with_info)
         table.add_row(*metric_summarized)
 
-    return table  # Layout(table)
+    return table
 
 
 def __metrics_empty_in_category(metrics: List["Metric"]) -> bool:
