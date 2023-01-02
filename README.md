@@ -45,13 +45,15 @@ It can generate reports in:
 
 ## Krisi solves the following problems
 
-- Most TS libraries attach reporting to modelling (eg.: Darts, Statsmodel) <br/> **→ Krisi is independent of any modelling method or library**
+- Most TS libraries attach reporting to modelling (eg.: Darts, Statsmodel) <br/> **→ Krisi is independent of any modelling method or library.**
 - Scorecard extendability only works by subclass <br/>
-**→ Krisi supports easy configuration of custom metrics along with an extensive library of predefined metrics**
+**→ Krisi supports easy configuration of custom metrics along with an extensive library of predefined metrics.**
 - Rolling window based evaluation <br/>
 **→ Krisi supports evaluating metrics over time.**
 - Lightweight (few dependcies)<br/>
-**→ Krisi has few hard dependencies (only core libarries, eg.: sklearn and plotting libraries)**
+**→ Krisi has few hard dependencies (only core libarries, eg.: sklearn and plotting libraries).**
+- Visualisation results is hardcoded to an option<br/>
+**→ With Krisi you can decide to share and interactive HTML, a static PDF or quickly look at results pretty printed to the console.**
 
 <br/>
 
