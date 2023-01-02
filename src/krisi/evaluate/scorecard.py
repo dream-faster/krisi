@@ -146,7 +146,7 @@ class ScoreCard:
         return ""
 
     def print_summary(
-        self, with_info: bool = False, extended: bool = False
+        self, with_info: bool = False, extended: bool = True
     ) -> "ScoreCard":
         if extended:
             summary = get_summary(
