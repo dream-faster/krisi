@@ -26,7 +26,7 @@
 
 Krisi is a Scoring library for Time-Series Forecasting. It calculates, stores and vizualises the performance of your predictions!
 
-Krisi is from the ground-up extensible and lightweight and comes with the fundmental metrics for regression and classification (wip).
+Krisi is from the ground-up extensible and lightweight and comes with the fundamental metrics for regression and classification (wip).
 
 It can generate reports in:
 - static **PDF** (with ``plotly``)
