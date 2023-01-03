@@ -75,6 +75,18 @@ Install from git directly
 
 ## Quickstart
 
+You can quickly evaluate your predictions by running:
+
+```python
+import numpy as np
+from krisi.evaluate import evaluate
+
+evaluate(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()
+```
+
+Krisi's main object is the ``ScoreCard`` that contains predefined ``Metric``s and which you can add further ``Metric``s to.
+
+
 ```python
 from krisi.evaluate import ScoreCard
 import numpy as np
