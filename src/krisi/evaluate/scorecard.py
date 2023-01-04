@@ -168,6 +168,7 @@ class ScoreCard:
 
     def save(
         self,
+        project_name: Optional[str] = None,
         path: str = f"output/evaluate/",
         with_info: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
@@ -176,6 +177,8 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> None:
+        if project_name:
+            path += f"{project_name}/"
         path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
         import os
 
