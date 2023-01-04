@@ -13,6 +13,7 @@ def evaluate(
     predictions: Predictions,
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
+    project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation_types: List[Union[CalculationTypes, str]] = [
@@ -31,9 +32,13 @@ def evaluate(
     if model_name is None:
         model_name = f"Model:{str(uuid.uuid4()).split('-')[0]}"
 
+    if project_name is None:
+        project_name = f"Project:{str(uuid.uuid4()).split('-')[0]}"
+
     sc = ScoreCard(
         model_name=model_name,
         dataset_name=dataset_name,
+        project_name=project_name,
         sample_type=sample_type,
         custom_metrics=custom_metrics,
     )

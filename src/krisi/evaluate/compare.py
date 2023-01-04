@@ -28,8 +28,13 @@ def compare(
 
 def load_scorecards(path: str, project_name: str) -> List[ScoreCard]:
     import os
+    import pickle
 
     files = os.listdir(f"{path}/{project_name}")
 
-    with open(f"{path}/{project_name}", "rb") as f:
-        x = pickle.load(f)
+    loaded_scorecards = []
+    for file in files:
+        with open(f"{path}{project_name}/{file}/scorecard.pickle", "rb") as f:
+            loaded_scorecards.append(pickle.load(f))
+
+    return loaded_scorecards

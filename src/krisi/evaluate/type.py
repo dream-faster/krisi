@@ -39,3 +39,7 @@ class SaveModes(Enum):
     text = "text"
     obj = "obj"
     minimal = "minimal"
+
+
+class PathConst:
+    default_eval_output_path: str = "output/evaluate/"
