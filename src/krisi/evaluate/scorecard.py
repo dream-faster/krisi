@@ -170,7 +170,7 @@ class ScoreCard:
         self,
         path: str = f"output/evaluate/",
         with_info: bool = False,
-        save_modes: List[SaveModes] = [
+        save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
             SaveModes.obj,
             SaveModes.text,
@@ -182,9 +182,9 @@ class ScoreCard:
         if not os.path.exists(path):
             os.makedirs(path)
 
-        if SaveModes.minimal in save_modes:
+        if SaveModes.minimal in save_modes or SaveModes.minimal.value in save_modes:
             save_minimal_summary(self, path)
-        if SaveModes.obj in save_modes:
+        if SaveModes.obj in save_modes or SaveModes.minimal.obj in save_modes:
             save_object(self, path)
         save_console(self, path, with_info, save_modes)
 
