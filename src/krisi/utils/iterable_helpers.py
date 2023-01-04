@@ -62,3 +62,7 @@ def isiterable(obj: Any) -> bool:
         return True
     else:
         return False
+
+
+def strip_builtin_functions(dict_to_strip: dict) -> dict:
+    return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}

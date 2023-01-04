@@ -31,3 +31,11 @@ class SampleTypes(Enum):
 class CalculationTypes(Enum):
     single = "single"
     rolling = "rolling"
+
+
+class SaveModes(Enum):
+    svg = "svg"
+    html = "html"
+    text = "text"
+    obj = "obj"
+    minimal = "minimal"
