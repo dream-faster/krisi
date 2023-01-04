@@ -170,15 +170,21 @@ class ScoreCard:
         self,
         path: str = f"output/evaluate/{datetime.datetime.now().strftime('%H:%M:%S')}",
         with_info: bool = False,
-        save_modes: List[SaveModes] = [SaveModes.text],
+        save_modes: List[SaveModes] = [
+            SaveModes.minimal,
+            SaveModes.obj,
+            SaveModes.text,
+        ],
     ) -> None:
         import os
 
         if not os.path.exists(path):
             os.makedirs(path)
 
-        save_minimal_summary(self, path)
-        save_object(self, path)
+        if SaveModes.minimal in save_modes:
+            save_minimal_summary(self, path)
+        if SaveModes.obj in save_modes:
+            save_object(self, path)
         save_console(self, path, with_info, save_modes)
 
     def get_rolling_diagrams(self) -> List[InteractiveFigure]:

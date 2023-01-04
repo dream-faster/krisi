@@ -37,3 +37,5 @@ class SaveModes(Enum):
     svg = "svg"
     html = "html"
     text = "text"
+    obj = "obj"
+    minimal = "minimal"

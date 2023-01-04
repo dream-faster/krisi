@@ -215,11 +215,13 @@ def save_console(
         console.print(summary)
 
     if SaveModes.text in save_modes:
-        console.save_text(f"{path}/console.txt")
+        console.save_text(f"{path}/console.txt", clear=False)
     if SaveModes.html in save_modes:
-        console.save_html(f"{path}/console.html")
+        console.save_html(f"{path}/console.html", clear=False)
     if SaveModes.svg in save_modes:
-        console.save_svg(f"{path}/console.svg", title="save_table_svg.py")
+        console.save_svg(f"{path}/console.svg", title="save_table_svg.py", clear=False)
+
+    console.clear()
 
 
 def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
