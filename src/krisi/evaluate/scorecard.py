@@ -1,9 +1,13 @@
+import datetime
+import json
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional, Union
 
 from rich import print
+from rich.layout import Layout
+from rich.panel import Panel
 from rich.pretty import Pretty
 
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
@@ -13,15 +17,17 @@ from krisi.evaluate.type import (
     MetricCategories,
     Predictions,
     SampleTypes,
+    SaveModes,
     Targets,
 )
 from krisi.report.type import InteractiveFigure
-from krisi.utils.iterable_helpers import map_newdict_on_olddict
-from krisi.utils.printing import get_summary
-
-
-def strip_builtin_functions(dict_to_strip: dict) -> dict:
-    return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
+from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
+from krisi.utils.printing import (
+    get_summary,
+    save_console,
+    save_minimal_summary,
+    save_object,
+)
 
 
 @dataclass
@@ -33,6 +39,7 @@ class ScoreCard:
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
+    summary: Optional[Union[Panel, Layout, str]] = None
 
     def __init__(
         self,
@@ -156,16 +163,25 @@ class ScoreCard:
                 with_info=with_info,
             )
         else:
-            summary = f"\n".join(
-                [
-                    f"{metric.name:>40s} - {metric.result:<15.5}"
-                    for metric in self.get_all_metrics()
-                    if isinstance(metric.result, (float, int))
-                ]
-            )
+            summary = get_minimal_summary(self)
 
         print(summary)
         return self
+
+    def save(
+        self,
+        path: str = f"output/evaluate/{datetime.datetime.now().strftime('%H:%M:%S')}",
+        with_info: bool = False,
+        save_mode: SaveModes = SaveModes.text,
+    ) -> None:
+        import os
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        save_minimal_summary(self, path)
+        save_object(self, path)
+        save_console(self, path, with_info, save_mode)
 
     def get_rolling_diagrams(self) -> List[InteractiveFigure]:
         return [

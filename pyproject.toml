@@ -30,6 +30,7 @@ dependencies = [
   "pytest",
   "numpy",
   "pandas",
+  "dill",
 
   #Plotting libraries
   # "matplotlib",

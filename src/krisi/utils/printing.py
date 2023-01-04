@@ -7,15 +7,14 @@ from typing import TYPE_CHECKING, Any, List, Optional, Union
 import numpy as np
 import pandas as pd
 import plotext as plx
-from rich import box, print
-from rich.console import Group
+from rich import box
+from rich.console import Console, Group
 from rich.layout import Layout
-from rich.padding import Padding
 from rich.panel import Panel
 from rich.pretty import Pretty
 from rich.table import Table
-from rich.text import Text
 
+from krisi.evaluate.type import MetricCategories, SaveModes
 from krisi.utils.console_plot import plotextMixin
 from krisi.utils.iterable_helpers import group_by_categories, isiterable
 
@@ -181,3 +180,50 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         result_ = f"{obj.result:<15.5}"
 
     return f"{obj.name:>40s} ({obj.key}): {result_}{hyperparams:>15s}"
+
+
+def save_object(obj: "ScoreCard", path: str) -> None:
+    import dill
+
+    with open(f"{path}/{obj.model_name}_{obj.dataset_name}.pickle", "wb") as file:
+        dill.dump(obj, file)
+
+
+def save_console(
+    obj: "ScoreCard", path: str, with_info: bool, save_mode: SaveModes
+) -> None:
+
+    summary = get_summary(
+        obj,
+        repr=True,
+        categories=[el.value for el in MetricCategories],
+        with_info=with_info,
+    )
+
+    console = Console(record=True, width=120)
+    with console.capture() as capture:
+        console.print(summary)
+
+    if save_mode == SaveModes.text:
+        console.save_text(f"{path}/console.txt")
+    elif save_mode == SaveModes.html:
+        console.save_html(f"{path}/console.html")
+    else:
+        console.save_svg(f"{path}/console.svg", title="save_table_svg.py")
+
+
+def get_minimal_summary(obj: "ScoreCard") -> str:
+    return f"\n".join(
+        [
+            f"{metric.name:>40s} - {metric.result:<15.5}"
+            for metric in obj.get_all_metrics()
+            if isinstance(metric.result, (float, int))
+        ]
+    )
+
+
+def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
+    text_summary = get_minimal_summary(obj)
+
+    with open(f"{path}/{obj.model_name}_{obj.dataset_name}_minimal.txt", "w") as f:
+        f.write(text_summary)
