@@ -153,6 +153,16 @@ def get_summary(
     return Panel(metric_tables, title=title, padding=1, box=box.HEAVY_EDGE, expand=True)
 
 
+def get_minimal_summary(obj: "ScoreCard") -> str:
+    return f"\n".join(
+        [
+            f"{metric.name:>40s} - {metric.result:<15.5}"
+            for metric in obj.get_all_metrics()
+            if isinstance(metric.result, (float, int))
+        ]
+    )
+
+
 def handle_iterable_printing(obj: Any) -> Optional[str]:
     if obj is None:
         return "None"
@@ -210,16 +220,6 @@ def save_console(
         console.save_html(f"{path}/console.html")
     if SaveModes.svg in save_modes:
         console.save_svg(f"{path}/console.svg", title="save_table_svg.py")
-
-
-def get_minimal_summary(obj: "ScoreCard") -> str:
-    return f"\n".join(
-        [
-            f"{metric.name:>40s} - {metric.result:<15.5}"
-            for metric in obj.get_all_metrics()
-            if isinstance(metric.result, (float, int))
-        ]
-    )
 
 
 def save_minimal_summary(obj: "ScoreCard", path: str) -> None:

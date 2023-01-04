@@ -1,9 +1,7 @@
 import datetime
-import json
 from copy import deepcopy
 from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from rich import print
 from rich.layout import Layout
@@ -13,7 +11,6 @@ from rich.pretty import Pretty
 from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
-    CalculationTypes,
     MetricCategories,
     Predictions,
     SampleTypes,
@@ -23,6 +20,7 @@ from krisi.evaluate.type import (
 from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
 from krisi.utils.printing import (
+    get_minimal_summary,
     get_summary,
     save_console,
     save_minimal_summary,
