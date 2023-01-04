@@ -1,3 +1,4 @@
+import uuid
 from typing import List, Optional, Tuple, Union
 
 import pandas as pd
@@ -10,7 +11,7 @@ from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targ
 def evaluate(
     y: Targets,
     predictions: Predictions,
-    model_name: str = "Unknown model",
+    model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
     sample_type: SampleTypes = SampleTypes.outofsample,
@@ -21,8 +22,14 @@ def evaluate(
     window: int = 30,
 ) -> ScoreCard:
 
-    if dataset_name is None and isinstance(y, pd.Series):
-        dataset_name = y.name
+    if dataset_name is None:
+        if isinstance(y, pd.Series) and y.name is not None:
+            dataset_name = y.name
+        else:
+            dataset_name = f"Dataset:{str(uuid.uuid4()).split('-')[0]}"
+
+    if model_name is None:
+        model_name = f"Model:{str(uuid.uuid4()).split('-')[0]}"
 
     sc = ScoreCard(
         model_name=model_name,

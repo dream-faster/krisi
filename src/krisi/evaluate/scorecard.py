@@ -168,7 +168,7 @@ class ScoreCard:
 
     def save(
         self,
-        path: str = f"output/evaluate/{datetime.datetime.now().strftime('%H:%M:%S')}",
+        path: str = f"output/evaluate/",
         with_info: bool = False,
         save_modes: List[SaveModes] = [
             SaveModes.minimal,
@@ -176,6 +176,7 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> None:
+        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
         import os
 
         if not os.path.exists(path):

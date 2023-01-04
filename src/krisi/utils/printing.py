@@ -195,7 +195,7 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
 def save_object(obj: "ScoreCard", path: str) -> None:
     import dill
 
-    with open(f"{path}/{obj.model_name}_{obj.dataset_name}.pickle", "wb") as file:
+    with open(f"{path}/scorecard.pickle", "wb") as file:
         dill.dump(obj, file)
 
 
@@ -227,5 +227,5 @@ def save_console(
 def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
     text_summary = get_minimal_summary(obj)
 
-    with open(f"{path}/{obj.model_name}_{obj.dataset_name}_minimal.txt", "w") as f:
+    with open(f"{path}/minimal.txt", "w") as f:
         f.write(text_summary)
