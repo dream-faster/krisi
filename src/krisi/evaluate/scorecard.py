@@ -176,7 +176,7 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> None:
-        path += datetime.datetime.now().strftime("%H:%M:%S")
+        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
         import os
 
         if not os.path.exists(path):
