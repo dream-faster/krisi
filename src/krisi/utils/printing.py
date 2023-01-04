@@ -190,7 +190,7 @@ def save_object(obj: "ScoreCard", path: str) -> None:
 
 
 def save_console(
-    obj: "ScoreCard", path: str, with_info: bool, save_mode: SaveModes
+    obj: "ScoreCard", path: str, with_info: bool, save_modes: List[SaveModes]
 ) -> None:
 
     summary = get_summary(
@@ -204,11 +204,11 @@ def save_console(
     with console.capture() as capture:
         console.print(summary)
 
-    if save_mode == SaveModes.text:
+    if SaveModes.text in save_modes:
         console.save_text(f"{path}/console.txt")
-    elif save_mode == SaveModes.html:
+    if SaveModes.html in save_modes:
         console.save_html(f"{path}/console.html")
-    else:
+    if SaveModes.svg in save_modes:
         console.save_svg(f"{path}/console.svg", title="save_table_svg.py")
 
 
