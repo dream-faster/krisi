@@ -65,6 +65,7 @@ def evaluate_in_out_sample(
     outsample_predictions: pd.Series,
     model_name: str = "Unknown model",
     dataset_name: Optional[str] = None,
+    project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
@@ -77,6 +78,7 @@ def evaluate_in_out_sample(
         insample_predictions,
         model_name,
         dataset_name,
+        project_name,
         custom_metrics,
         SampleTypes.insample,
         calculation_types,
@@ -86,6 +88,7 @@ def evaluate_in_out_sample(
         outsample_predictions,
         model_name,
         dataset_name,
+        project_name,
         custom_metrics,
         SampleTypes.outofsample,
         calculation_types,
