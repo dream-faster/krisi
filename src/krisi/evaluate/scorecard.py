@@ -36,7 +36,23 @@ from krisi.utils.printing import (
 
 @dataclass
 class ScoreCard:
-    """Default Identifiers"""
+    """ScoreCard Object.
+
+    Krisi's main object holding and evaluating metrics.
+    Stores, evaluates and generates vizualisations of predefined
+    and custom metrics for regression and classification.
+
+    Examples
+    --------
+    >>> import numpy as np
+    ... from krisi.evaluate import SampleTypes, ScoreCard
+    ... y_pred = [0, 2, 1, 3]
+    ... y_true = [0, 1, 2, 3]
+    ... sc.evaluate(y_pred, y_true, defaults=True) # Calculate predefined metrics
+    ... accuracy_score(y_true, y_pred, normalize=False)
+    ... sc["own_metric"] = (target - predictions).mean() # Add a metric result directly
+    ... sc.print_summary(extended=True)
+    """
 
     model_name: Optional[str]
     dataset_name: Optional[str]
@@ -77,6 +93,26 @@ class ScoreCard:
             self.__dict__[metric.key] = deepcopy(metric)
 
     def __setattr__(self, key: str, item: Any) -> None:
+        """Defines Dictionary like behaviour and ensures that a Metric can be
+        added as a Metric object, a Dictionary, or as a float, int or a List of float or int
+
+        Parameters
+        ----------
+        key : string
+            The key to which the object will be assign to on this object
+
+        item : Dictionary, Metric, Float, Int or List of Float or Int, or pd.Series
+            Always ignored, exists for compatibility.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+
+
+        """
         metric = getattr(self, key, None)
 
         if metric is None:
@@ -107,9 +143,24 @@ class ScoreCard:
                 self.__dict__[key] = metric
 
     def get_default_metrics(self) -> List[Metric]:
+        """Returns a List of Predefined Metrics according to task type:
+        regression, classification, multi-label classification.
+
+
+        Returns
+        -------
+        List of Metrics
+        """
         return [self.__dict__[key] for key in self.default_metrics_keys]
 
     def get_custom_metrics(self) -> List[Metric]:
+        """Returns a List of Custom ``Metric``s defined by the user on initalization
+        of the ``ScoreCard``
+
+        Returns
+        -------
+        List of Metrics
+        """
         predifined_custom_metrics = [
             self.__dict__[key] for key in self.custom_metrics_keys
         ]
@@ -131,6 +182,24 @@ class ScoreCard:
     def evaluate(
         self, y: Targets, predictions: Predictions, defaults: bool = True
     ) -> "ScoreCard":
+        """Evaluates ``Metric``s present on the ``ScoreCard``
+
+        Parameters
+        ----------
+        y: Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The true labels to compare values to
+
+        predictions: Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The predicted values. Integers or whole floats if classification, else floats.
+
+        defaults: boolean
+        Wether the default ``Metric``s should be evaluated or not. Default value = True
+
+        Returns
+        -------
+        self: ScoreCard
+        """
+
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate(y, predictions)
@@ -191,7 +260,7 @@ class ScoreCard:
             SaveModes.obj,
             SaveModes.text,
         ],
-    ) -> None:
+    ) -> "ScoreCard":
         if self.project_name:
             path += f"{self.project_name}/"
         path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
@@ -205,6 +274,8 @@ class ScoreCard:
         if SaveModes.obj in save_modes or SaveModes.minimal.obj in save_modes:
             save_object(self, path)
         save_console(self, path, with_info, save_modes)
+
+        return self
 
     def get_rolling_diagrams(self) -> List[InteractiveFigure]:
         return [
