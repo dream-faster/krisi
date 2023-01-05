@@ -224,7 +224,7 @@ def save_console(
     if SaveModes.svg in save_modes or SaveModes.svg.value in save_modes:
         console.save_svg(f"{path}/console.svg", title="save_table_svg.py", clear=False)
 
-    console.clear()
+    # console.clear()
 
 
 def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
