@@ -44,13 +44,11 @@ class ScoreCard:
 
     Examples
     --------
-    >>> import numpy as np
-    ... from krisi.evaluate import SampleTypes, ScoreCard
-    ... y_pred = [0, 2, 1, 3]
-    ... y_true = [0, 1, 2, 3]
+    >>> from krisi import ScoreCard
+    ... y_pred, y_true = [0, 2, 1, 3], [0, 1, 2, 3]
+    ... sc = ScoreCard()
     ... sc.evaluate(y_pred, y_true, defaults=True) # Calculate predefined metrics
-    ... accuracy_score(y_true, y_pred, normalize=False)
-    ... sc["own_metric"] = (target - predictions).mean() # Add a metric result directly
+    ... sc["own_metric"] = (y_pred - y_true).mean() # Add a metric result directly
     ... sc.print_summary(extended=True)
     """
 
@@ -94,7 +92,12 @@ class ScoreCard:
 
     def __setattr__(self, key: str, item: Any) -> None:
         """Defines Dictionary like behaviour and ensures that a Metric can be
-        added as a Metric object, a Dictionary, or as a float, int or a List of float or int
+        added as a
+            - Metric object,
+            - Dictionary,
+            - Direct result (float, int or a List of float or int). Gets wrapped in a ``Metric`` object
+
+        See examples for behaviour.
 
         Parameters
         ----------
@@ -110,7 +113,21 @@ class ScoreCard:
 
         Examples
         --------
+        >>> from krisi import ScoreCard
+        ... sc = ScoreCard()
+        ... sc['metric_result'] = 0.53 # Direct result assignment as a Dictionary
+        Metric(result=0.53, key='metric_result', category=None, parameters=None, info="", ...)
 
+        >>> sc.another_metric_result = 1 # Direct object assignment
+        Metric(result=1, key='another_metric_result', category=None, parameters=None, info="", ...)
+
+        >>> from krisi.evaluate.metric import Metric
+        ... from krisi.evaluate.type import MetricCategories
+        ... sc.full_metric = Metric("My own metric", category=MetricCategories.class_err, info="A fictious metric with metadata")
+        Metric("My own metric", key="my_own_metric", func: lambda y, y_hat: (y - y_hat)/2, category=MetricCategories.class_err, info="A fictious metric with metadata", ...)
+
+        >>> sc.metric_as_dictionary = {name: "My other metric", info: "A Metric created with a dictionary", func: lambda y, y_hat: y - y_hat}
+        Metric("My other metric", key="my_other_metric", info="A Metric created with a dictionary", ...)
 
         """
         metric = getattr(self, key, None)
