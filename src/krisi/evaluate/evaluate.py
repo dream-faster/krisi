@@ -1,11 +1,22 @@
 import uuid
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
+
+
+def is_dataset_classification_like(y: Targets):
+    # Todo: should work with booleans and also check for arrays of whole floats, eg.: [1.0,2.0,3.0]
+    if isinstance(y, pd.Series):
+        return pd.api.types.is_integer_dtype(y)
+    elif isinstance(y, np.ndarray):
+        return all([i.is_integer() for i in y if i is not None])
+    else:
+        return all([isinstance(i, int) for i in y if i is not None])
 
 
 def evaluate(
@@ -35,6 +46,9 @@ def evaluate(
 
     if project_name is None:
         project_name = f"Project:{str(uuid.uuid4()).split('-')[0]}"
+
+    if classification is None:
+        classification = is_dataset_classification_like(y)
 
     sc = ScoreCard(
         model_name=model_name,
