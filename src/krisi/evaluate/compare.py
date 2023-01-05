@@ -24,3 +24,17 @@ def compare(
         print(
             f"{scorecard.model_name:>30s}    {bold(f'{scorecard[sort_metric_key].result:<15.5}', rich=False)} {metrics}"
         )
+
+
+def load_scorecards(path: str, project_name: str) -> List[ScoreCard]:
+    import os
+    import pickle
+
+    files = os.listdir(f"{path}/{project_name}")
+
+    loaded_scorecards = []
+    for file in files:
+        with open(f"{path}{project_name}/{file}/scorecard.pickle", "rb") as f:
+            loaded_scorecards.append(pickle.load(f))
+
+    return loaded_scorecards

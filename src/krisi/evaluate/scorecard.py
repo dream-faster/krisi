@@ -12,6 +12,7 @@ from krisi.evaluate.library.default_metrics import predefined_default_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     MetricCategories,
+    PathConst,
     Predictions,
     SampleTypes,
     SaveModes,
@@ -32,8 +33,9 @@ from krisi.utils.printing import (
 class ScoreCard:
     """Default Identifiers"""
 
-    model_name: str
-    dataset_name: str
+    model_name: Optional[str]
+    dataset_name: Optional[str]
+    project_name: Optional[str]
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
@@ -43,12 +45,14 @@ class ScoreCard:
         self,
         model_name: str,
         dataset_name: Optional[str] = None,
+        project_name: Optional[str] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: List[Metric] = predefined_default_metrics,
         custom_metrics: List[Metric] = [],
     ) -> None:
         self.__dict__["model_name"] = model_name
         self.__dict__["dataset_name"] = dataset_name
+        self.__dict__["project_name"] = project_name
         self.__dict__["sample_type"] = sample_type
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
@@ -168,7 +172,7 @@ class ScoreCard:
 
     def save(
         self,
-        path: str = f"output/evaluate/",
+        path: str = PathConst.default_eval_output_path,
         with_info: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
@@ -176,6 +180,8 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> None:
+        if self.project_name:
+            path += f"{self.project_name}/"
         path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
         import os
 
