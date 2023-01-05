@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from typing import Any, List, Optional, Union
 
 from rich import print
-from rich.layout import Layout
-from rich.panel import Panel
 from rich.pretty import Pretty
 
 from krisi.evaluate.library.default_metrics_classification import (
@@ -230,6 +228,28 @@ class ScoreCard:
         defaults: bool = True,
         window: Optional[int] = None,
     ) -> "ScoreCard":
+        """Evaluates ``Metric``s present on the ``ScoreCard`` over time, either with expanding
+        or fixed sized window. Assigns list of results to ``results_over_time``.
+
+        Parameters
+        ----------
+        y: Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The true labels to compare values to
+
+        predictions: Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The predicted values. Integers or whole floats if classification, else floats.
+
+        defaults: boolean
+        Wether the default ``Metric``s should be evaluated or not. Default value = True
+
+        window: int - Optional
+        Size of window. If number is provided then evaluation happens on a fixed window size,
+        otherwise it evaluates it on an expanding window basis.
+
+        Returns
+        -------
+        self: ScoreCard
+        """
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate_over_time(y, predictions, window=window)
