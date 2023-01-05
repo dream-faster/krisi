@@ -8,7 +8,12 @@ from rich.layout import Layout
 from rich.panel import Panel
 from rich.pretty import Pretty
 
-from krisi.evaluate.library.default_metrics import predefined_default_metrics
+from krisi.evaluate.library.default_metrics_classification import (
+    predefined_classification_metrics,
+)
+from krisi.evaluate.library.default_metrics_regression import (
+    predefined_regression_metrics,
+)
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     MetricCategories,
@@ -39,21 +44,28 @@ class ScoreCard:
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
-    summary: Optional[Union[Panel, Layout, str]] = None
+    classification: Optional[bool] = None
 
     def __init__(
         self,
         model_name: str,
         dataset_name: Optional[str] = None,
         project_name: Optional[str] = None,
+        classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
-        default_metrics: List[Metric] = predefined_default_metrics,
+        default_metrics: List[Metric] = [],
         custom_metrics: List[Metric] = [],
     ) -> None:
         self.__dict__["model_name"] = model_name
         self.__dict__["dataset_name"] = dataset_name
         self.__dict__["project_name"] = project_name
         self.__dict__["sample_type"] = sample_type
+
+        if classification:
+            default_metrics = predefined_classification_metrics
+        else:
+            default_metrics = predefined_regression_metrics
+
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]

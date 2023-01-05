@@ -15,6 +15,7 @@ def evaluate(
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
+    classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
@@ -40,6 +41,7 @@ def evaluate(
         dataset_name=dataset_name,
         project_name=project_name,
         sample_type=sample_type,
+        classification=classification,
         custom_metrics=custom_metrics,
     )
 
@@ -67,6 +69,7 @@ def evaluate_in_out_sample(
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
+    classification: Optional[bool] = None,
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
         CalculationTypes.rolling,
@@ -80,6 +83,7 @@ def evaluate_in_out_sample(
         dataset_name,
         project_name,
         custom_metrics,
+        classification,
         SampleTypes.insample,
         calculation_types,
     )
@@ -90,6 +94,7 @@ def evaluate_in_out_sample(
         dataset_name,
         project_name,
         custom_metrics,
+        classification,
         SampleTypes.outofsample,
         calculation_types,
     )
