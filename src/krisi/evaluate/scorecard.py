@@ -44,7 +44,7 @@ class ScoreCard:
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
-    classification: Optional[bool] = None
+    classification: Optional[bool]  # TODO: Support multilabel classification
 
     def __init__(
         self,
