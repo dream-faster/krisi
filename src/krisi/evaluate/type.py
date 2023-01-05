@@ -10,8 +10,8 @@ MetricResult = TypeVar(
 )
 
 
-Predictions = Union[np.ndarray, pd.Series]
-Targets = Union[np.ndarray, pd.Series]
+Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
 MetricFunction = Callable[[Predictions, Targets], MetricResult]
 
 

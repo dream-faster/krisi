@@ -1,11 +1,23 @@
 import uuid
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
+
+
+def is_dataset_classification_like(y: Targets):
+    # TODO: Should work with booleans and also check for arrays of whole floats, eg.: [1.0,2.0,3.0]
+    # TODO: Create multilabel heuristic to be passed on to ScoreCard
+    if isinstance(y, pd.Series):
+        return pd.api.types.is_integer_dtype(y)
+    elif isinstance(y, np.ndarray):
+        return all([i.is_integer() for i in y if i is not None])
+    else:
+        return all([isinstance(i, int) for i in y if i is not None])
 
 
 def evaluate(
@@ -15,6 +27,7 @@ def evaluate(
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
+    classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
@@ -35,11 +48,15 @@ def evaluate(
     if project_name is None:
         project_name = f"Project:{str(uuid.uuid4()).split('-')[0]}"
 
+    if classification is None:
+        classification = is_dataset_classification_like(y)
+
     sc = ScoreCard(
         model_name=model_name,
         dataset_name=dataset_name,
         project_name=project_name,
         sample_type=sample_type,
+        classification=classification,
         custom_metrics=custom_metrics,
     )
 
@@ -67,6 +84,7 @@ def evaluate_in_out_sample(
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
+    classification: Optional[bool] = None,
     calculation_types: List[Union[CalculationTypes, str]] = [
         CalculationTypes.single,
         CalculationTypes.rolling,
@@ -80,6 +98,7 @@ def evaluate_in_out_sample(
         dataset_name,
         project_name,
         custom_metrics,
+        classification,
         SampleTypes.insample,
         calculation_types,
     )
@@ -90,6 +109,7 @@ def evaluate_in_out_sample(
         dataset_name,
         project_name,
         custom_metrics,
+        classification,
         SampleTypes.outofsample,
         calculation_types,
     )
