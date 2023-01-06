@@ -11,10 +11,20 @@ copyright = "2022, Myalo UG - Daniel Szemerey, Mark Aron Szulyovszky"
 author = "Myalo UG - Daniel Szemerey, Mark Aron Szulyovszky"
 release = "0.0.1"
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".src"))
+
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.duration", "sphinx.ext.autodoc"]
+extensions = [
+    "sphinx.ext.duration",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+]  #'sphinx.ext.coverage'
 
 templates_path = ["_templates"]
 exclude_patterns = []
