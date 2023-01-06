@@ -16,9 +16,6 @@ It can generate reports in:
 Check out the :doc:`usage` section for further information.
 
 
-
-
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

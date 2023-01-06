@@ -14,7 +14,7 @@ release = "0.0.1"
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../../krisi"))
+sys.path.insert(0, os.path.abspath("../../src"))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -46,7 +46,7 @@ html_theme_options = {
     # Set the name of the project to appear in the navigation.
     "nav_title": "Krisi - Forecasting Evaluation & Exploration",
     # Set you GA account ID to enable tracking
-    "google_analytics_account": "UA-XXXXX",
+    "google_analytics_account": "G-Z22E374SDG",
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
     "base_url": "https://dream-faster.github.io/krisi",
@@ -64,9 +64,29 @@ html_theme_options = {
     "globaltoc_includehidden": False,
     "nav_links": [
         {
+            "href": "get_started",
+            "title": "Get Started",
+            "internal": True,
+        },
+        {
             "href": "api",
             "title": "API",
             "internal": True,
-        }
+        },
+        {
+            "href": "contribute",
+            "title": "Contribute",
+            "internal": True,
+        },
+        {
+            "href": "https://github.com/dream-faster/krisi/issues",
+            "title": "Submit Issues",
+            "internal": False,
+        },
+        {
+            "href": "https://dreamfaster.ai",
+            "title": "About us",
+            "internal": False,
+        },
     ],
 }
