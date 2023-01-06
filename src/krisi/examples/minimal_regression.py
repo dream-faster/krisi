@@ -1,5 +1,5 @@
 import numpy as np
 
-from krisi import evaluate
+from krisi import eval
 
-evaluate(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()
+eval(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()

@@ -14,7 +14,7 @@ release = "0.0.1"
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../../krisi"))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -28,11 +28,45 @@ extensions = [
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = ["_build", "_templates"]
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+html_logo = "logo_white.svg"
 html_theme = "sphinx_material"
 html_static_path = ["_static"]
+
+# Set link name generated in the top bar.
+html_title = "Krisi"
+
+# Material theme options (see theme.conf for more information)
+html_theme_options = {
+    # Set the name of the project to appear in the navigation.
+    "nav_title": "Krisi - Forecasting Evaluation & Exploration",
+    # Set you GA account ID to enable tracking
+    "google_analytics_account": "UA-XXXXX",
+    # Specify a base_url used to generate sitemap.xml. If not
+    # specified, then no sitemap will be built.
+    "base_url": "https://dream-faster.github.io/krisi",
+    # Set the color and the accent color
+    "color_primary": "yellow",
+    "color_accent": "light-yellow",
+    # Set the repo location to get a badge with stats
+    "repo_url": "https://github.com/dream-faster/krisi/",
+    "repo_name": "Krisi",
+    # Visible levels of the global TOC; -1 means unlimited
+    "globaltoc_depth": 3,
+    # If False, expand all TOC entries
+    "globaltoc_collapse": False,
+    # If True, show hidden TOC entries
+    "globaltoc_includehidden": False,
+    "nav_links": [
+        {
+            "href": "api",
+            "title": "API",
+            "internal": True,
+        }
+    ],
+}
