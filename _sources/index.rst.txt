@@ -1,21 +1,26 @@
-.. Krisi - Forecasting Evaluation and Exploration documentation master file, created by
-   sphinx-quickstart on Tue Dec 27 14:14:56 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Krisi - Powerful Forecasting Evaluation!
 ==========================================================================
 
-**Krisi** (/crisi/) is a Python library for Time-Series Analysis and Evaluation. 
-Krisi offers a simple Scorcard and generates powerful results all while using a *simple* and
-*intuitive* API.
+**Krisi** (/crisi/) is a Scoring library for Time-Series Forecasting. It calculates, stores and vizualises the performance of your predictions!
+
+Krisi is from the ground-up extensible and lightweight and comes with the fundamental metrics for regression and classification.
+
+It can generate reports in:
+
+- static **PDF** (with ``plotly``)
+
+- interactive **HTML** (with ``plotly``)
+
+- pretty formatted for **console** (with ``rich`` and ``plotext``)
 
 Check out the :doc:`usage` section for further information.
 
-.. note::
+.. .. note::
 
-   This project is under active development.
+..    This project is under active development.
 
+.. automodule:: krisi.scorecard
+    :members:
 
 .. toctree::
    :maxdepth: 2
