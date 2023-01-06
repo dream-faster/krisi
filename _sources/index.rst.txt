@@ -15,17 +15,6 @@ It can generate reports in:
 
 Check out the :doc:`usage` section for further information.
 
-.. .. note::
-
-..    This project is under active development.
-
-.. autosummary::
-   :toctree: _autosummary
-   .. :template: custom-module-template.rst
-   :recursive:
-
-   krisi
-
 
 .. toctree::
    :maxdepth: 2
@@ -33,7 +22,7 @@ Check out the :doc:`usage` section for further information.
 
 Get Started
 ===========
-* :ref: `krisi`
+* :doc:`api`
 
 Indices and tables
 ==================
