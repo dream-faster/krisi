@@ -14,4 +14,7 @@ for _ in range(5):
     ).save()
 
 
-compare(load_scorecards(PathConst.default_eval_output_path, project_name))
+compare(
+    load_scorecards(PathConst.default_eval_output_path, project_name),
+    metrics_to_display=["mse"],
+)

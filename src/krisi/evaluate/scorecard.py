@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from typing import Any, List, Optional, Union
 
 from rich import print
-from rich.layout import Layout
-from rich.panel import Panel
 from rich.pretty import Pretty
 
 from krisi.evaluate.library.default_metrics_classification import (
@@ -36,7 +34,21 @@ from krisi.utils.printing import (
 
 @dataclass
 class ScoreCard:
-    """Default Identifiers"""
+    """ScoreCard Object.
+
+    Krisi's main object holding and evaluating metrics.
+    Stores, evaluates and generates vizualisations of predefined
+    and custom metrics for regression and classification.
+
+    Examples
+    --------
+    >>> from krisi import ScoreCard
+    ... y_pred, y_true = [0, 2, 1, 3], [0, 1, 2, 3]
+    ... sc = ScoreCard()
+    ... sc.evaluate(y_pred, y_true, defaults=True) # Calculate predefined metrics
+    ... sc["own_metric"] = (y_pred - y_true).mean() # Add a metric result directly
+    ... sc.print_summary(extended=True)
+    """
 
     model_name: Optional[str]
     dataset_name: Optional[str]
@@ -77,6 +89,45 @@ class ScoreCard:
             self.__dict__[metric.key] = deepcopy(metric)
 
     def __setattr__(self, key: str, item: Any) -> None:
+        """Defines Dictionary like behaviour and ensures that a Metric can be
+        added as a
+            - Metric object,
+            - Dictionary,
+            - Direct result (float, int or a List of float or int). Gets wrapped in a ``Metric`` object
+
+        See examples for behaviour.
+
+        Parameters
+        ----------
+        key : string
+            The key to which the object will be assign to on this object
+
+        item : Dictionary, Metric, Float, Int or List of Float or Int, or pd.Series
+            Always ignored, exists for compatibility.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        >>> from krisi import ScoreCard
+        ... sc = ScoreCard()
+        ... sc['metric_result'] = 0.53 # Direct result assignment as a Dictionary
+        Metric(result=0.53, key='metric_result', category=None, parameters=None, info="", ...)
+
+        >>> sc.another_metric_result = 1 # Direct object assignment
+        Metric(result=1, key='another_metric_result', category=None, parameters=None, info="", ...)
+
+        >>> from krisi.evaluate.metric import Metric
+        ... from krisi.evaluate.type import MetricCategories
+        ... sc.full_metric = Metric("My own metric", category=MetricCategories.class_err, info="A fictious metric with metadata")
+        Metric("My own metric", key="my_own_metric", func: lambda y, y_hat: (y - y_hat)/2, category=MetricCategories.class_err, info="A fictious metric with metadata", ...)
+
+        >>> sc.metric_as_dictionary = {name: "My other metric", info: "A Metric created with a dictionary", func: lambda y, y_hat: y - y_hat}
+        Metric("My other metric", key="my_other_metric", info="A Metric created with a dictionary", ...)
+
+        """
         metric = getattr(self, key, None)
 
         if metric is None:
@@ -107,9 +158,24 @@ class ScoreCard:
                 self.__dict__[key] = metric
 
     def get_default_metrics(self) -> List[Metric]:
+        """Returns a List of Predefined Metrics according to task type:
+        regression, classification, multi-label classification.
+
+
+        Returns
+        -------
+        List of Metrics
+        """
         return [self.__dict__[key] for key in self.default_metrics_keys]
 
     def get_custom_metrics(self) -> List[Metric]:
+        """Returns a List of Custom ``Metric``s defined by the user on initalization
+        of the ``ScoreCard``
+
+        Returns
+        -------
+        List of Metrics
+        """
         predifined_custom_metrics = [
             self.__dict__[key] for key in self.custom_metrics_keys
         ]
@@ -131,6 +197,24 @@ class ScoreCard:
     def evaluate(
         self, y: Targets, predictions: Predictions, defaults: bool = True
     ) -> "ScoreCard":
+        """Evaluates ``Metric``s present on the ``ScoreCard``
+
+        Parameters
+        ----------
+        y: Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The true labels to compare values to
+
+        predictions: Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The predicted values. Integers or whole floats if classification, else floats.
+
+        defaults: boolean
+        Wether the default ``Metric``s should be evaluated or not. Default value = True
+
+        Returns
+        -------
+        self: ScoreCard
+        """
+
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate(y, predictions)
@@ -144,6 +228,28 @@ class ScoreCard:
         defaults: bool = True,
         window: Optional[int] = None,
     ) -> "ScoreCard":
+        """Evaluates ``Metric``s present on the ``ScoreCard`` over time, either with expanding
+        or fixed sized window. Assigns list of results to ``results_over_time``.
+
+        Parameters
+        ----------
+        y: Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The true labels to compare values to
+
+        predictions: Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+        The predicted values. Integers or whole floats if classification, else floats.
+
+        defaults: boolean
+        Wether the default ``Metric``s should be evaluated or not. Default value = True
+
+        window: int - Optional
+        Size of window. If number is provided then evaluation happens on a fixed window size,
+        otherwise it evaluates it on an expanding window basis.
+
+        Returns
+        -------
+        self: ScoreCard
+        """
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate_over_time(y, predictions, window=window)
@@ -191,7 +297,7 @@ class ScoreCard:
             SaveModes.obj,
             SaveModes.text,
         ],
-    ) -> None:
+    ) -> "ScoreCard":
         if self.project_name:
             path += f"{self.project_name}/"
         path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
@@ -205,6 +311,8 @@ class ScoreCard:
         if SaveModes.obj in save_modes or SaveModes.minimal.obj in save_modes:
             save_object(self, path)
         save_console(self, path, with_info, save_modes)
+
+        return self
 
     def get_rolling_diagrams(self) -> List[InteractiveFigure]:
         return [
