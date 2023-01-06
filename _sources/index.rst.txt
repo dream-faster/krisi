@@ -19,8 +19,13 @@ Check out the :doc:`usage` section for further information.
 
 ..    This project is under active development.
 
-.. automodule:: krisi.scorecard
-    :members:
+.. autosummary::
+   :toctree: _autosummary
+   .. :template: custom-module-template.rst
+   :recursive:
+
+   krisi
+
 
 .. toctree::
    :maxdepth: 2
