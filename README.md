@@ -10,7 +10,7 @@
 <br />
 <div align="center">
   <a href="https://dream-faster.github.io/krisi/">
-    <img src="docs/logo.svg" alt="Logo" width="90" >
+    <img src="docs/source/logo.svg" alt="Logo" width="90" >
   </a>
 
 <h3 align="center"> <i>(/creesee/)</i></h3>
@@ -36,8 +36,8 @@ It can generate reports in:
 <br/>
 
 <div>
-  <img src="docs/pdf_example.png" alt="PDF Example" width="200" >
-  <img src="docs/console_example.png" alt="Logo" width="290" >
+  <img src="docs/source/pdf_example.png" alt="PDF Example" width="200" >
+  <img src="docs/source/console_example.png" alt="Logo" width="290" >
 
 </div>
   
@@ -79,9 +79,9 @@ You can quickly evaluate your predictions by running:
 
 ```python
 import numpy as np
-from krisi.evaluate import evaluate
+from krisi.evaluate import eval
 
-evaluate(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()
+eval(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()
 ```
 
 Krisi's main object is the ``ScoreCard`` that contains predefined ``Metric``s and which you can add further ``Metric``s to.

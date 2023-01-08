@@ -1,9 +1,9 @@
 import numpy as np
 
-from krisi import compare, evaluate
+from krisi import compare, eval
 
 scorecards = [
-    evaluate(y=np.random.randint(0, 2, 1000), predictions=np.random.randint(0, 2, 1000))
+    eval(y=np.random.randint(0, 2, 1000), predictions=np.random.randint(0, 2, 1000))
     for _ in range(5)
 ]
 compare(

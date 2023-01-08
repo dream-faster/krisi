@@ -20,7 +20,7 @@ def is_dataset_classification_like(y: Targets):
         return all([isinstance(i, int) for i in y if i is not None])
 
 
-def evaluate(
+def eval(
     y: Targets,
     predictions: Predictions,
     model_name: Optional[str] = None,
@@ -91,7 +91,7 @@ def evaluate_in_out_sample(
     ],
 ) -> Tuple[ScoreCard, ScoreCard]:
 
-    insample_summary = evaluate(
+    insample_summary = eval(
         y_insample,
         insample_predictions,
         model_name,
@@ -102,7 +102,7 @@ def evaluate_in_out_sample(
         SampleTypes.insample,
         calculation_types,
     )
-    outsample_summary = evaluate(
+    outsample_summary = eval(
         y_outsample,
         outsample_predictions,
         model_name,

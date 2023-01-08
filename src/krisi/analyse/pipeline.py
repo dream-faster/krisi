@@ -123,4 +123,5 @@ def eda_pipeline(
     report.generate_launch()
 
 
-eda_pipeline(plot=True)
+if __name__ == "__main__":
+    eda_pipeline(plot=True)
