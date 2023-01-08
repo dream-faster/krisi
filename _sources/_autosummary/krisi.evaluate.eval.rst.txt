@@ -1,0 +1,6 @@
+krisi.evaluate.eval
+===================
+
+.. currentmodule:: krisi.evaluate
+
+.. autofunction:: eval

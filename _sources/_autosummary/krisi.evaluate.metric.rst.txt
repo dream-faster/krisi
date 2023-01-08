@@ -1,0 +1,6 @@
+krisi.evaluate.metric
+=====================
+
+.. currentmodule:: krisi.evaluate
+
+.. automodule:: metric

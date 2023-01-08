@@ -1,0 +1,6 @@
+krisi.evaluate.type
+===================
+
+.. currentmodule:: krisi.evaluate
+
+.. automodule:: type

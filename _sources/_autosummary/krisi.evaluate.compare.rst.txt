@@ -1,0 +1,6 @@
+krisi.evaluate.compare
+======================
+
+.. currentmodule:: krisi.evaluate
+
+.. autofunction:: compare

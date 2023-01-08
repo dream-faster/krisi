@@ -1,0 +1,6 @@
+krisi.evaluate.scorecard
+========================
+
+.. currentmodule:: krisi.evaluate
+
+.. automodule:: scorecard
