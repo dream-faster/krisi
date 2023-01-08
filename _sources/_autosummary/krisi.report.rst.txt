@@ -1,0 +1,6 @@
+﻿krisi.report
+============
+
+.. currentmodule:: krisi
+
+.. automodule:: report

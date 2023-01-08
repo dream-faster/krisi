@@ -1,0 +1,6 @@
+﻿krisi.evaluate
+==============
+
+.. currentmodule:: krisi
+
+.. automodule:: evaluate
