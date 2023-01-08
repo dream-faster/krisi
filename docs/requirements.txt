@@ -1,2 +1,17 @@
 sphinx
 sphinx-material
+numpy
+pandas
+dill
+
+
+matplotlib
+rich
+tqdm
+plotext
+plotly
+dash
+xhtml2pdf
+
+statsmodels >=0.12.1
+scikit-learn
