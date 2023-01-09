@@ -36,8 +36,8 @@ It can generate reports in:
 <br/>
 
 <div>
-  <img src="docs/source/images/pdf_example.png" alt="PDF Example" width="200" >
-  <img src="docs/source/images/console_example.png" alt="Logo" width="290" >
+  <img src="docs/source/_static/pdf_example.png" alt="PDF Example" width="200" >
+  <img src="docs/source/_static/console_example.png" alt="Logo" width="290" >
 
 </div>
   
@@ -91,13 +91,13 @@ Krisi's main object is the ``ScoreCard`` that contains predefined ``Metric``s an
 from krisi.evaluate import ScoreCard
 import numpy as np
 
-sc = ScoreCard("<your_model_name>")
-
 # Random targets and predictions for Demo
 target, predictions = np.random.rand(1000), np.random.rand(1000)
 
+sc = ScoreCard(target, predictions)
+
 # Calculate predefined metrics
-sc.evaluate(target, predictions, defaults=True)
+sc.evaluate(defaults=True)
 
 # Add a new metric
 sc["own_metric"] = (target - predictions).mean()
@@ -149,10 +149,13 @@ Creating more sophisticated ``Metric``s with metadata.
 import numpy as np
 from krisi.evaluate import Metric, MetricCategories, ScoreCard
 
-sc = ScoreCard("<your_model_name>")
 
 # Random targets and predictions for Demo
 target, predictions = np.random.rand(100), np.random.rand(100)
+
+# Create ScoreCard
+sc = ScoreCard(target, predictions)
+
 # Calculate a random metric for Demo
 calculated_metric_example = (target - predictions).mean()
 

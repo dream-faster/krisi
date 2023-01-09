@@ -1,22 +1,27 @@
 <html>
-<!-- <head>
-<style>
-    @page {
-        size: a4 portrait;
-        @frame header_frame {           /* Static Frame */
-            -pdf-frame-content: header_content;
-            left: 50pt; width: 512pt; top: 50pt; height: 40pt;
-        }
-        @frame content_frame {          /* Content Frame */
-            left: 50pt; width: 512pt; top: 90pt; height: 632pt;
-        }
-        @frame footer_frame {           /* Another static Frame */
-            -pdf-frame-content: footer_content;
-            left: 50pt; width: 512pt; top: 772pt; height: 20pt;
-        }
-    }
+<head>
+<style type="text/css">
+@media print {
+body{
+    width: 21cm;
+    height: 29.7cm;
+    margin: 30mm 45mm 30mm 45mm; 
+    /* change the margins as you want them to be. */
+} 
+header_frame {           /* Static Frame */
+    -pdf-frame-content: header_content;
+    left: 50pt; width: 512pt; top: 50pt; height: 40pt;
+}
+content_frame {          /* Content Frame */
+    left: 50pt; width: 512pt; top: 90pt; height: 632pt;
+}
+footer_frame {           /* Another static Frame */
+    -pdf-frame-content: footer_content;
+    left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+}
+}
 </style>
-</head> -->
+</head>
  
 <body>
     <!-- Content for Static Frame 'header_frame' -->
