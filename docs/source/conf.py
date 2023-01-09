@@ -14,8 +14,11 @@ release = "0.0.1"
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../.."))
-sys.path.append(os.path.abspath(".."))
+current_dir = os.path.dirname(__file__)
+target_dir = os.path.abspath(os.path.join(current_dir, "../../src"))
+sys.path.insert(0, target_dir)
+# sys.path.insert(0, os.path.abspath("../.."))
+# sys.path.append(os.path.abspath(".."))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
