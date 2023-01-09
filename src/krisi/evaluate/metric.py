@@ -93,12 +93,14 @@ class Metric(Generic[MetricResult]):
 
 def create_diagram(obj: Metric) -> Optional[InteractiveFigure]:
 
-    if isinstance(obj.result, Exception) or obj.result is None:
+    if isinstance(obj.result_over_time, Exception) or obj.result_over_time is None:
         return None
-    elif isiterable(obj.result) and obj.plot_func is not None:
+    elif isiterable(obj.result_over_time) and obj.plot_func is not None:
         return InteractiveFigure(
             obj.key,
-            get_figure=plotly_interactive(obj.plot_func, obj.result, name=obj.name),
+            get_figure=plotly_interactive(
+                obj.plot_func, obj.result_over_time, name=obj.name
+            ),
         )
     else:
         return None
