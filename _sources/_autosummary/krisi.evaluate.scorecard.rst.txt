@@ -1,4 +1,4 @@
-krisi.evaluate.scorecard
+﻿krisi.evaluate.scorecard
 ========================
 
 .. currentmodule:: krisi.evaluate

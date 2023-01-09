@@ -1,4 +1,4 @@
-krisi.evaluate.assertions
+﻿krisi.evaluate.assertions
 =========================
 
 .. currentmodule:: krisi.evaluate

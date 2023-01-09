@@ -1,4 +1,4 @@
-krisi.evaluate.metric
+﻿krisi.evaluate.metric
 =====================
 
 .. currentmodule:: krisi.evaluate

@@ -1,0 +1,6 @@
+﻿krisi.report.pdf
+================
+
+.. currentmodule:: krisi.report
+
+.. automodule:: pdf

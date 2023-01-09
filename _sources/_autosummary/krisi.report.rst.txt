@@ -30,7 +30,7 @@
    :recursive:
 
    krisi.report.interactive
+   krisi.report.pdf
    krisi.report.report
-   krisi.report.static
    krisi.report.type
 
