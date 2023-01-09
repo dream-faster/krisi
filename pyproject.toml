@@ -41,6 +41,7 @@ dependencies = [
   "dash",
   "kaleido",
   "xhtml2pdf",
+  "weasyprint",
 
 
   #TS and Modeling libraries

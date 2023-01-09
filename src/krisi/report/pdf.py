@@ -1,6 +1,7 @@
 import base64
 from typing import List
 
+import weasyprint
 from xhtml2pdf import pisa
 
 
@@ -8,7 +9,7 @@ def figure_to_base64(figures):
     images_html = ""
     for figure in figures:
         image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
-        images_html += f'<img src="data:image/png;base64,{image}"><br>'
+        images_html += f'<img width="30px" style="width: 100%;" src="data:image/png;base64,{image}"><br>'
     return images_html
 
 
@@ -19,12 +20,9 @@ def create_html_report(
 
     template_html = pkgutil.get_data(__name__, template_file)
     template_html = str(template_html)
-    # with open(template_file, "r") as f:
-    #     template_html = f.read()
     report_html = template_html.replace("{{ FIGURES }}", images_html).replace(
         "{{ TITLE }}", title
     )
-    # report_html = template_html.replace("{{ TITLE }}", title)
     return report_html
 
 
@@ -34,9 +32,12 @@ def convert_html_to_pdf(source_html: str, output_path: str, report_name: str):
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    with open(f"{output_path}/{report_name}", "w+b") as f:
-        pisa_status = pisa.CreatePDF(source_html, dest=f)
-    return pisa_status.err
+    pdf = weasyprint.HTML(string=source_html).write_pdf()
+    open("google.pdf", "wb").write(pdf)
+
+    # with open(f"{output_path}/{report_name}", "w+b") as f:
+    # pisa_status = pisa.CreatePDF(source_html, dest=f)
+    return False  # pisa_status.err
 
 
 def create_pdf_report(figures: List, path: str = "output", title: str = ""):
