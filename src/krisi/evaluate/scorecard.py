@@ -6,7 +6,8 @@ from typing import Any, List, Optional, Union
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.report.type import InteractiveFigure
+from krisi.report import Report
+from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
 from krisi.utils.printing import (
     get_minimal_summary,
@@ -324,11 +325,30 @@ class ScoreCard:
 
         return self
 
-    def get_rolling_diagrams(self) -> List[InteractiveFigure]:
-        return [
-            diagram
-            for diagram in [
-                metric.get_diagram_over_time() for metric in self.get_all_metrics()
-            ]
-            if diagram is not None
+    def generate_report(
+        self, display_modes: List[DisplayModes] = [DisplayModes.pdf]
+    ) -> None:
+        report = create_report(self, display_modes, get_rolling_diagrams(self))
+        report.generate_launch()
+
+
+def create_report(
+    obj: "ScoreCard",
+    display_modes: List[DisplayModes],
+    figures: List[InteractiveFigure],
+) -> Report:
+    return Report(
+        title=f"Scorecard on {obj.dataset_name}, model: {obj.model_name}",
+        modes=display_modes,
+        figures=figures,
+    )
+
+
+def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
+    return [
+        diagram
+        for diagram in [
+            metric.get_diagram_over_time() for metric in obj.get_all_metrics()
         ]
+        if diagram is not None
+    ]

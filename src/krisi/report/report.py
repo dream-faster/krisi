@@ -9,15 +9,19 @@ from .type import DisplayModes, InteractiveFigure, PlotlyInput
 
 class Report:
     title: str
-    display_modes = DisplayModes
-    figure_type = InteractiveFigure
-    plotly_input = PlotlyInput
+    modes: List[DisplayModes]
 
-    def __init__(self, title: str, modes: List[DisplayModes]) -> None:
+    def __init__(
+        self,
+        title: str,
+        modes: List[DisplayModes] = [DisplayModes.pdf],
+        figures: List[InteractiveFigure] = [],
+        global_controllers: List[PlotlyInput] = [],
+    ) -> None:
         self.title = title
         self.modes = modes
-        self.figures: List[InteractiveFigure] = []
-        self.global_controllers: List[PlotlyInput] = []
+        self.figures = figures
+        self.global_controllers = global_controllers
 
     def generate_launch(self):
         if DisplayModes.pdf in self.modes:

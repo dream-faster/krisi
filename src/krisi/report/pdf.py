@@ -43,4 +43,4 @@ def create_pdf_report(figures: List, path: str = "output", title: str = ""):
     [fig.update_layout(width=900.0) for fig in figures]
     images_html = figure_to_base64(figures)
     report_html = create_html_report(f"template.html", images_html, title)
-    convert_html_to_pdf(report_html, path, report_name="report.pdf")
+    convert_html_to_pdf(report_html, path, report_name=f"report-{title}.pdf")
