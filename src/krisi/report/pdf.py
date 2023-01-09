@@ -1,4 +1,5 @@
 import base64
+import pkgutil
 from typing import List
 
 from weasyprint import CSS, HTML
@@ -8,11 +9,10 @@ def figure_to_base64(figures):
     images_html = ""
     for figure in figures:
         image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
-        images_html += f'<img width="30px" style="width: 100%;" src="data:image/png;base64,{image}"><br>'
+        images_html += (
+            f'<img style="width: 100%;" src="data:image/png;base64,{image}"><br>'
+        )
     return images_html
-
-
-import pkgutil
 
 
 def create_html_report(
