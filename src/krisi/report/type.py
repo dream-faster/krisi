@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Literal, Optional, Union
+from typing import Callable, List, Literal, Optional, Union
 
 import pandas as pd
 import plotly.graph_objects as go

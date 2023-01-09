@@ -6,21 +6,6 @@ from typing import Any, List, Optional, Union
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.evaluate.library.default_metrics_classification import (
-    predefined_classification_metrics,
-)
-from krisi.evaluate.library.default_metrics_regression import (
-    predefined_regression_metrics,
-)
-from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import (
-    MetricCategories,
-    PathConst,
-    Predictions,
-    SampleTypes,
-    SaveModes,
-    Targets,
-)
 from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
 from krisi.utils.printing import (
@@ -29,6 +14,18 @@ from krisi.utils.printing import (
     save_console,
     save_minimal_summary,
     save_object,
+)
+
+from .library.default_metrics_classification import predefined_classification_metrics
+from .library.default_metrics_regression import predefined_regression_metrics
+from .metric import Metric
+from .type import (
+    MetricCategories,
+    PathConst,
+    Predictions,
+    SampleTypes,
+    SaveModes,
+    Targets,
 )
 
 

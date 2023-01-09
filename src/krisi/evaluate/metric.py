@@ -1,8 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Any, Generic, List, Optional, Union
 
-from krisi.evaluate.assertions import check_valid_pred_target
-from krisi.evaluate.type import (
+from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
+from krisi.utils.iterable_helpers import isiterable, string_to_id
+from krisi.utils.printing import print_metric
+
+from .assertions import check_valid_pred_target
+from .type import (
     MetricCategories,
     MetricFunction,
     MetricResult,
@@ -10,9 +14,6 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
-from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id
-from krisi.utils.printing import print_metric
 
 
 @dataclass

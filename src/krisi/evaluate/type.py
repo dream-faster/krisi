@@ -1,9 +1,8 @@
 from enum import Enum
-from typing import Any, Callable, List, Tuple, TypeVar, Union
+from typing import Callable, List, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 
 MetricResult = TypeVar(
     "MetricResult", bound=Union[float, int, str, List, Tuple, pd.DataFrame]

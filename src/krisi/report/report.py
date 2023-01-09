@@ -2,9 +2,9 @@ from typing import List, Optional, Union
 
 import plotly.express as px
 
-from krisi.report.interactive import run_app
-from krisi.report.pdf import create_pdf_report
-from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
+from .interactive import run_app
+from .pdf import create_pdf_report
+from .type import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 class Report:
