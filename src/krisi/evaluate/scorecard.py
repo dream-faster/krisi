@@ -102,6 +102,23 @@ class ScoreCard:
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
 
+    def __setitem__(self, key: str, item: Any) -> None:
+        self.__setattr__(key, item)
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self, key, "Unknown metric")
+
+    def __delitem__(self, key: str) -> None:
+        setattr(self, key, None)
+
+    def __str__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
+
+    def __repr__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
+
     def __setattr__(self, key: str, item: Any) -> None:
         """Defines Dictionary like behaviour and ensures that a Metric can be
         added as a
@@ -264,23 +281,6 @@ class ScoreCard:
             if metric.restrict_to_sample is not self.sample_type:
                 metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
-
-    def __setitem__(self, key: str, item: Any) -> None:
-        self.__setattr__(key, item)
-
-    def __getitem__(self, key: str) -> Any:
-        return getattr(self, key, "Unknown metric")
-
-    def __delitem__(self, key: str) -> None:
-        setattr(self, key, None)
-
-    def __str__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
-    def __repr__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
 
     def print_summary(
         self, with_info: bool = False, extended: bool = True
