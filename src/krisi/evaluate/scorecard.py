@@ -75,9 +75,9 @@ class ScoreCard:
         self.__dict__["predictions"] = predictions
         self.__dict__["sample_type"] = sample_type
         self.__dict__["classification"] = (
-            classification
-            if classification is not None
-            else is_dataset_classification_like(y)
+            is_dataset_classification_like(y)
+            if classification is None
+            else classification
         )
 
         (
