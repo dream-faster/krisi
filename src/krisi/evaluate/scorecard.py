@@ -338,7 +338,7 @@ def create_report(
     figures: List[InteractiveFigure],
 ) -> Report:
     return Report(
-        title=f"Scorecard on {obj.dataset_name}, model: {obj.model_name}",
+        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
         modes=display_modes,
         figures=figures,
     )

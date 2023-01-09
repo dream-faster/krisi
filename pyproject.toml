@@ -33,14 +33,12 @@ dependencies = [
   "dill",
 
   #Plotting libraries
-  # "matplotlib",
   "rich",
   "tqdm",
   "plotext",
   "plotly",
   "dash",
   "kaleido",
-  "xhtml2pdf",
   "weasyprint",
 
 
