@@ -35,7 +35,7 @@ exclude_patterns = ["_build", "_templates"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_logo = "images/logo_white.svg"
+html_logo = "logo_white.svg"
 html_theme = "sphinx_material"
 html_static_path = ["_static"]
 
