@@ -39,7 +39,9 @@ dependencies = [
   "plotext",
   "plotly",
   "dash",
+  "kaleido",
   "xhtml2pdf",
+
 
   #TS and Modeling libraries
   "statsmodels >=0.12.1",

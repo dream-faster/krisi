@@ -1,8 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Any, Generic, List, Optional, Union
 
-from krisi.evaluate.assertions import check_valid_pred_target
-from krisi.evaluate.type import (
+from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
+from krisi.utils.iterable_helpers import isiterable, string_to_id
+from krisi.utils.printing import print_metric
+
+from .assertions import check_valid_pred_target
+from .type import (
     MetricCategories,
     MetricFunction,
     MetricResult,
@@ -10,9 +14,6 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
-from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id
-from krisi.utils.printing import print_metric
 
 
 @dataclass
@@ -93,12 +94,14 @@ class Metric(Generic[MetricResult]):
 
 def create_diagram(obj: Metric) -> Optional[InteractiveFigure]:
 
-    if isinstance(obj.result, Exception) or obj.result is None:
+    if isinstance(obj.result_over_time, Exception) or obj.result_over_time is None:
         return None
-    elif isiterable(obj.result) and obj.plot_func is not None:
+    elif isiterable(obj.result_over_time) and obj.plot_func is not None:
         return InteractiveFigure(
             obj.key,
-            get_figure=plotly_interactive(obj.plot_func, obj.result, name=obj.name),
+            get_figure=plotly_interactive(
+                obj.plot_func, obj.result_over_time, name=obj.name
+            ),
         )
     else:
         return None

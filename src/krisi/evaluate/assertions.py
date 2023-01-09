@@ -1,10 +1,11 @@
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, Union
 
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.type import Predictions, Targets
 from krisi.utils.iterable_helpers import isiterable
+
+from .type import Predictions, Targets
 
 valid_types = [
     "int64",

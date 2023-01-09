@@ -13,12 +13,16 @@ It can generate reports in:
 
 - pretty formatted for **console** (with ``rich`` and ``plotext``)
 
-Check out the :doc:`usage` section for further information.
-
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
+
+   installation
+   get_started
+   api
+   contribute
+   
 
 Get Started
 ===========
