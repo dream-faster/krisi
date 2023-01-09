@@ -35,4 +35,5 @@
    krisi.evaluate.metric
    krisi.evaluate.scorecard
    krisi.evaluate.type
+   krisi.evaluate.utils
 

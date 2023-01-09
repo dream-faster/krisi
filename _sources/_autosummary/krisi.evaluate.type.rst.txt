@@ -1,4 +1,4 @@
-﻿krisi.evaluate.type
+krisi.evaluate.type
 ===================
 
 .. currentmodule:: krisi.evaluate

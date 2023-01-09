@@ -1,4 +1,4 @@
-﻿krisi.evaluate.compare
+krisi.evaluate.compare
 ======================
 
 .. currentmodule:: krisi.evaluate
