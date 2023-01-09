@@ -2,16 +2,18 @@ import numpy as np
 
 from krisi.evaluate import Metric, MetricCategories, SampleTypes, ScoreCard
 
+target, predictions = np.random.rand(100), np.random.rand(100)
+
 sc = ScoreCard(
-    model_name="<your_model_name>",
+    "<your_model_name>",
+    target,
+    predictions,
     dataset_name="<your_dataset_name>",
     sample_type=SampleTypes.insample,
 )
 
-target, predictions = np.random.rand(100), np.random.rand(100)
-
 """ Predefined metrics """
-sc.evaluate(target, predictions, defaults=True)
+sc.evaluate(defaults=True)
 
 """ Adding a new metric """
 calculated_metric_example = (target - predictions).mean()
