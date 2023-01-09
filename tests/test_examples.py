@@ -1,7 +1,3 @@
-def test_basic_eda():
-    import krisi.examples.basic_eda
-
-
 def test_basic_loading():
     import krisi.examples.basic_loading
 

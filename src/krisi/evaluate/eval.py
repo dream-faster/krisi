@@ -9,17 +9,6 @@ from .scorecard import ScoreCard
 from .type import CalculationTypes, Predictions, SampleTypes, Targets
 
 
-def is_dataset_classification_like(y: Targets):
-    # TODO: Should work with booleans and also check for arrays of whole floats, eg.: [1.0,2.0,3.0]
-    # TODO: Create multilabel heuristic to be passed on to ScoreCard
-    if isinstance(y, pd.Series):
-        return pd.api.types.is_integer_dtype(y)
-    elif isinstance(y, np.ndarray):
-        return all([i.is_integer() for i in y if i is not None])
-    else:
-        return all([isinstance(i, int) for i in y if i is not None])
-
-
 def eval(
     y: Targets,
     predictions: Predictions,
@@ -36,22 +25,9 @@ def eval(
     window: int = 30,
 ) -> ScoreCard:
 
-    if dataset_name is None:
-        if isinstance(y, pd.Series) and y.name is not None:
-            dataset_name = y.name
-        else:
-            dataset_name = f"Dataset:{str(uuid.uuid4()).split('-')[0]}"
-
-    if model_name is None:
-        model_name = f"Model:{str(uuid.uuid4()).split('-')[0]}"
-
-    if project_name is None:
-        project_name = f"Project:{str(uuid.uuid4()).split('-')[0]}"
-
-    if classification is None:
-        classification = is_dataset_classification_like(y)
-
     sc = ScoreCard(
+        y=y,
+        predictions=predictions,
         model_name=model_name,
         dataset_name=dataset_name,
         project_name=project_name,
@@ -65,12 +41,12 @@ def eval(
             calculation_type == CalculationTypes.single
             or calculation_type == CalculationTypes.single.value
         ):
-            sc.evaluate(y, predictions)
+            sc.evaluate()
         if (
             calculation_type == CalculationTypes.rolling
             or calculation_type == CalculationTypes.rolling.value
         ):
-            sc.evaluate_over_time(y, predictions, window=window)
+            sc.evaluate_over_time(window=window)
 
     return sc
 

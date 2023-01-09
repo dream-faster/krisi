@@ -34,3 +34,14 @@ def check_valid_pred_target(y: Targets, predictions: Predictions):
         assert (
             dtype_name in valid_types
         ), f"{iterable} contains at least one invalid type. {get_bad_types(iterable)}"
+
+
+def is_dataset_classification_like(y: Targets):
+    # TODO: Should work with booleans and also check for arrays of whole floats, eg.: [1.0,2.0,3.0]
+    # TODO: Create multilabel heuristic to be passed on to ScoreCard
+    if isinstance(y, pd.Series):
+        return pd.api.types.is_integer_dtype(y)
+    elif isinstance(y, np.ndarray):
+        return all([i.is_integer() for i in y if i is not None])
+    else:
+        return all([isinstance(i, int) for i in y if i is not None])

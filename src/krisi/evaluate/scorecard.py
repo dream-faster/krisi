@@ -16,6 +16,7 @@ from krisi.utils.printing import (
     save_object,
 )
 
+from .assertions import is_dataset_classification_like
 from .library.default_metrics_classification import predefined_classification_metrics
 from .library.default_metrics_regression import predefined_regression_metrics
 from .metric import Metric
@@ -27,6 +28,7 @@ from .type import (
     SaveModes,
     Targets,
 )
+from .utils import handle_unnamed
 
 
 @dataclass
@@ -47,6 +49,8 @@ class ScoreCard:
     ... sc.print_summary(extended=True)
     """
 
+    y: Targets
+    predictions: Predictions
     model_name: Optional[str]
     dataset_name: Optional[str]
     project_name: Optional[str]
@@ -57,7 +61,9 @@ class ScoreCard:
 
     def __init__(
         self,
-        model_name: str,
+        y: Targets,
+        predictions: Predictions,
+        model_name: Optional[str] = None,
         dataset_name: Optional[str] = None,
         project_name: Optional[str] = None,
         classification: Optional[bool] = None,
@@ -65,15 +71,26 @@ class ScoreCard:
         default_metrics: List[Metric] = [],
         custom_metrics: List[Metric] = [],
     ) -> None:
-        self.__dict__["model_name"] = model_name
-        self.__dict__["dataset_name"] = dataset_name
-        self.__dict__["project_name"] = project_name
+        self.__dict__["y"] = y
+        self.__dict__["predictions"] = predictions
         self.__dict__["sample_type"] = sample_type
+        self.__dict__["classification"] = (
+            classification
+            if classification is not None
+            else is_dataset_classification_like(y)
+        )
 
-        if classification:
-            default_metrics = predefined_classification_metrics
-        else:
-            default_metrics = predefined_regression_metrics
+        (
+            self.__dict__["model_name"],
+            self.__dict__["dataset_name"],
+            self.__dict__["project_name"],
+        ) = handle_unnamed(y, model_name, dataset_name, project_name)
+
+        default_metrics = (
+            predefined_classification_metrics
+            if self.classification
+            else predefined_regression_metrics
+        )
 
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
@@ -191,9 +208,7 @@ class ScoreCard:
         else:
             return self.get_custom_metrics()
 
-    def evaluate(
-        self, y: Targets, predictions: Predictions, defaults: bool = True
-    ) -> "ScoreCard":
+    def evaluate(self, defaults: bool = True) -> "ScoreCard":
         """Evaluates ``Metric``s present on the ``ScoreCard``
 
         Parameters
@@ -214,14 +229,12 @@ class ScoreCard:
 
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                metric.evaluate(y, predictions)
+                metric.evaluate(self.y, self.predictions)
 
         return self
 
     def evaluate_over_time(
         self,
-        y: Targets,
-        predictions: Predictions,
         defaults: bool = True,
         window: Optional[int] = None,
     ) -> "ScoreCard":
@@ -249,7 +262,7 @@ class ScoreCard:
         """
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                metric.evaluate_over_time(y, predictions, window=window)
+                metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
 
     def __setitem__(self, key: str, item: Any) -> None:
