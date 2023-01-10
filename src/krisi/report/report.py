@@ -18,15 +18,17 @@ class Report:
         modes: List[DisplayModes] = [DisplayModes.pdf],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
+        html_template: Optional[str] = None,
     ) -> None:
         self.title = title
         self.modes = modes
         self.figures = figures
         self.global_controllers = global_controllers
+        self.html_template = html_template
 
     def generate_launch(self):
 
-        if DisplayModes.pdf in self.modes or DisplayModes.interactive in self.modes:
+        if DisplayModes.interactive in self.modes:
             run_app(self.figures, self.global_controllers)
 
         if DisplayModes.pdf in self.modes:
@@ -62,34 +64,16 @@ if __name__ == "__main__":
         fig = px.line(df, x="date", y=ticker, width=width)
         return fig
 
-    report = Report(
-        title=f"Report on Apple", modes=[DisplayModes.interactive, DisplayModes.pdf]
-    )
+    report = Report(title=f"Report on Apple", modes=[DisplayModes.pdf])
     report.add(
         [
             InteractiveFigure(
                 id="time-series-chart",
                 get_figure=display_time_series,
-                # inputs=[
-                #     PlotlyInput(
-                #         type=dcc.Dropdown,
-                #         id="ticker",
-                #         value_name="value",
-                #         default_value="value",
-                #     )
-                # ],
             ),
             InteractiveFigure(
                 id="time-series-chart2",
                 get_figure=display_time_series,
-                # inputs=[
-                #     PlotlyInput(
-                #         type=dcc.Dropdown,
-                #         id="ticker2",
-                #         value_name="value",
-                #         default_value="value",
-                #     )
-                # ],
             ),
         ]
     )
