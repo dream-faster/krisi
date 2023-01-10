@@ -1,10 +1,11 @@
 from typing import List, Optional, Union
 
 import plotly.express as px
+from dash import dcc
 
-from .interactive import run_app
-from .pdf import create_pdf_report
-from .type import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.interactive import run_app
+from krisi.report.pdf import create_pdf_report
+from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 class Report:
@@ -24,14 +25,15 @@ class Report:
         self.global_controllers = global_controllers
 
     def generate_launch(self):
+
+        if DisplayModes.pdf in self.modes or DisplayModes.interactive in self.modes:
+            run_app(self.figures, self.global_controllers)
+
         if DisplayModes.pdf in self.modes:
             create_pdf_report(
                 [figure.get_figure(width=900.0) for figure in self.figures],
                 title=self.title,
             )
-
-        if DisplayModes.interactive in self.modes:
-            run_app(self.figures, self.global_controllers)
 
         if DisplayModes.direct in self.modes:
             [figure.get_figure(width=900.0).show() for figure in self.figures]
@@ -60,18 +62,34 @@ if __name__ == "__main__":
         fig = px.line(df, x="date", y=ticker, width=width)
         return fig
 
-    report = Report(title=f"Report on Apple", modes=[DisplayModes.interactive])
+    report = Report(
+        title=f"Report on Apple", modes=[DisplayModes.interactive, DisplayModes.pdf]
+    )
     report.add(
         [
             InteractiveFigure(
                 id="time-series-chart",
                 get_figure=display_time_series,
-                inputs=[("ticker", "value")],
+                # inputs=[
+                #     PlotlyInput(
+                #         type=dcc.Dropdown,
+                #         id="ticker",
+                #         value_name="value",
+                #         default_value="value",
+                #     )
+                # ],
             ),
             InteractiveFigure(
                 id="time-series-chart2",
                 get_figure=display_time_series,
-                inputs=[("ticker", "value")],
+                # inputs=[
+                #     PlotlyInput(
+                #         type=dcc.Dropdown,
+                #         id="ticker2",
+                #         value_name="value",
+                #         default_value="value",
+                #     )
+                # ],
             ),
         ]
     )

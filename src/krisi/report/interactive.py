@@ -86,4 +86,4 @@ def run_app(
                 + [Input(input_id, "value") for input_id in component.global_input_ids],
             )(component.get_figure)
 
-    app.run_server(debug=True, threaded=True)
+    app.run(debug=True, threaded=True)

@@ -20,7 +20,7 @@ class PlotlyInput:
     id: str
     value_name: str
     default_value: Union[str, float, int]
-    options: Optional[List[Union[str, float, int]]]
+    options: Optional[List[Union[str, float, int]]] = None
 
 
 @dataclass

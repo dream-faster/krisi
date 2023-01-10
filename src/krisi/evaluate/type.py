@@ -41,4 +41,4 @@ class SaveModes(Enum):
 
 
 class PathConst:
-    default_eval_output_path: str = "output/evaluate/"
+    default_eval_output_path: str = "output/"
