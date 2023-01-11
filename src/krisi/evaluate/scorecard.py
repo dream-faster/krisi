@@ -353,7 +353,19 @@ def create_report(
 ) -> Report:
     from krisi.report.pdf import convert_figures
 
-    BODY = f"""<div>This will be the body <div> {convert_figures([figure.get_figure(width=900.0) for figure in figures])}</div>"""
+    default_metrics = obj.get_default_metrics()
+    custom_metric_interactive_diagrams = [
+        metric.get_diagram() for metric in obj.get_default_metrics()
+    ]
+    html_images = convert_figures(
+        [
+            interactive_diagram.get_figure(width=900.0)
+            for interactive_diagram in custom_metric_interactive_diagrams
+            if interactive_diagram is not None
+        ]
+    )
+
+    BODY = f"""<div>This will be the body <div> {html_images}</div>"""
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",

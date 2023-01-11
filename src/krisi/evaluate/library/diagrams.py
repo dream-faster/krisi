@@ -19,3 +19,19 @@ def display_time_series(
         width=width,
     )
     return fig
+
+
+def display_single_value(
+    data: MetricResult, name: str = "", width: Optional[float] = None
+) -> go.Figure:
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Indicator(
+            value=data,
+            delta={},
+            gauge={"axis": {"visible": False}},
+            domain={"row": 0, "column": 0},
+        )
+    )
+    return fig
