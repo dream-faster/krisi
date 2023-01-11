@@ -17,13 +17,15 @@ def convert_figures(figures: List[go.Figure]) -> str:
     return "<br>".join([figure_to_html(figure) for figure in figures])
 
 
-def create_html_report(template_file: str, images_html: str, title: str) -> str:
+def create_html_report(
+    template_file: str, html_elements_to_inject: dict[str, str], title: str
+) -> str:
     template_html = pkgutil.get_data(__name__, template_file)
     template_html = template_html.decode()
-    report_html = template_html.replace("{{ FIGURES }}", images_html).replace(
-        "{{ TITLE }}", title
-    )
-    return report_html
+
+    for key, value in html_elements_to_inject.items():
+        template_html = template_html.replace(f"{{ {key} }}", value)
+    return template_html
 
 
 def convert_html_to_pdf(
@@ -49,7 +51,10 @@ def create_pdf_report(
     title: str = "Time Series Report",
     html_template_url: str = PathConst.html_template_url,
     css_template_url: str = PathConst.css_template_url,
+    html_elements_to_inject: dict[str, str] = dict(BODY="WHAAAAAAT"),
 ):
-    images_html = convert_figures(figures)
-    report_html = create_html_report(html_template_url, images_html, title)
+    #  images_html = convert_figures(figures)
+
+    html_elements_to_inject["TITLE"] = title
+    report_html = create_html_report(html_template_url, html_elements_to_inject, title)
     convert_html_to_pdf(report_html, path, f"Report-{title}.pdf", css_template_url)

@@ -19,6 +19,7 @@ class Report:
         global_controllers: List[PlotlyInput] = [],
         html_template_url: str = "library/default/template.html",
         css_template_url: str = "library/default/template.css",
+        html_elements_to_inject: dict[str, str] = dict(),
     ) -> None:
         self.title = title
         self.modes = modes
@@ -26,6 +27,7 @@ class Report:
         self.global_controllers = global_controllers
         self.html_template_url = html_template_url
         self.css_template_url = css_template_url
+        self.html_elements_to_inject = html_elements_to_inject
 
     def generate_launch(self):
 
@@ -38,6 +40,7 @@ class Report:
                 title=self.title,
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
+                html_elements_to_inject=self.html_elements_to_inject,
             )
 
         if DisplayModes.direct in self.modes:

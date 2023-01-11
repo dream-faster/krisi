@@ -351,8 +351,9 @@ def create_report(
     html_template_url: str,
     css_template_url: str,
 ) -> Report:
+    from krisi.report.pdf import convert_figures
 
-    # BODY = """<div>This will be the body</div>"""
+    BODY = f"""<div>This will be the body <div> {convert_figures([figure.get_figure(width=900.0) for figure in figures])}</div>"""
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
@@ -360,6 +361,7 @@ def create_report(
         figures=figures,
         html_template_url=html_template_url,
         css_template_url=css_template_url,
+        html_elements_to_inject=dict(BODY=BODY),
     )
 
 
