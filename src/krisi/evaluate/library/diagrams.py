@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from statsmodels.tsa.stattools import acf, pacf
 
 from krisi.evaluate.type import MetricResult
 
@@ -19,6 +20,7 @@ def display_time_series(
         y=name,
         width=width,
     )
+    fig.update_layout(title=name)
     return fig
 
 
@@ -35,10 +37,9 @@ def display_single_value(
             domain={"row": 0, "column": 0},
         )
     )
+
+    fig.update_layout(title=name)
     return fig
-
-
-from statsmodels.tsa.stattools import acf, pacf
 
 
 def display_acf_plot(
@@ -47,6 +48,12 @@ def display_acf_plot(
     plot_pacf: bool = False,
     width: Optional[float] = None,
 ) -> go.Figure:
+    if len(name) < 1:
+        title = (
+            "Partial Autocorrelation (PACF)" if plot_pacf else "Autocorrelation (ACF)"
+        )
+    else:
+        title = name
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
 
@@ -88,7 +95,6 @@ def display_acf_plot(
     fig.update_xaxes(range=[-1, 42])
     fig.update_yaxes(zerolinecolor="#000000")
 
-    title = "Partial Autocorrelation (PACF)" if plot_pacf else "Autocorrelation (ACF)"
     fig.update_layout(title=title)
     return fig
 
@@ -101,8 +107,6 @@ def display_density_plot(
 ) -> go.Figure:
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
-    fig = px.histogram(
-        data,
-        marginal="box",  # or violin, rug
-    )
+    fig = px.histogram(data, marginal="box", title=name)  # or violin, rug
+
     return fig

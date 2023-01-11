@@ -1,7 +1,7 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from rich import print
 from rich.pretty import Pretty
@@ -26,7 +26,12 @@ from krisi.evaluate.utils import handle_unnamed
 from krisi.report import Report
 from krisi.report.pdf import convert_figures
 from krisi.report.type import DisplayModes, InteractiveFigure
-from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
+from krisi.utils.iterable_helpers import (
+    flatten,
+    map_newdict_on_olddict,
+    remove_nans,
+    strip_builtin_functions,
+)
 from krisi.utils.printing import (
     get_minimal_summary,
     get_summary,
@@ -329,6 +334,13 @@ class ScoreCard:
 
         return self
 
+    def get_diagram_dictionary(self) -> Dict[str, List[InteractiveFigure]]:
+        diagrams = flatten(
+            remove_nans([metric.get_diagrams() for metric in self.get_all_metrics()])
+        )
+
+        return {diagram.id: diagram for diagram in diagrams}
+
     def generate_report(
         self,
         display_modes: List[DisplayModes] = [DisplayModes.pdf],
@@ -338,15 +350,10 @@ class ScoreCard:
         report = create_report(
             self,
             display_modes,
-            get_rolling_diagrams(self),
             html_template_url,
             css_template_url,
         )
         report.generate_launch()
-
-
-def remove_nans(list: List[Any]) -> List[Any]:
-    return [el for el in list if el is not None]
 
 
 def get_waterfall_metric_html(metrics: List[Metric]) -> str:
@@ -372,20 +379,28 @@ def get_waterfall_metric_html(metrics: List[Metric]) -> str:
 def create_report(
     obj: "ScoreCard",
     display_modes: List[DisplayModes],
-    figures: List[InteractiveFigure],
     html_template_url: str,
     css_template_url: str,
 ) -> Report:
 
     custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
 
+    diagrams = obj.get_diagram_dictionary()
+    diagrams_static = {
+        interactive_figure.id: convert_figures(
+            [interactive_figure.get_figure(width=900.0)]
+        )
+        for key, interactive_figure in diagrams.items()
+    }
+
     default_metric_html = f"""
         <div>
             <div>
-            <h4>Residuals</h4>
-            <div style='display:flex; flex-direction:column;'>
-                <div> {convert_figures([obj['residuals'].get_diagrams()[0].get_figure()])} </div>
-                <div> {convert_figures([obj['residuals'].get_diagrams()[1].get_figure()])} </div>
+                <h4>Residuals</h4>
+                <div style='width:100%; height:100%; display:flex; flex-direction:row;'>
+                    <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_acf_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
+                    <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_density_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
+                </div>
             </div>
         </div>
     """
@@ -404,10 +419,10 @@ def create_report(
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
         modes=display_modes,
-        figures=figures,
+        figures=diagrams.values(),
         html_template_url=html_template_url,
         css_template_url=css_template_url,
-        html_elements_to_inject=dict(BODY=BODY),
+        html_elements_to_inject=dict(BODY=BODY, **diagrams_static),
     )
 
 

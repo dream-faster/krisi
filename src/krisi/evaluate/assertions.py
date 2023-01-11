@@ -3,23 +3,14 @@ from typing import Any, Iterable, List, Tuple, Union, get_args, get_origin
 import numpy as np
 import pandas as pd
 
-from krisi.utils.iterable_helpers import isiterable
-
-from .type import Predictions, Targets
+from krisi.evaluate.type import Predictions, Targets
+from krisi.utils.iterable_helpers import flatten, isiterable
 
 valid_types = ["int64", "float64", "float32", "float", "int"]
 
 
 def get_bad_types(iterable: Union[Targets, Predictions]) -> Iterable:
     return [x for x in iterable if type(x) not in valid_types]
-
-
-def flatten(xs):
-    for x in xs:
-        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-            yield from flatten(x)
-        else:
-            yield x
 
 
 def flatten_type(complex_type: Any) -> Union[List, Any]:

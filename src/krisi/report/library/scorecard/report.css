@@ -8,3 +8,86 @@
     content: "Page " counter(page) " of " counter(pages);
   }
 }
+
+* {
+  box-sizing: border-box;
+}
+body {
+  font-size: 14px;
+}
+.v1_2 {
+  width: 595px;
+  height: 842px;
+  background: rgba(255, 255, 255, 1);
+  opacity: 1;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.v1_3 {
+  width: 242px;
+  color: rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  font-family: Inter;
+  font-weight: Regular;
+  font-size: 36px;
+  opacity: 1;
+  text-align: left;
+}
+.v1_5 {
+  width: 242px;
+  color: rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 145px;
+  left: 32px;
+  font-family: Inter;
+  font-weight: Bold;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+.v1_6 {
+  width: 242px;
+  color: rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 80px;
+  left: 32px;
+  font-family: Inter;
+  font-weight: Regular;
+  font-size: 16px;
+  opacity: 1;
+  text-align: left;
+}
+.v1_4 {
+  width: 233px;
+  height: 271px;
+  background: rgba(217, 217, 217, 1);
+  opacity: 1;
+  position: absolute;
+  top: 181px;
+  left: 32px;
+  overflow: hidden;
+}
+.v1_7 {
+  width: 271px;
+  height: 131px;
+  background: rgba(217, 217, 217, 1);
+  opacity: 1;
+  position: absolute;
+  top: 181px;
+  left: 274px;
+  overflow: hidden;
+}
+.v1_8 {
+  width: 271px;
+  height: 131px;
+  background: rgba(217, 217, 217, 1);
+  opacity: 1;
+  position: absolute;
+  top: 321px;
+  left: 274px;
+  overflow: hidden;
+}

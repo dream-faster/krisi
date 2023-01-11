@@ -2,12 +2,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Generic, List, Optional, Union
 
-from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id
-from krisi.utils.printing import print_metric
-
-from .assertions import check_valid_pred_target
-from .type import (
+from krisi.evaluate.assertions import check_valid_pred_target
+from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
     MetricResult,
@@ -15,6 +11,9 @@ from .type import (
     SampleTypes,
     Targets,
 )
+from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
+from krisi.utils.iterable_helpers import isiterable, string_to_id
+from krisi.utils.printing import print_metric
 
 
 @dataclass
@@ -105,7 +104,7 @@ def create_diagram_rolling(obj: Metric) -> Optional[InteractiveFigure]:
         return None
     elif isiterable(obj.result_rolling):
         return InteractiveFigure(
-            obj.key,
+            f"{obj.key}_{obj.plot_func_rolling.__name__}",
             get_figure=plotly_interactive(
                 obj.plot_func_rolling, obj.result_rolling, name=obj.name
             ),
@@ -121,8 +120,9 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
     else:
         return [
             InteractiveFigure(
-                obj.key,
+                f"{obj.key}_{plot_func.__name__}",
                 get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
+                title=f"{obj.name} - {plot_func.__name__}",
             )
             for plot_func in obj.plot_funcs
         ]
