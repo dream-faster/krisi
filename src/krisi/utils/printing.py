@@ -56,7 +56,7 @@ def line_plot_rolling(data, width, height, title):
 
 def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
     if metric.result is None:
-        result = deepcopy(metric.result_over_time)
+        result = deepcopy(metric.result_rolling)
     else:
         result = deepcopy(metric.result)
 
@@ -111,7 +111,7 @@ def __create_metric_table(
         table.add_column("Info", width=3)
 
     for metric in metrics:
-        if metric.result is None and metric.result_over_time is None:
+        if metric.result is None and metric.result_rolling is None:
             continue
         metric_summarized = __create_metric(metric, with_info)
         table.add_row(*metric_summarized)
@@ -125,7 +125,7 @@ def __metrics_empty_in_category(metrics: List["Metric"]) -> bool:
         or len(metrics) < 1
         or (
             all([metric.result is None for metric in metrics])
-            and all([metric.result_over_time is None for metric in metrics])
+            and all([metric.result_rolling is None for metric in metrics])
         )
     )
 
@@ -182,9 +182,9 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         hyperparams += "".join(
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
-    if obj.result is None and obj.result_over_time is not None:
+    if obj.result is None and obj.result_rolling is not None:
         result_ = (
-            "[" + ", ".join([f"{result:<0.5}" for result in obj.result_over_time]) + "]"
+            "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
         )
     else:
         result_ = f"{obj.result:<15.5}"

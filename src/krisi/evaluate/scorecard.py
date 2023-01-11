@@ -6,7 +6,26 @@ from typing import Any, List, Optional, Union
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.report.type import InteractiveFigure
+from krisi.evaluate.assertions import is_dataset_classification_like
+from krisi.evaluate.library.default_metrics_classification import (
+    predefined_classification_metrics,
+)
+from krisi.evaluate.library.default_metrics_regression import (
+    predefined_regression_metrics,
+)
+from krisi.evaluate.metric import Metric
+from krisi.evaluate.type import (
+    MetricCategories,
+    PathConst,
+    Predictions,
+    SampleTypes,
+    SaveModes,
+    Targets,
+)
+from krisi.evaluate.utils import handle_unnamed
+from krisi.report import Report
+from krisi.report.pdf import convert_figures
+from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
 from krisi.utils.printing import (
     get_minimal_summary,
@@ -15,20 +34,6 @@ from krisi.utils.printing import (
     save_minimal_summary,
     save_object,
 )
-
-from .assertions import is_dataset_classification_like
-from .library.default_metrics_classification import predefined_classification_metrics
-from .library.default_metrics_regression import predefined_regression_metrics
-from .metric import Metric
-from .type import (
-    MetricCategories,
-    PathConst,
-    Predictions,
-    SampleTypes,
-    SaveModes,
-    Targets,
-)
-from .utils import handle_unnamed
 
 
 @dataclass
@@ -101,6 +106,23 @@ class ScoreCard:
             self.__dict__[metric.key] = deepcopy(metric)
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
+
+    def __setitem__(self, key: str, item: Any) -> None:
+        self.__setattr__(key, item)
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self, key, "Unknown metric")
+
+    def __delitem__(self, key: str) -> None:
+        setattr(self, key, None)
+
+    def __str__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
+
+    def __repr__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
 
     def __setattr__(self, key: str, item: Any) -> None:
         """Defines Dictionary like behaviour and ensures that a Metric can be
@@ -265,23 +287,6 @@ class ScoreCard:
                 metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
 
-    def __setitem__(self, key: str, item: Any) -> None:
-        self.__setattr__(key, item)
-
-    def __getitem__(self, key: str) -> Any:
-        return getattr(self, key, "Unknown metric")
-
-    def __delitem__(self, key: str) -> None:
-        setattr(self, key, None)
-
-    def __str__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
-    def __repr__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
     def print_summary(
         self, with_info: bool = False, extended: bool = True
     ) -> "ScoreCard":
@@ -324,11 +329,98 @@ class ScoreCard:
 
         return self
 
-    def get_rolling_diagrams(self) -> List[InteractiveFigure]:
-        return [
-            diagram
-            for diagram in [
-                metric.get_diagram_over_time() for metric in self.get_all_metrics()
-            ]
-            if diagram is not None
+    def generate_report(
+        self,
+        display_modes: List[DisplayModes] = [DisplayModes.pdf],
+        html_template_url: str = PathConst.html_report_template_url,
+        css_template_url: str = PathConst.css_report_template_url,
+    ) -> None:
+        report = create_report(
+            self,
+            display_modes,
+            get_rolling_diagrams(self),
+            html_template_url,
+            css_template_url,
+        )
+        report.generate_launch()
+
+
+def remove_nans(list: List[Any]) -> List[Any]:
+    return [el for el in list if el is not None]
+
+
+def get_waterfall_metric_html(metrics: List[Metric]) -> str:
+    custom_metric_interactive_diagrams = remove_nans(
+        [metric.get_diagrams() for metric in metrics]
+    )
+    custom_diagrams = [
+        plot_func
+        for plot_funcs in custom_metric_interactive_diagrams
+        for plot_func in plot_funcs
+    ]
+
+    html_images = convert_figures(
+        [
+            interactive_diagram.get_figure(width=900.0)
+            for interactive_diagram in custom_diagrams
         ]
+    )
+
+    return html_images
+
+
+def create_report(
+    obj: "ScoreCard",
+    display_modes: List[DisplayModes],
+    figures: List[InteractiveFigure],
+    html_template_url: str,
+    css_template_url: str,
+) -> Report:
+
+    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
+
+    default_metric_html = f"""
+        <div>
+            <div>
+            <h4>Residuals</h4>
+            <div style='display:flex; flex-direction:column;'>
+                <div> {convert_figures([obj['residuals'].get_diagrams()[0].get_figure()])} </div>
+                <div> {convert_figures([obj['residuals'].get_diagrams()[1].get_figure()])} </div>
+            </div>
+        </div>
+    """
+
+    BODY = f"""<div>
+                    <div>
+                        <h3>Default Metrics</h3>
+                        {default_metric_html}
+                    </div>
+                    <div>
+                        <h3>Custom Metrics</h3>
+                        {custom_metric_html}
+                    </div>
+                </div>"""
+
+    return Report(
+        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
+        modes=display_modes,
+        figures=figures,
+        html_template_url=html_template_url,
+        css_template_url=css_template_url,
+        html_elements_to_inject=dict(BODY=BODY),
+    )
+
+
+def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
+    return [
+        diagram
+        for diagram in [
+            metric.get_diagram_over_time() for metric in obj.get_all_metrics()
+        ]
+        if diagram is not None
+    ]
+
+
+def get_html(obj: "ScoreCard") -> str:
+    return """
+            sfadfadf"""

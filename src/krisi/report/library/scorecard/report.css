@@ -1,0 +1,10 @@
+@page {
+  margin: 0;
+  padding: 5%;
+  size: A4;
+  @bottom-center {
+    height: 20%;
+    margin-bottom: 10%;
+    content: "Page " counter(page) " of " counter(pages);
+  }
+}
