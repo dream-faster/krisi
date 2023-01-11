@@ -26,7 +26,7 @@ class Metric(Generic[MetricResult]):
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
-    plot_func: Optional[PlotFunction] = None
+    plot_funcs: Optional[List[PlotFunction]] = None
     plot_func_rolling: Optional[PlotFunction] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
@@ -83,7 +83,9 @@ class Metric(Generic[MetricResult]):
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
         return create_diagram(self, rolling=True)
 
-    def get_diagram(self) -> Optional[InteractiveFigure]:
+    def get_diagram(
+        self,
+    ) -> Optional[Union[List[InteractiveFigure], InteractiveFigure]]:
         return create_diagram(self)
 
     def __safe_set(
@@ -95,7 +97,9 @@ class Metric(Generic[MetricResult]):
             self.__dict__[key] = result
 
 
-def create_diagram(obj: Metric, rolling: bool = False) -> Optional[InteractiveFigure]:
+def create_diagram(
+    obj: Metric, rolling: bool = False
+) -> Optional[Union[List[InteractiveFigure], InteractiveFigure]]:
     if rolling:
         if obj.plot_func_rolling is None:
             logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
@@ -112,11 +116,14 @@ def create_diagram(obj: Metric, rolling: bool = False) -> Optional[InteractiveFi
         else:
             return None
     else:
-        if obj.plot_func is None:
+        if obj.plot_funcs is None:
             logging.info("No plot_func (Plotting Function) specified")
             return None
         else:
-            return InteractiveFigure(
-                obj.key,
-                get_figure=plotly_interactive(obj.plot_func, obj.result, name=obj.name),
-            )
+            return [
+                InteractiveFigure(
+                    obj.key,
+                    get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
+                )
+                for plot_func in obj.plot_funcs
+            ]

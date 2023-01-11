@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 from sklearn.metrics import (
     mean_absolute_error,
@@ -7,7 +9,12 @@ from sklearn.metrics import (
     r2_score,
 )
 
-from krisi.evaluate.library.diagrams import display_single_value, display_time_series
+from krisi.evaluate.library.diagrams import (
+    display_acf_plot,
+    display_density_plot,
+    display_single_value,
+    display_time_series,
+)
 from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories, SampleTypes
@@ -19,7 +26,7 @@ predefined_regression_metrics = [
         category=MetricCategories.reg_err,
         info="(Mean absolute error) represents the difference between the original and predicted values extracted by averaged the absolute difference over the data set.",
         func=mean_absolute_error,
-        plot_func=display_single_value,
+        plot_funcs=[display_single_value],
         plot_func_rolling=display_time_series,
     ),
     Metric[float](
@@ -27,7 +34,6 @@ predefined_regression_metrics = [
         key="mape",
         category=MetricCategories.reg_err,
         func=mean_absolute_percentage_error,
-        plot_func=display_single_value,
         plot_func_rolling=display_time_series,
     ),
     Metric[float](
@@ -63,6 +69,14 @@ predefined_regression_metrics = [
         info="(Coefficient of determination) represents the coefficient of how well the values fit compared to the original values. The value from 0 to 1 interpreted as percentages. The higher the value is, the better the model is.",
         func=r2_score,
         plot_func_rolling=display_time_series,
+    ),
+    Metric[List[float]](
+        name="Residuals",
+        key="residuals",
+        category=MetricCategories.residual,
+        func=lambda y, pred: y - pred,
+        plot_func_rolling=display_time_series,
+        plot_funcs=[display_acf_plot, display_density_plot],
     ),
     Metric[float](
         name="Mean of the Residuals",

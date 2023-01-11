@@ -344,6 +344,10 @@ class ScoreCard:
         report.generate_launch()
 
 
+def remove_nans(list: List[Any]) -> List[Any]:
+    return [el for el in list if el is not None]
+
+
 def create_report(
     obj: "ScoreCard",
     display_modes: List[DisplayModes],
@@ -354,14 +358,19 @@ def create_report(
     from krisi.report.pdf import convert_figures
 
     default_metrics = obj.get_default_metrics()
-    custom_metric_interactive_diagrams = [
-        metric.get_diagram() for metric in obj.get_default_metrics()
+    custom_metric_interactive_diagrams = remove_nans(
+        [metric.get_diagram() for metric in obj.get_default_metrics()]
+    )
+    custom_diagrams = [
+        plot_func
+        for plot_funcs in custom_metric_interactive_diagrams
+        for plot_func in plot_funcs
     ]
+
     html_images = convert_figures(
         [
             interactive_diagram.get_figure(width=900.0)
-            for interactive_diagram in custom_metric_interactive_diagrams
-            if interactive_diagram is not None
+            for interactive_diagram in custom_diagrams
         ]
     )
 
