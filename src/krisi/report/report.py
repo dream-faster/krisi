@@ -17,15 +17,15 @@ class Report:
         modes: List[DisplayModes] = [DisplayModes.pdf],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
-        html_template: str = "library/default/template.html",
-        css_template: str = "library/default/template.css",
+        html_template_url: str = "library/default/template.html",
+        css_template_url: str = "library/default/template.css",
     ) -> None:
         self.title = title
         self.modes = modes
         self.figures = figures
         self.global_controllers = global_controllers
-        self.html_template = html_template
-        self.css_template = css_template
+        self.html_template_url = html_template_url
+        self.css_template_url = css_template_url
 
     def generate_launch(self):
 
@@ -36,6 +36,8 @@ class Report:
             create_pdf_report(
                 [figure.get_figure(width=900.0) for figure in self.figures],
                 title=self.title,
+                html_template_url=self.html_template_url,
+                css_template_url=self.css_template_url,
             )
 
         if DisplayModes.direct in self.modes:

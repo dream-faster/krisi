@@ -326,9 +326,18 @@ class ScoreCard:
         return self
 
     def generate_report(
-        self, display_modes: List[DisplayModes] = [DisplayModes.pdf]
+        self,
+        display_modes: List[DisplayModes] = [DisplayModes.pdf],
+        html_template_url: str = PathConst.html_report_template_url,
+        css_template_url: str = PathConst.css_report_template_url,
     ) -> None:
-        report = create_report(self, display_modes, get_rolling_diagrams(self))
+        report = create_report(
+            self,
+            display_modes,
+            get_rolling_diagrams(self),
+            html_template_url,
+            css_template_url,
+        )
         report.generate_launch()
 
 
@@ -336,13 +345,15 @@ def create_report(
     obj: "ScoreCard",
     display_modes: List[DisplayModes],
     figures: List[InteractiveFigure],
+    html_template_url: str,
+    css_template_url: str,
 ) -> Report:
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
         modes=display_modes,
         figures=figures,
-        html_template="report.html",
-        css_template="report.css",
+        html_template_url=html_template_url,
+        css_template_url=css_template_url,
     )
 
 

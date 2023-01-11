@@ -38,7 +38,10 @@ class DisplayModes(Enum):
     direct = "direct"
 
 
-save_path = "report/"
+class PathConst:
+    default_save_path = "output/report/"
+    html_template_url = "libary/default/template.html"
+    css_template_url = "libary/default/template.css"
 
 
 def plotly_interactive(
