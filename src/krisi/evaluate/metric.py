@@ -83,7 +83,7 @@ class Metric(Generic[MetricResult]):
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
         return create_diagram(self, rolling=True)
 
-    def get_diagram(
+    def get_diagrams(
         self,
     ) -> Optional[Union[List[InteractiveFigure], InteractiveFigure]]:
         return create_diagram(self)

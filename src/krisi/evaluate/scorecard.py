@@ -359,7 +359,7 @@ def create_report(
 
     default_metrics = obj.get_default_metrics()
     custom_metric_interactive_diagrams = remove_nans(
-        [metric.get_diagram() for metric in obj.get_default_metrics()]
+        [metric.get_diagrams() for metric in obj.get_default_metrics()]
     )
     custom_diagrams = [
         plot_func
