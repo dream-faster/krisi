@@ -341,7 +341,8 @@ def create_report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
         modes=display_modes,
         figures=figures,
-        html_template = 
+        html_template="report.html",
+        css_template="report.css",
     )
 
 
@@ -355,6 +356,6 @@ def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
     ]
 
 
-def get_html(obj: "ScoreCard")->str:
+def get_html(obj: "ScoreCard") -> str:
     return """
             sfadfadf"""

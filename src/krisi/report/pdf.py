@@ -6,18 +6,16 @@ import plotly.graph_objects as go
 from weasyprint import CSS, HTML
 
 
-def figure_to_base64(figures: List[go.Figure]):
-    images_html = ""
-    for figure in figures:
-        image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
-        images_html += (
-            f'<img style="width: 100%;" src="data:image/png;base64,{image}"><br>'
-        )
-    return images_html
+def figure_to_html(figure: go.Figure) -> str:
+    image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
+    return f'<img style="width: 100%;" src="data:image/png;base64,{image}"><br>'
+
+
+def convert_figures(figures: List[go.Figure]) -> str:
+    return "<br>".join([figure_to_html(figure) for figure in figures])
 
 
 def create_html_report(template_file: str, images_html: str, title: str) -> str:
-
     template_html = pkgutil.get_data(__name__, template_file)
     template_html = template_html.decode()
     report_html = template_html.replace("{{ FIGURES }}", images_html).replace(
@@ -50,6 +48,6 @@ def create_pdf_report(
     html_template_url: str = "template.html",
     html_template_css: str = "template.css",
 ):
-    images_html = figure_to_base64(figures)
+    images_html = convert_figures(figures)
     report_html = create_html_report(html_template_url, images_html, title)
     convert_html_to_pdf(report_html, path, f"Report-{title}.pdf", html_template_css)

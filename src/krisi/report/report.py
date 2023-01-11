@@ -1,7 +1,6 @@
 from typing import List, Optional, Union
 
 import plotly.express as px
-from dash import dcc
 
 from krisi.report.interactive import run_app
 from krisi.report.pdf import create_pdf_report
@@ -18,13 +17,15 @@ class Report:
         modes: List[DisplayModes] = [DisplayModes.pdf],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
-        html_template: Optional[str] = None,
+        html_template: str = "library/default/template.html",
+        css_template: str = "library/default/template.css",
     ) -> None:
         self.title = title
         self.modes = modes
         self.figures = figures
         self.global_controllers = global_controllers
         self.html_template = html_template
+        self.css_template = css_template
 
     def generate_launch(self):
 
