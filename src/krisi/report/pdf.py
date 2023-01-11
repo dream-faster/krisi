@@ -51,10 +51,10 @@ def create_pdf_report(
     title: str = "Time Series Report",
     html_template_url: str = PathConst.html_template_url,
     css_template_url: str = PathConst.css_template_url,
-    html_elements_to_inject: dict[str, str] = dict(BODY="WHAAAAAAT"),
+    html_elements_to_inject: dict[str, str] = dict(),
 ):
     #  images_html = convert_figures(figures)
 
     html_elements_to_inject["TITLE"] = title
     report_html = create_html_report(html_template_url, html_elements_to_inject, title)
-    convert_html_to_pdf(report_html, path, f"Report-{title}.pdf", css_template_url)
+    convert_html_to_pdf(report_html, path, f"{title}.pdf", css_template_url)

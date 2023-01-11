@@ -24,6 +24,7 @@ from krisi.evaluate.type import (
 )
 from krisi.evaluate.utils import handle_unnamed
 from krisi.report import Report
+from krisi.report.pdf import convert_figures
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
 from krisi.utils.printing import (
@@ -348,18 +349,9 @@ def remove_nans(list: List[Any]) -> List[Any]:
     return [el for el in list if el is not None]
 
 
-def create_report(
-    obj: "ScoreCard",
-    display_modes: List[DisplayModes],
-    figures: List[InteractiveFigure],
-    html_template_url: str,
-    css_template_url: str,
-) -> Report:
-    from krisi.report.pdf import convert_figures
-
-    default_metrics = obj.get_default_metrics()
+def get_waterfall_metric_html(metrics: List[Metric]) -> str:
     custom_metric_interactive_diagrams = remove_nans(
-        [metric.get_diagrams() for metric in obj.get_default_metrics()]
+        [metric.get_diagrams() for metric in metrics]
     )
     custom_diagrams = [
         plot_func
@@ -374,7 +366,40 @@ def create_report(
         ]
     )
 
-    BODY = f"""<div>This will be the body <div> {html_images}</div>"""
+    return html_images
+
+
+def create_report(
+    obj: "ScoreCard",
+    display_modes: List[DisplayModes],
+    figures: List[InteractiveFigure],
+    html_template_url: str,
+    css_template_url: str,
+) -> Report:
+
+    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
+
+    default_metric_html = f"""
+        <div>
+            <div>
+            <h4>Residuals</h4>
+            <div style='display:flex; flex-direction:column;'>
+                <div> {convert_figures([obj['residuals'].get_diagrams()[0].get_figure()])} </div>
+                <div> {convert_figures([obj['residuals'].get_diagrams()[1].get_figure()])} </div>
+            </div>
+        </div>
+    """
+
+    BODY = f"""<div>
+                    <div>
+                        <h3>Default Metrics</h3>
+                        {default_metric_html}
+                    </div>
+                    <div>
+                        <h3>Custom Metrics</h3>
+                        {custom_metric_html}
+                    </div>
+                </div>"""
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",

@@ -81,11 +81,11 @@ class Metric(Generic[MetricResult]):
         self.__safe_set(result_rolling, key="result_rolling")
 
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
-        return create_diagram(self, rolling=True)
+        return create_diagram_rolling(self)
 
     def get_diagrams(
         self,
-    ) -> Optional[Union[List[InteractiveFigure], InteractiveFigure]]:
+    ) -> Optional[List[InteractiveFigure]]:
         return create_diagram(self)
 
     def __safe_set(
@@ -97,33 +97,32 @@ class Metric(Generic[MetricResult]):
             self.__dict__[key] = result
 
 
-def create_diagram(
-    obj: Metric, rolling: bool = False
-) -> Optional[Union[List[InteractiveFigure], InteractiveFigure]]:
-    if rolling:
-        if obj.plot_func_rolling is None:
-            logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
-            return None
-        elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
-            return None
-        elif isiterable(obj.result_rolling):
-            return InteractiveFigure(
-                obj.key,
-                get_figure=plotly_interactive(
-                    obj.plot_func_rolling, obj.result_rolling, name=obj.name
-                ),
-            )
-        else:
-            return None
+def create_diagram_rolling(obj: Metric) -> Optional[InteractiveFigure]:
+    if obj.plot_func_rolling is None:
+        logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
+        return None
+    elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
+        return None
+    elif isiterable(obj.result_rolling):
+        return InteractiveFigure(
+            obj.key,
+            get_figure=plotly_interactive(
+                obj.plot_func_rolling, obj.result_rolling, name=obj.name
+            ),
+        )
     else:
-        if obj.plot_funcs is None:
-            logging.info("No plot_func (Plotting Function) specified")
-            return None
-        else:
-            return [
-                InteractiveFigure(
-                    obj.key,
-                    get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
-                )
-                for plot_func in obj.plot_funcs
-            ]
+        return None
+
+
+def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
+    if obj.plot_funcs is None:
+        logging.info("No plot_func (Plotting Function) specified")
+        return None
+    else:
+        return [
+            InteractiveFigure(
+                obj.key,
+                get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
+            )
+            for plot_func in obj.plot_funcs
+        ]
