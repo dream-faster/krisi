@@ -22,7 +22,7 @@ def flatten(xs):
             yield x
 
 
-def flatten_type(complex_type: Union[Targets, Predictions]) -> Union[List, Any]:
+def flatten_type(complex_type: Any) -> Union[List, Any]:
     types = get_args(complex_type)
     if len(types) == 0:
         return complex_type
@@ -33,7 +33,7 @@ def flatten_type(complex_type: Union[Targets, Predictions]) -> Union[List, Any]:
         return add_list + [flatten_type(type_) for type_ in get_args(complex_type)]
 
 
-def unpack_type(complex_type: Union[Targets, Predictions]) -> Tuple[Any]:
+def unpack_type(complex_type: Any) -> Tuple[Any]:
     return tuple(flatten(flatten_type(complex_type)))
 
 
