@@ -117,6 +117,8 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_funcs is None:
         logging.info("No plot_func (Plotting Function) specified")
         return None
+    elif isinstance(obj.result, Exception) or obj.result is None:
+        return None
     else:
         return [
             InteractiveFigure(
