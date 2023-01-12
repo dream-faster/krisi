@@ -30,6 +30,7 @@ class InteractiveFigure:
     inputs: List[PlotlyInput] = field(default_factory=list)
     global_input_ids: List[str] = field(default_factory=list)
     title: Optional[str] = ""
+    size: Optional[float] = 900.0
 
 
 class DisplayModes(Enum):

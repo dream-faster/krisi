@@ -81,7 +81,7 @@ predefined_regression_metrics = [
         category=MetricCategories.residual,
         func=lambda y, pred: y - pred,
         plot_func_rolling=display_time_series,
-        plot_funcs=[display_acf_plot, display_density_plot],
+        plot_funcs=[display_acf_plot, display_density_plot, display_time_series],
     ),
     Metric[float](
         name="Mean of the Residuals",

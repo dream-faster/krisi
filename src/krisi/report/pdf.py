@@ -10,7 +10,7 @@ from krisi.report.type import PathConst
 
 def figure_to_html(figure: go.Figure) -> str:
     image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
-    return f'<img style="width: 100%;" src="data:image/png;base64,{image}"><br>'
+    return f'<img style="height: 100%;" src="data:image/png;base64,{image}"><br>'
 
 
 def convert_figures(figures: List[go.Figure]) -> str:

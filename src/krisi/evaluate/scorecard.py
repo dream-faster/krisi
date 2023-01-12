@@ -61,13 +61,13 @@ class ScoreCard:
 
     y: Targets
     predictions: Predictions
-    model_name: Optional[str]
-    dataset_name: Optional[str]
-    project_name: Optional[str]
+    model_name: str
+    dataset_name: str
+    project_name: str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
-    classification: Optional[bool]  # TODO: Support multilabel classification
+    classification: bool  # TODO: Support multilabel classification
 
     def __init__(
         self,
@@ -346,12 +346,14 @@ class ScoreCard:
         display_modes: List[DisplayModes] = [DisplayModes.pdf],
         html_template_url: str = PathConst.html_report_template_url,
         css_template_url: str = PathConst.css_report_template_url,
+        author: str = "",
     ) -> None:
         report = create_report(
             self,
             display_modes,
             html_template_url,
             css_template_url,
+            author=author,
         )
         report.generate_launch()
 
@@ -376,45 +378,36 @@ def get_waterfall_metric_html(metrics: List[Metric]) -> str:
     return html_images
 
 
+def append_sizes(
+    diagram_dict: Dict[str, InteractiveFigure]
+) -> Dict[str, InteractiveFigure]:
+    diagram_dict["residuals_display_acf_plot"].size = 700.0
+    diagram_dict["residuals_display_density_plot"].size = 700.0
+    diagram_dict["residuals_display_time_series"].size = 1500.0
+
+    return diagram_dict
+
+
 def create_report(
     obj: "ScoreCard",
     display_modes: List[DisplayModes],
     html_template_url: str,
     css_template_url: str,
+    author: str,
 ) -> Report:
 
     custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
 
     diagrams = obj.get_diagram_dictionary()
+    diagrams = append_sizes(diagrams)
+
     diagrams_static = {
         interactive_figure.id: convert_figures(
-            [interactive_figure.get_figure(width=900.0)]
+            [interactive_figure.get_figure(width=interactive_figure.size)]
         )
         for key, interactive_figure in diagrams.items()
     }
-
-    # default_metric_html = f"""
-    #     <div>
-    #         <div>
-    #             <h4>Residuals</h4>
-    #             <div style='width:100%; height:100%; display:flex; flex-direction:row;'>
-    #                 <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_acf_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
-    #                 <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_density_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
-    #             </div>
-    #         </div>
-    #     </div>
-    # """
-
-    # BODY = f"""<div>
-    #                 <div>
-    #                     <h3>Default Metrics</h3>
-    #                     {default_metric_html}
-    #                 </div>
-    #                 <div>
-    #                     <h3>Custom Metrics</h3>
-    #                     {custom_metric_html}
-    #                 </div>
-    #             </div>"""
+    date: str = datetime.datetime.now().strftime("%Y%-m-%d")
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
@@ -422,7 +415,12 @@ def create_report(
         figures=diagrams.values(),
         html_template_url=html_template_url,
         css_template_url=css_template_url,
-        html_elements_to_inject=dict(**diagrams_static),
+        html_elements_to_inject=dict(
+            author=author,
+            project_name=obj.project_name,
+            date=date,
+            **diagrams_static,
+        ),
     )
 
 
