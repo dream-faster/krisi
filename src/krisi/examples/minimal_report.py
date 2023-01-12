@@ -14,4 +14,7 @@ sc = ScoreCard(
 
 """ A predefined metrics """
 sc.evaluate(defaults=True)
-sc.generate_report()
+sc.generate_report(
+    html_template_url="library/scorecard/index.html",
+    css_template_url="library/scorecard/main.css",
+)

@@ -393,28 +393,28 @@ def create_report(
         for key, interactive_figure in diagrams.items()
     }
 
-    default_metric_html = f"""
-        <div>
-            <div>
-                <h4>Residuals</h4>
-                <div style='width:100%; height:100%; display:flex; flex-direction:row;'>
-                    <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_acf_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
-                    <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_density_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
-                </div>
-            </div>
-        </div>
-    """
+    # default_metric_html = f"""
+    #     <div>
+    #         <div>
+    #             <h4>Residuals</h4>
+    #             <div style='width:100%; height:100%; display:flex; flex-direction:row;'>
+    #                 <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_acf_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
+    #                 <div style='width:100%; height:auto;'> {convert_figures([diagrams['residuals_display_density_plot'].get_figure(width=900.0, name="WHAAAT")])} </div>
+    #             </div>
+    #         </div>
+    #     </div>
+    # """
 
-    BODY = f"""<div>
-                    <div>
-                        <h3>Default Metrics</h3>
-                        {default_metric_html}
-                    </div>
-                    <div>
-                        <h3>Custom Metrics</h3>
-                        {custom_metric_html}
-                    </div>
-                </div>"""
+    # BODY = f"""<div>
+    #                 <div>
+    #                     <h3>Default Metrics</h3>
+    #                     {default_metric_html}
+    #                 </div>
+    #                 <div>
+    #                     <h3>Custom Metrics</h3>
+    #                     {custom_metric_html}
+    #                 </div>
+    #             </div>"""
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
@@ -422,7 +422,7 @@ def create_report(
         figures=diagrams.values(),
         html_template_url=html_template_url,
         css_template_url=css_template_url,
-        html_elements_to_inject=dict(BODY=BODY, **diagrams_static),
+        html_elements_to_inject=dict(**diagrams_static),
     )
 
 
