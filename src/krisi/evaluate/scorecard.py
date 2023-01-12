@@ -336,7 +336,13 @@ class ScoreCard:
 
     def get_diagram_dictionary(self) -> Dict[str, List[InteractiveFigure]]:
         diagrams = flatten(
-            remove_nans([metric.get_diagrams() for metric in self.get_all_metrics()])
+            remove_nans(
+                [
+                    metric.get_diagrams()
+                    for metric in self.get_all_metrics()
+                    if metric.result is not None
+                ]
+            )
         )
 
         return {diagram.id: diagram for diagram in diagrams}

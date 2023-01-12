@@ -19,6 +19,11 @@ from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories, SampleTypes
 
+
+def residual(y, pred):
+    return y - pred
+
+
 predefined_regression_metrics = [
     Metric[float](
         name="Mean Absolute Error",
