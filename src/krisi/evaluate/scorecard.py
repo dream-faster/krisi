@@ -334,7 +334,7 @@ class ScoreCard:
 
         return self
 
-    def get_diagram_dictionary(self) -> Dict[str, List[InteractiveFigure]]:
+    def get_diagram_dictionary(self) -> Dict[str, InteractiveFigure]:
         diagrams = flatten(
             remove_nans([metric.get_diagrams() for metric in self.get_all_metrics()])
         )
@@ -407,7 +407,7 @@ def create_report(
         )
         for key, interactive_figure in diagrams.items()
     }
-    date: str = datetime.datetime.now().strftime("%Y%-m-%d")
+    date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
@@ -419,6 +419,7 @@ def create_report(
             author=author,
             project_name=obj.project_name,
             date=date,
+            custom_metric_html=custom_metric_html,
             **diagrams_static,
         ),
     )
