@@ -1,6 +1,7 @@
 import numpy as np
 
 from krisi.evaluate import SampleTypes, ScoreCard
+from krisi.report.type import DisplayModes
 
 target, predictions = np.random.rand(100), np.random.rand(100)
 sc = ScoreCard(
@@ -17,4 +18,5 @@ sc.evaluate(defaults=True)
 sc.generate_report(
     html_template_url="library/scorecard/index.html",
     css_template_url="library/scorecard/main.css",
+    display_modes=[DisplayModes.interactive],
 )

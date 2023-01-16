@@ -381,9 +381,16 @@ def get_waterfall_metric_html(metrics: List[Metric]) -> str:
 def append_sizes(
     diagram_dict: Dict[str, InteractiveFigure]
 ) -> Dict[str, InteractiveFigure]:
-    diagram_dict["residuals_display_acf_plot"].size = 700.0
-    diagram_dict["residuals_display_density_plot"].size = 700.0
-    diagram_dict["residuals_display_time_series"].size = 1500.0
+
+    size_dict = dict(
+        residuals_display_acf_plot=700.0,
+        residuals_display_density_plot=700.0,
+        residuals_display_time_series=1500.0,
+    )
+
+    for key, value in size_dict.items():
+        if key in diagram_dict.keys():
+            diagram_dict[key].size = value
 
     return diagram_dict
 
