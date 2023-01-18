@@ -34,7 +34,6 @@ class InteractiveFigure:
     height: Optional[float] = 600.0
 
 
-
 class DisplayModes(Enum):
     interactive = "interactive"
     pdf = "pdf"
