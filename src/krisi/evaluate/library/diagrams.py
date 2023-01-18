@@ -21,7 +21,6 @@ def display_time_series(data: List[MetricResult], name: str = "") -> go.Figure:
     return fig
 
 
-
 def display_single_value(data: MetricResult, name: str = "") -> go.Figure:
 
     fig = go.Figure()
