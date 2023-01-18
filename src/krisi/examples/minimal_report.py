@@ -18,5 +18,5 @@ sc.evaluate(defaults=True)
 sc.generate_report(
     html_template_url="library/scorecard/index.html",
     css_template_url="library/scorecard/main.css",
-    display_modes=[DisplayModes.interactive],
+    display_modes=[DisplayModes.pdf],
 )
