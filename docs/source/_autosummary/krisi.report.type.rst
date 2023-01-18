@@ -1,6 +1,38 @@
 krisi.report.type
 =================
 
-.. currentmodule:: krisi.report
+.. automodule:: krisi.report.type
 
-.. automodule:: type
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      plotly_interactive
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DisplayModes
+      InteractiveFigure
+      PathConst
+      PlotlyInput
+   
+   
+
+   
+   
+   
+
+
+

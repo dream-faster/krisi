@@ -1,8 +1,7 @@
 from typing import List
 
+from krisi.evaluate.scorecard import ScoreCard
 from krisi.utils.printing import bold
-
-from .scorecard import ScoreCard
 
 
 def compare(

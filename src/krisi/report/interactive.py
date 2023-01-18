@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from dash import Dash, Input, Output, dcc, html
 
-from .type import InteractiveFigure, PlotlyInput
+from krisi.report.type import InteractiveFigure, PlotlyInput
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 

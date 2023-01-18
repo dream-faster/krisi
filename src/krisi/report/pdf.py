@@ -3,7 +3,6 @@ import pkgutil
 from typing import List, Optional
 
 import plotly.graph_objects as go
-from weasyprint import CSS, HTML
 
 from krisi.report.type import PathConst
 
@@ -32,6 +31,8 @@ def convert_html_to_pdf(
     source_html: str, output_path: str, report_name: str, css_template_url: str
 ) -> None:
     import os
+
+    from weasyprint import CSS, HTML
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)

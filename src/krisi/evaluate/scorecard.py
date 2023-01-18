@@ -23,8 +23,8 @@ from krisi.evaluate.type import (
     Targets,
 )
 from krisi.evaluate.utils import handle_unnamed
-from krisi.report import Report
 from krisi.report.pdf import convert_figures
+from krisi.report.report import Report
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.iterable_helpers import (
     flatten,
