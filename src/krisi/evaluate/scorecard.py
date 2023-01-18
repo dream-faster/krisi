@@ -383,14 +383,15 @@ def append_sizes(
 ) -> Dict[str, InteractiveFigure]:
 
     size_dict = dict(
-        residuals_display_acf_plot=700.0,
-        residuals_display_density_plot=700.0,
-        residuals_display_time_series=1500.0,
+        residuals_display_acf_plot=(750.0, 750.0),
+        residuals_display_density_plot=(350.0, 350.0),
+        residuals_display_time_series=(1500.0, 750.0),
     )
 
     for key, value in size_dict.items():
         if key in diagram_dict.keys():
-            diagram_dict[key].size = value
+            diagram_dict[key].width = value[0]
+            diagram_dict[key].height = value[1]
 
     return diagram_dict
 
@@ -410,7 +411,13 @@ def create_report(
 
     diagrams_static = {
         interactive_figure.id: convert_figures(
-            [interactive_figure.get_figure(width=interactive_figure.size)]
+            [
+                interactive_figure.get_figure(
+                    width=interactive_figure.width,
+                    height=interactive_figure.height,
+                    title=interactive_figure.title,
+                )
+            ]
         )
         for key, interactive_figure in diagrams.items()
     }

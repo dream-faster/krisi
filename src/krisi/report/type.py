@@ -30,7 +30,8 @@ class InteractiveFigure:
     inputs: List[PlotlyInput] = field(default_factory=list)
     global_input_ids: List[str] = field(default_factory=list)
     title: Optional[str] = ""
-    size: Optional[float] = 900.0
+    width: Optional[float] = 900.0
+    height: Optional[float] = 600.0
 
 
 class DisplayModes(Enum):
@@ -56,7 +57,8 @@ def plotly_interactive(
 
     def wrapper(*args, **kwargs) -> go.Figure:
         width = kwargs.pop("width", None)
-        title = kwargs.pop("title", "")
+        height = kwargs.pop("height", None)
+        title = kwargs.pop("title", None)
 
         for key, value in default_kwargs.items():
             if key not in kwargs:
@@ -64,7 +66,8 @@ def plotly_interactive(
 
         fig = plot_function(data_source, *args, **kwargs)
 
-        fig.update_layout(width=width)
+        # fig.update_layout(width=width)
+        fig.update_layout(autosize=False, width=width, height=height)
         if title is not None:
             fig.update_layout(title=title)
         return fig

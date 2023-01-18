@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -9,24 +9,20 @@ from statsmodels.tsa.stattools import acf, pacf
 from krisi.evaluate.type import MetricResult
 
 
-def display_time_series(
-    data: List[MetricResult], name: str = "", width: Optional[float] = None
-) -> go.Figure:
+def display_time_series(data: List[MetricResult], name: str = "") -> go.Figure:
     df = pd.DataFrame(data, columns=[name])
     df["iteration"] = list(range(len(data)))
     fig = px.line(
         df,
         x="iteration",
         y=name,
-        width=width,
     )
     fig.update_layout(title=name)
     return fig
 
 
-def display_single_value(
-    data: MetricResult, name: str = "", width: Optional[float] = None
-) -> go.Figure:
+def display_single_value(data: MetricResult, name: str = "") -> go.Figure:
+
     fig = go.Figure()
 
     fig.add_trace(
@@ -46,7 +42,6 @@ def display_acf_plot(
     data: MetricResult,
     name: str = "",
     plot_pacf: bool = False,
-    width: Optional[float] = None,
 ) -> go.Figure:
     if len(name) < 1:
         title = (
@@ -103,10 +98,10 @@ def display_density_plot(
     data: MetricResult,
     name: str = "",
     plot_pacf: bool = False,
-    width: Optional[float] = None,
 ) -> go.Figure:
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
-    fig = px.histogram(data, marginal="box", title=name)  # or violin, rug
+    fig = px.histogram(data, marginal="box")  # or violin, rug
+    fig.update_layout(title=name)
 
     return fig

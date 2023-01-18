@@ -35,9 +35,10 @@ p {
   margin-top: 0px;
 }
 
-.section {
+section {
   margin-bottom: 12px;
   width: 100%;
+  overflow: hidden;
 }
 
 .header {
