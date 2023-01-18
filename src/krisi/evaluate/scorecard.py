@@ -1,26 +1,20 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.report.type import InteractiveFigure
-from krisi.utils.iterable_helpers import map_newdict_on_olddict, strip_builtin_functions
-from krisi.utils.printing import (
-    get_minimal_summary,
-    get_summary,
-    save_console,
-    save_minimal_summary,
-    save_object,
+from krisi.evaluate.assertions import is_dataset_classification_like
+from krisi.evaluate.library.default_metrics_classification import (
+    predefined_classification_metrics,
 )
-
-from .assertions import is_dataset_classification_like
-from .library.default_metrics_classification import predefined_classification_metrics
-from .library.default_metrics_regression import predefined_regression_metrics
-from .metric import Metric
-from .type import (
+from krisi.evaluate.library.default_metrics_regression import (
+    predefined_regression_metrics,
+)
+from krisi.evaluate.metric import Metric
+from krisi.evaluate.type import (
     MetricCategories,
     PathConst,
     Predictions,
@@ -28,7 +22,23 @@ from .type import (
     SaveModes,
     Targets,
 )
-from .utils import handle_unnamed
+from krisi.evaluate.utils import handle_unnamed
+from krisi.report import Report
+from krisi.report.pdf import convert_figures
+from krisi.report.type import DisplayModes, InteractiveFigure
+from krisi.utils.iterable_helpers import (
+    flatten,
+    map_newdict_on_olddict,
+    remove_nans,
+    strip_builtin_functions,
+)
+from krisi.utils.printing import (
+    get_minimal_summary,
+    get_summary,
+    save_console,
+    save_minimal_summary,
+    save_object,
+)
 
 
 @dataclass
@@ -51,13 +61,13 @@ class ScoreCard:
 
     y: Targets
     predictions: Predictions
-    model_name: Optional[str]
-    dataset_name: Optional[str]
-    project_name: Optional[str]
+    model_name: str
+    dataset_name: str
+    project_name: str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
-    classification: Optional[bool]  # TODO: Support multilabel classification
+    classification: bool  # TODO: Support multilabel classification
 
     def __init__(
         self,
@@ -101,6 +111,23 @@ class ScoreCard:
             self.__dict__[metric.key] = deepcopy(metric)
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
+
+    def __setitem__(self, key: str, item: Any) -> None:
+        self.__setattr__(key, item)
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self, key, "Unknown metric")
+
+    def __delitem__(self, key: str) -> None:
+        setattr(self, key, None)
+
+    def __str__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
+
+    def __repr__(self) -> str:
+        print(Pretty(self.__dict__))
+        return ""
 
     def __setattr__(self, key: str, item: Any) -> None:
         """Defines Dictionary like behaviour and ensures that a Metric can be
@@ -265,23 +292,6 @@ class ScoreCard:
                 metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
 
-    def __setitem__(self, key: str, item: Any) -> None:
-        self.__setattr__(key, item)
-
-    def __getitem__(self, key: str) -> Any:
-        return getattr(self, key, "Unknown metric")
-
-    def __delitem__(self, key: str) -> None:
-        setattr(self, key, None)
-
-    def __str__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
-    def __repr__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
     def print_summary(
         self, with_info: bool = False, extended: bool = True
     ) -> "ScoreCard":
@@ -324,11 +334,114 @@ class ScoreCard:
 
         return self
 
-    def get_rolling_diagrams(self) -> List[InteractiveFigure]:
-        return [
-            diagram
-            for diagram in [
-                metric.get_diagram_over_time() for metric in self.get_all_metrics()
-            ]
-            if diagram is not None
+    def get_diagram_dictionary(self) -> Dict[str, InteractiveFigure]:
+        diagrams = flatten(
+            remove_nans([metric.get_diagrams() for metric in self.get_all_metrics()])
+        )
+
+        return {diagram.id: diagram for diagram in diagrams}
+
+    def generate_report(
+        self,
+        display_modes: List[DisplayModes] = [DisplayModes.pdf],
+        html_template_url: str = PathConst.html_report_template_url,
+        css_template_url: str = PathConst.css_report_template_url,
+        author: str = "",
+    ) -> None:
+        report = create_report(
+            self,
+            display_modes,
+            html_template_url,
+            css_template_url,
+            author=author,
+        )
+        report.generate_launch()
+
+
+def get_waterfall_metric_html(metrics: List[Metric]) -> str:
+    custom_metric_interactive_diagrams = remove_nans(
+        [metric.get_diagrams() for metric in metrics]
+    )
+    custom_diagrams = [
+        plot_func
+        for plot_funcs in custom_metric_interactive_diagrams
+        for plot_func in plot_funcs
+    ]
+
+    html_images = convert_figures(
+        [
+            interactive_diagram.get_figure(width=900.0)
+            for interactive_diagram in custom_diagrams
         ]
+    )
+
+    return html_images
+
+
+def append_sizes(
+    diagram_dict: Dict[str, InteractiveFigure]
+) -> Dict[str, InteractiveFigure]:
+
+    size_dict = dict(
+        residuals_display_acf_plot=700.0,
+        residuals_display_density_plot=700.0,
+        residuals_display_time_series=1500.0,
+    )
+
+    for key, value in size_dict.items():
+        if key in diagram_dict.keys():
+            diagram_dict[key].size = value
+
+    return diagram_dict
+
+
+def create_report(
+    obj: "ScoreCard",
+    display_modes: List[DisplayModes],
+    html_template_url: str,
+    css_template_url: str,
+    author: str,
+) -> Report:
+
+    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
+
+    diagrams = obj.get_diagram_dictionary()
+    diagrams = append_sizes(diagrams)
+
+    diagrams_static = {
+        interactive_figure.id: convert_figures(
+            [interactive_figure.get_figure(width=interactive_figure.size)]
+        )
+        for key, interactive_figure in diagrams.items()
+    }
+    date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    return Report(
+        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
+        modes=display_modes,
+        figures=diagrams.values(),
+        html_template_url=html_template_url,
+        css_template_url=css_template_url,
+        html_elements_to_inject=dict(
+            author=author,
+            project_name=obj.project_name,
+            date=date,
+            custom_metric_html=custom_metric_html,
+            **diagrams_static,
+        ),
+    )
+
+
+def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
+    return [
+        diagram
+        for diagram in [
+            metric.get_diagram_over_time() for metric in obj.get_all_metrics()
+        ]
+        if diagram is not None
+    ]
+
+
+def get_html(obj: "ScoreCard") -> str:
+    return """
+            sfadfadf"""

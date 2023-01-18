@@ -2,32 +2,44 @@ from typing import List, Optional, Union
 
 import plotly.express as px
 
-from .interactive import run_app
-from .pdf import create_pdf_report
-from .type import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.interactive import run_app
+from krisi.report.pdf import create_pdf_report
+from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 
 
 class Report:
     title: str
-    display_modes = DisplayModes
-    figure_type = InteractiveFigure
-    plotly_input = PlotlyInput
+    modes: List[DisplayModes]
 
-    def __init__(self, title: str, modes: List[DisplayModes]) -> None:
+    def __init__(
+        self,
+        title: str,
+        modes: List[DisplayModes] = [DisplayModes.pdf],
+        figures: List[InteractiveFigure] = [],
+        global_controllers: List[PlotlyInput] = [],
+        html_template_url: str = "library/default/template.html",
+        css_template_url: str = "library/default/template.css",
+        html_elements_to_inject: dict[str, str] = dict(),
+    ) -> None:
         self.title = title
         self.modes = modes
-        self.figures: List[InteractiveFigure] = []
-        self.global_controllers: List[PlotlyInput] = []
+        self.figures = figures
+        self.global_controllers = global_controllers
+        self.html_template_url = html_template_url
+        self.css_template_url = css_template_url
+        self.html_elements_to_inject = html_elements_to_inject
 
     def generate_launch(self):
-        if DisplayModes.pdf in self.modes:
-            create_pdf_report(
-                [figure.get_figure(width=900.0) for figure in self.figures],
-                title=self.title,
-            )
 
         if DisplayModes.interactive in self.modes:
             run_app(self.figures, self.global_controllers)
+
+        if DisplayModes.pdf in self.modes:
+            create_pdf_report(
+                html_template_url=self.html_template_url,
+                css_template_url=self.css_template_url,
+                html_elements_to_inject=self.html_elements_to_inject,
+            )
 
         if DisplayModes.direct in self.modes:
             [figure.get_figure(width=900.0).show() for figure in self.figures]
@@ -56,18 +68,16 @@ if __name__ == "__main__":
         fig = px.line(df, x="date", y=ticker, width=width)
         return fig
 
-    report = Report(title=f"Report on Apple", modes=[DisplayModes.interactive])
+    report = Report(title=f"Report on Apple", modes=[DisplayModes.pdf])
     report.add(
         [
             InteractiveFigure(
                 id="time-series-chart",
                 get_figure=display_time_series,
-                inputs=[("ticker", "value")],
             ),
             InteractiveFigure(
                 id="time-series-chart2",
                 get_figure=display_time_series,
-                inputs=[("ticker", "value")],
             ),
         ]
     )

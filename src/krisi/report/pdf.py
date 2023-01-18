@@ -1,46 +1,57 @@
 import base64
-from typing import List
+import pkgutil
+from typing import List, Optional
 
-from xhtml2pdf import pisa
+import plotly.graph_objects as go
+from weasyprint import CSS, HTML
+
+from krisi.report.type import PathConst
 
 
-def figure_to_base64(figures):
-    images_html = ""
-    for figure in figures:
-        image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
-        images_html += f'<img src="data:image/png;base64,{image}"><br>'
-    return images_html
+def figure_to_html(figure: go.Figure) -> str:
+    image = str(base64.b64encode(figure.to_image(format="png", scale=2)))[2:-1]
+    return f'<img style="max-width:100%; max-height:100%;" src="data:image/png;base64,{image}"/>'
+
+
+def convert_figures(figures: List[go.Figure]) -> str:
+    return "<br>".join([figure_to_html(figure) for figure in figures])
 
 
 def create_html_report(
-    template_file: str, images_html: str, title: str = "Time Series Report"
+    template_file: str, html_elements_to_inject: dict[str, str]
 ) -> str:
-    import pkgutil
-
     template_html = pkgutil.get_data(__name__, template_file)
-    template_html = str(template_html)
-    # with open(template_file, "r") as f:
-    #     template_html = f.read()
-    report_html = template_html.replace("{{ FIGURES }}", images_html).replace(
-        "{{ TITLE }}", title
-    )
-    # report_html = template_html.replace("{{ TITLE }}", title)
-    return report_html
+    template_html = template_html.decode()
+
+    for key, value in html_elements_to_inject.items():
+        template_html = template_html.replace(f"{{ {key} }}", value)
+    return template_html
 
 
-def convert_html_to_pdf(source_html: str, output_path: str, report_name: str):
+def convert_html_to_pdf(
+    source_html: str, output_path: str, report_name: str, css_template_url: str
+) -> None:
     import os
 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
-    with open(f"{output_path}/{report_name}", "w+b") as f:
-        pisa_status = pisa.CreatePDF(source_html, dest=f)
-    return pisa_status.err
+    css_string = pkgutil.get_data(__name__, css_template_url)
+    css_string = css_string.decode()
+
+    css = CSS(string=css_string)
+    pdf = HTML(string=source_html).write_pdf(stylesheets=[css])
+
+    open(f"{output_path}/{report_name}", "wb").write(pdf)
 
 
-def create_pdf_report(figures: List, path: str = "output", title: str = ""):
-    [fig.update_layout(width=900.0) for fig in figures]
-    images_html = figure_to_base64(figures)
-    report_html = create_html_report(f"template.html", images_html, title)
-    convert_html_to_pdf(report_html, path, report_name="report.pdf")
+def create_pdf_report(
+    path: str = PathConst.default_save_path,
+    title: str = "Time Series Report",
+    html_template_url: str = PathConst.html_template_url,
+    css_template_url: str = PathConst.css_template_url,
+    html_elements_to_inject: dict[str, str] = dict(),
+):
+    html_elements_to_inject["title"] = title
+    report_html = create_html_report(html_template_url, html_elements_to_inject)
+    convert_html_to_pdf(report_html, path, f"{title}.pdf", css_template_url)

@@ -66,3 +66,22 @@ def isiterable(obj: Any) -> bool:
 
 def strip_builtin_functions(dict_to_strip: dict) -> dict:
     return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
+
+
+def __flatten(xs):
+    for x in xs:
+        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            yield from flatten(x)
+        else:
+            yield x
+
+
+def flatten(xs):
+    return list(__flatten(xs))
+
+
+def remove_nans(iter):
+    if isinstance(iter, List):
+        return [el for el in iter if el is not None]
+    else:
+        return {key: el for key, el in iter.items() if el is not None}

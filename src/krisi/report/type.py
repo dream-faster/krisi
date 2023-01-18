@@ -20,7 +20,7 @@ class PlotlyInput:
     id: str
     value_name: str
     default_value: Union[str, float, int]
-    options: Optional[List[Union[str, float, int]]]
+    options: Optional[List[Union[str, float, int]]] = None
 
 
 @dataclass
@@ -30,6 +30,7 @@ class InteractiveFigure:
     inputs: List[PlotlyInput] = field(default_factory=list)
     global_input_ids: List[str] = field(default_factory=list)
     title: Optional[str] = ""
+    size: Optional[float] = 900.0
 
 
 class DisplayModes(Enum):
@@ -38,7 +39,10 @@ class DisplayModes(Enum):
     direct = "direct"
 
 
-save_path = "report/"
+class PathConst:
+    default_save_path = "output/report/"
+    html_template_url = "libary/default/template.html"
+    css_template_url = "libary/default/template.css"
 
 
 def plotly_interactive(

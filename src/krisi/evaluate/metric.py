@@ -1,12 +1,9 @@
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Generic, List, Optional, Union
 
-from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id
-from krisi.utils.printing import print_metric
-
-from .assertions import check_valid_pred_target
-from .type import (
+from krisi.evaluate.assertions import check_valid_pred_target
+from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
     MetricResult,
@@ -14,6 +11,9 @@ from .type import (
     SampleTypes,
     Targets,
 )
+from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
+from krisi.utils.iterable_helpers import isiterable, string_to_id
+from krisi.utils.printing import print_metric
 
 
 @dataclass
@@ -22,12 +22,11 @@ class Metric(Generic[MetricResult]):
     key: str = ""
     category: Optional[MetricCategories] = None
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
-    result_over_time: Optional[
-        Union[Exception, MetricResult, List[MetricResult]]
-    ] = None
+    result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
     func: MetricFunction = lambda x, y: None
-    plot_func: Optional[PlotFunction] = None
+    plot_funcs: Optional[List[PlotFunction]] = None
+    plot_func_rolling: Optional[PlotFunction] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
 
@@ -61,7 +60,7 @@ class Metric(Generic[MetricResult]):
     ) -> None:
         try:
             if window:
-                result_over_time = [
+                result_rolling = [
                     self.func(
                         y[i : i + window],
                         predictions[i : i + window],
@@ -71,16 +70,21 @@ class Metric(Generic[MetricResult]):
                 ]
             else:
                 # expanding
-                result_over_time = [
+                result_rolling = [
                     self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
                     for i in range(len(y) - 1)
                 ]
         except Exception as e:
-            result_over_time = e
+            result_rolling = e
 
-        self.__safe_set(result_over_time, key="result_over_time")
+        self.__safe_set(result_rolling, key="result_rolling")
 
     def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
+        return create_diagram_rolling(self)
+
+    def get_diagrams(
+        self,
+    ) -> Optional[List[InteractiveFigure]]:
         return create_diagram(self)
 
     def __safe_set(
@@ -92,16 +96,35 @@ class Metric(Generic[MetricResult]):
             self.__dict__[key] = result
 
 
-def create_diagram(obj: Metric) -> Optional[InteractiveFigure]:
-
-    if isinstance(obj.result_over_time, Exception) or obj.result_over_time is None:
+def create_diagram_rolling(obj: Metric) -> Optional[InteractiveFigure]:
+    if obj.plot_func_rolling is None:
+        logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
         return None
-    elif isiterable(obj.result_over_time) and obj.plot_func is not None:
+    elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
+        return None
+    elif isiterable(obj.result_rolling):
         return InteractiveFigure(
-            obj.key,
+            f"{obj.key}_{obj.plot_func_rolling.__name__}",
             get_figure=plotly_interactive(
-                obj.plot_func, obj.result_over_time, name=obj.name
+                obj.plot_func_rolling, obj.result_rolling, name=obj.name
             ),
         )
     else:
         return None
+
+
+def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
+    if obj.plot_funcs is None:
+        logging.info("No plot_func (Plotting Function) specified")
+        return None
+    elif isinstance(obj.result, Exception) or obj.result is None:
+        return None
+    else:
+        return [
+            InteractiveFigure(
+                f"{obj.key}_{plot_func.__name__}",
+                get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
+                title=f"{obj.name} - {plot_func.__name__}",
+            )
+            for plot_func in obj.plot_funcs
+        ]
