@@ -70,6 +70,10 @@ quality = [
 tests = [
   "pytest~=7.1.2",
 ]
+docs = [
+  "sphinx",
+  "sphinx-material"
+]
 
 [tool.hatch.envs.quality]
 dependencies = [

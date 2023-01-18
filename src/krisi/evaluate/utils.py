@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from .type import (
+from krisi.evaluate.type import (
     MetricCategories,
     PathConst,
     Predictions,

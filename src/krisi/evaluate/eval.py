@@ -4,9 +4,9 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from .metric import Metric
-from .scorecard import ScoreCard
-from .type import CalculationTypes, Predictions, SampleTypes, Targets
+from krisi.evaluate.metric import Metric
+from krisi.evaluate.scorecard import ScoreCard
+from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
 
 
 def eval(
@@ -51,7 +51,7 @@ def eval(
     return sc
 
 
-def evaluate_in_out_sample(
+def evaluate_in_outsample(
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,

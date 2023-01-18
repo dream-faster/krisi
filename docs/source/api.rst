@@ -3,8 +3,12 @@ API
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-module-template.rst
-   :recursive:
+   :recursive: 
    
-   krisi.evaluate
-   krisi.report
+   krisi
+   .. krisi.evaluate
+   .. krisi.report
+   .. krisi.utils
+   
+   .. :template: _templates/module.rst
+   .. :template: custom-module-template.rst
