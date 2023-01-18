@@ -20,4 +20,3 @@ sc.generate_report(
     css_template_url="library/scorecard/main.css",
     display_modes=[DisplayModes.pdf],
 )
- 
