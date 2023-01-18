@@ -21,7 +21,9 @@ def display_time_series(data: List[MetricResult], name: str = "") -> go.Figure:
     return fig
 
 
+
 def display_single_value(data: MetricResult, name: str = "") -> go.Figure:
+
     fig = go.Figure()
 
     fig.add_trace(
@@ -102,4 +104,5 @@ def display_density_plot(
         data = pd.Series(data)
     fig = px.histogram(data, marginal="box")  # or violin, rug
     fig.update_layout(title=name)
+
     return fig
