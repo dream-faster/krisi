@@ -51,7 +51,7 @@ def eval(
     return sc
 
 
-def evaluate_in_out_sample(
+def evaluate_in_outsample(
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
