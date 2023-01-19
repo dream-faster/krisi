@@ -9,7 +9,7 @@ from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
 
 
-def eval(
+def score(
     y: Targets,
     predictions: Predictions,
     model_name: Optional[str] = None,
@@ -67,7 +67,7 @@ def evaluate_in_outsample(
     ],
 ) -> Tuple[ScoreCard, ScoreCard]:
 
-    insample_summary = eval(
+    insample_summary = score(
         y_insample,
         insample_predictions,
         model_name,
@@ -78,7 +78,7 @@ def evaluate_in_outsample(
         SampleTypes.insample,
         calculation_types,
     )
-    outsample_summary = eval(
+    outsample_summary = score(
         y_outsample,
         outsample_predictions,
         model_name,
