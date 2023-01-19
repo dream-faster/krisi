@@ -1,5 +1,5 @@
 from .compare import compare
-from .eval import eval, evaluate_in_outsample
 from .metric import Metric
+from .score import evaluate_in_outsample, score
 from .scorecard import ScoreCard
 from .type import CalculationTypes, MetricCategories, SampleTypes
