@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from krisi.evaluate import ScoreCard, evaluate_in_outsample
-from krisi.evaluate.type import CalculationTypes
+from krisi.evaluate.type import Calculation
 from krisi.utils.data import generating_arima_synthetic_data
 from krisi.utils.iterable_helpers import type_converter
 from krisi.utils.models import default_arima_model
@@ -32,7 +32,7 @@ def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
     report_insample, report_outsample = evaluate_in_outsample(
         model_name="default_arima_model",
         dataset_name="synthetic_arima",
-        calculation_types=[CalculationTypes.rolling],
+        calculation=Calculation.rolling,
         y_insample=train[target_col],
         insample_predictions=insample_prediction,
         y_outsample=test[target_col],

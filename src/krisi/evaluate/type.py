@@ -27,9 +27,10 @@ class SampleTypes(Enum):
     outofsample = "outofsample"
 
 
-class CalculationTypes(Enum):
+class Calculation(Enum):
     single = "single"
     rolling = "rolling"
+    both = "both"
 
 
 class SaveModes(Enum):

@@ -6,7 +6,7 @@ import pandas as pd
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
-from krisi.evaluate.type import CalculationTypes, Predictions, SampleTypes, Targets
+from krisi.evaluate.type import Calculation, Predictions, SampleTypes, Targets
 
 
 def score(
@@ -18,10 +18,7 @@ def score(
     custom_metrics: List[Metric] = [],
     classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
-    calculation_types: List[Union[CalculationTypes, str]] = [
-        CalculationTypes.single,
-        CalculationTypes.rolling,
-    ],
+    calculation: Union[Calculation, str] = Calculation.single,
     window: int = 30,
 ) -> ScoreCard:
 
@@ -36,17 +33,26 @@ def score(
         custom_metrics=custom_metrics,
     )
 
-    for calculation_type in calculation_types:
-        if (
-            calculation_type == CalculationTypes.single
-            or calculation_type == CalculationTypes.single.value
-        ):
-            sc.evaluate()
-        if (
-            calculation_type == CalculationTypes.rolling
-            or calculation_type == CalculationTypes.rolling.value
-        ):
-            sc.evaluate_over_time(window=window)
+    if (
+        calculation == Calculation.single
+        or calculation == Calculation.single.value
+    ):
+        sc.evaluate()
+    elif (
+        calculation == Calculation.rolling
+        or calculation == Calculation.rolling.value
+    ):
+        sc.evaluate_over_time(window=window)
+    elif (
+        calculation == Calculation.both
+        or calculation == Calculation.both.value
+    ):
+        sc.evaluate()
+        sc.evaluate_over_time(window=window)
+    else:
+        raise ValueError(
+            f"Calculation type {calculation} not recognized."
+        )
 
     return sc
 
@@ -61,10 +67,7 @@ def evaluate_in_outsample(
     project_name: Optional[str] = None,
     custom_metrics: List[Metric] = [],
     classification: Optional[bool] = None,
-    calculation_types: List[Union[CalculationTypes, str]] = [
-        CalculationTypes.single,
-        CalculationTypes.rolling,
-    ],
+    calculation: Union[Calculation, str] = Calculation.single,
 ) -> Tuple[ScoreCard, ScoreCard]:
 
     insample_summary = score(
@@ -76,7 +79,7 @@ def evaluate_in_outsample(
         custom_metrics,
         classification,
         SampleTypes.insample,
-        calculation_types,
+        calculation,
     )
     outsample_summary = score(
         y_outsample,
@@ -87,7 +90,7 @@ def evaluate_in_outsample(
         custom_metrics,
         classification,
         SampleTypes.outofsample,
-        calculation_types,
+        calculation,
     )
 
     return insample_summary, outsample_summary
