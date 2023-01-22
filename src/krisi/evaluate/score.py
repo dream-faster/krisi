@@ -33,26 +33,15 @@ def score(
         custom_metrics=custom_metrics,
     )
 
-    if (
-        calculation == Calculation.single
-        or calculation == Calculation.single.value
-    ):
+    if calculation == Calculation.single or calculation == Calculation.single.value:
         sc.evaluate()
-    elif (
-        calculation == Calculation.rolling
-        or calculation == Calculation.rolling.value
-    ):
+    elif calculation == Calculation.rolling or calculation == Calculation.rolling.value:
         sc.evaluate_over_time(window=window)
-    elif (
-        calculation == Calculation.both
-        or calculation == Calculation.both.value
-    ):
+    elif calculation == Calculation.both or calculation == Calculation.both.value:
         sc.evaluate()
         sc.evaluate_over_time(window=window)
     else:
-        raise ValueError(
-            f"Calculation type {calculation} not recognized."
-        )
+        raise ValueError(f"Calculation type {calculation} not recognized.")
 
     return sc
 
