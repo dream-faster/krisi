@@ -3,26 +3,26 @@
 <!-- <link href="main.css" rel="stylesheet" /> -->
 
 <body>
-    <page size="A4">
-        <section class="header">
-            <div class="title">
-                <h1 class="text-xl text-slate-800">{ title }</h1>
-                <h2 class="text-sm text-slate-500">{ project_name }</h2>
-            </div>
-            <div class="title">
-                <p>{ date }</p>
-                <p>{ author }</p>
-            </div>
-        </section>
-        <section class="flex-row">
-            <h3 class="mb-6 text-sm font-bold">Residual Diagnostics</h3>
-            <div class="wide">{ residuals_display_time_series }</div>
-            <div class="two">
-                <div class="half">{ residuals_display_acf_plot }</div>
-                <div class="half">{ residuals_display_density_plot }</div>
-            </div>
-        </section>
-        <!-- <section class="flex-row">
+  <page size="A4">
+    <section class="header">
+      <div class="title">
+        <h1 class="text-xl text-slate-800">{ title }</h1>
+        <h2 class="text-sm text-slate-500">{ project_name }</h2>
+      </div>
+      <div class="title">
+        <p>{ date }</p>
+        <p>{ author }</p>
+      </div>
+    </section>
+    <section class="flex-row">
+      <h3 class="mb-6 text-sm font-bold">Residual Diagnostics</h3>
+      <div class="wide">{ residuals_display_time_series }</div>
+      <div class="two">
+        <div class="half">{ residuals_display_acf_plot }</div>
+        <div class="half">{ residuals_display_density_plot }</div>
+      </div>
+    </section>
+    <!-- <section class="flex-row">
             <h3 class="mb-6 text-sm font-bold">Regression Errors</h3>
             <div class="two">
                 <div class="mr-1 h-60 w-full border">{ residuals_display_acf_plot_2 }</div>
@@ -37,7 +37,7 @@
             <h3 class="mb-6 text-sm font-bold">Custom Metrics</h3>
             <div class="mb-2 h-60 border p-1">{ custom_metric_html }</div>
         </section> -->
-    </page>
+  </page>
 </body>
 
 </html>

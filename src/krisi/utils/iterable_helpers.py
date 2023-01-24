@@ -1,5 +1,9 @@
 from typing import Any, Callable, Iterable, List, Union
 
+import pandas as pd
+
+from krisi.evaluate.type import Predictions, Targets
+
 
 def map_newdict_on_olddict(
     old_dict: dict, new_dict: dict, exclude: List[str] = []
@@ -85,3 +89,7 @@ def remove_nans(iter):
         return [el for el in iter if el is not None]
     else:
         return {key: el for key, el in iter.items() if el is not None}
+
+
+def calculate_nans(ds: Union[Targets, Predictions]) -> int:
+    return ds.isna().sum() if isinstance(ds, pd.Series) else sum(np.isnan(ds))

@@ -23,21 +23,16 @@ from krisi.evaluate.type import (
     Targets,
 )
 from krisi.evaluate.utils import handle_unnamed
+from krisi.report.console import get_minimal_summary, get_summary
 from krisi.report.pdf import convert_figures
 from krisi.report.report import Report
 from krisi.report.type import DisplayModes, InteractiveFigure
+from krisi.utils.io import save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
     flatten,
     map_newdict_on_olddict,
     remove_nans,
     strip_builtin_functions,
-)
-from krisi.utils.printing import (
-    get_minimal_summary,
-    get_summary,
-    save_console,
-    save_minimal_summary,
-    save_object,
 )
 
 
