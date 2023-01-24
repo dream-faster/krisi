@@ -14,7 +14,7 @@ from rich.panel import Panel
 from rich.pretty import Pretty
 from rich.table import Table
 
-from krisi.evaluate.type import MetricCategories, SaveModes
+from krisi.evaluate.type import MetricCategories, Predictions, SaveModes, Targets
 from krisi.utils.console_plot import plotextMixin
 from krisi.utils.iterable_helpers import group_by_categories, isiterable
 
@@ -50,6 +50,22 @@ def line_plot_rolling(data, width, height, title):
     plx.plot(data, marker="hd")
     plx.plotsize(width, 10)
     plx.theme("dark")
+
+    return plx.build()
+
+
+def distribution_plot(data, width, height, title):
+    if isinstance(data, np.ndarray):
+        data = pd.Series(data)
+
+    data = data.to_frame("values")
+
+    groups = data.groupby("values").size()
+    plx.simple_bar(
+        groups.index,
+        groups.to_list(),
+        width=width,
+    )
 
     return plx.build()
 
@@ -130,6 +146,48 @@ def __metrics_empty_in_category(metrics: List["Metric"]) -> bool:
     )
 
 
+def calculate_nans(ds: Union[Targets, Predictions]) -> int:
+    return ds.isna().sum() if isinstance(ds, pd.Series) else sum(np.isnan(ds))
+
+
+def __create_y_pred_table(
+    classification: bool, y: Targets, preds: Predictions
+) -> Table:
+    table = Table(
+        title="Targets and Predictions Analysis",
+        # show_edge=False,
+        show_footer=False,
+        show_lines=True,
+        show_header=True,
+        expand=True,
+        box=box.ROUNDED,
+    )
+
+    vizualisation_name = "Category Imbalance" if classification else "Series Vizualised"
+    vizualisation_func = distribution_plot if classification else line_plot_rolling
+    table.add_column(
+        "Series Type", justify="right", style="cyan", width=1, no_wrap=False
+    )
+    table.add_column(
+        vizualisation_name, justify="right", style="cyan", width=5, no_wrap=False
+    )
+    table.add_column(
+        "Number of NaN", justify="right", style="cyan", width=1, no_wrap=False
+    )
+
+    table.add_row(
+        "Targets",
+        plotextMixin(y, vizualisation_func, title=vizualisation_name),
+        str(calculate_nans(preds)),
+    )
+    table.add_row(
+        "Predictions",
+        plotextMixin(preds, vizualisation_func, title=vizualisation_name),
+        str(calculate_nans(preds)),
+    )
+    return table
+
+
 def get_summary(
     obj: "ScoreCard", categories: List[str], repr: bool = True, with_info: bool = False
 ) -> Union[Panel, Layout]:
@@ -137,7 +195,8 @@ def get_summary(
     category_groups = group_by_categories(list(vars(obj).values()), categories)
 
     metric_tables = Group(
-        *[
+        *[__create_y_pred_table(obj.classification, obj.y, obj.predictions)]
+        + [
             __create_metric_table(
                 f"{category if category is not None else 'Unknown Category':>15s}",
                 metrics,
