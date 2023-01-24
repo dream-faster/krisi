@@ -72,7 +72,7 @@ class ScoreCard:
         classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
-        custom_metrics: List[Metric] = [],
+        custom_metrics: Optional[List[Metric]] = None,
     ) -> None:
         self.__dict__["y"] = y
         self.__dict__["predictions"] = predictions
@@ -99,10 +99,14 @@ class ScoreCard:
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]
+        if custom_metrics is None:
+            custom_metrics = []
+
         self.__dict__["custom_metrics_keys"] = [metric.key for metric in custom_metrics]
 
         for metric in default_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
+
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
 
