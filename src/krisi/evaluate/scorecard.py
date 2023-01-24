@@ -8,7 +8,7 @@ from rich.pretty import Pretty
 
 from krisi.evaluate.assertions import is_dataset_classification_like
 from krisi.evaluate.library.default_metrics_classification import (
-    predefined_classification_metrics,
+    all_classification_metrics,
 )
 from krisi.evaluate.library.default_metrics_regression import all_regression_metrics
 from krisi.evaluate.metric import Metric
@@ -91,7 +91,7 @@ class ScoreCard:
 
         if default_metrics is None:
             default_metrics = (
-                predefined_classification_metrics
+                all_classification_metrics
                 if self.classification
                 else all_regression_metrics
             )
