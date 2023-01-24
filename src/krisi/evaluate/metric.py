@@ -4,6 +4,7 @@ from typing import Any, Generic, List, Optional, Union
 
 from krisi.evaluate.assertions import check_valid_pred_target
 from krisi.evaluate.type import (
+    ComputationalComplexity,
     MetricCategories,
     MetricFunction,
     MetricResult,
@@ -29,6 +30,7 @@ class Metric(Generic[MetricResult]):
     plot_func_rolling: Optional[PlotFunction] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
+    comp_complexity: Optional[ComputationalComplexity] = None
 
     def __post_init__(self):
         if self.key == "":

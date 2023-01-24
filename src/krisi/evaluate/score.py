@@ -15,6 +15,7 @@ def score(
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
+    default_metrics: List[Metric] = [],
     custom_metrics: List[Metric] = [],
     classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
@@ -30,6 +31,7 @@ def score(
         project_name=project_name,
         sample_type=sample_type,
         classification=classification,
+        default_metrics=default_metrics,
         custom_metrics=custom_metrics,
     )
 
