@@ -45,7 +45,16 @@ def iterative_length(obj: Iterable) -> List[int]:
     return object_shape
 
 
-def line_plot_rolling(data, width, height, title):
+def histogram_plot(data, width, height, title):
+    plx.clf()
+    plx.hist(data, 40)
+    plx.plotsize(width, 10)
+    plx.theme("dark")
+
+    return plx.build()
+
+
+def line_plot(data, width, height, title):
     plx.clf()
     plx.plot(data, marker="hd")
     plx.plotsize(width, 10)
@@ -55,6 +64,7 @@ def line_plot_rolling(data, width, height, title):
 
 
 def distribution_plot(data, width, height, title):
+    plx.clf()
     if isinstance(data, np.ndarray):
         data = pd.Series(data)
 
@@ -88,7 +98,7 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
             return Pretty("Result is a complex Iterable")
         else:
             # Create a Console Plot
-            return plotextMixin(result, line_plot_rolling, title=metric.name)
+            return plotextMixin(result, line_plot, title=metric.name)
     else:
         return Pretty(result, max_depth=2, max_length=3)
 
@@ -163,8 +173,8 @@ def __create_y_pred_table(
         box=box.ROUNDED,
     )
 
-    vizualisation_name = "Category Imbalance" if classification else "Series Vizualised"
-    vizualisation_func = distribution_plot if classification else line_plot_rolling
+    vizualisation_name = "Category Imbalance" if classification else "Histogram"
+    vizualisation_func = distribution_plot if classification else histogram_plot
     table.add_column(
         "Series Type", justify="right", style="cyan", width=1, no_wrap=False
     )
