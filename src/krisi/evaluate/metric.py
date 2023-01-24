@@ -11,9 +11,9 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
+from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
 from krisi.utils.iterable_helpers import isiterable, string_to_id
-from krisi.utils.printing import print_metric
 
 
 @dataclass
