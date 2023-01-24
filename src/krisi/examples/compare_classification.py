@@ -7,5 +7,5 @@ scorecards = [
     for _ in range(5)
 ]
 compare(
-    scorecards, sort_metric_key="accuracy", metrics_to_display=["recall", "f1_score"]
+    scorecards, sort_metric_key="accuracy", metrics_to_display=["recall", "f_one_score"]
 )

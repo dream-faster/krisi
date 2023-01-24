@@ -46,13 +46,22 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
 
 
 def get_summary(
-    obj: "ScoreCard", categories: List[str], repr: bool = True, with_info: bool = False
+    obj: "ScoreCard",
+    categories: List[str],
+    repr: bool = True,
+    with_info: bool = False,
+    input_analysis: bool = True,
 ) -> Union[Panel, Layout]:
 
     category_groups = group_by_categories(list(vars(obj).values()), categories)
+    input_analysis_table = (
+        [create_y_pred_table(obj.classification, obj.y, obj.predictions)]
+        if input_analysis
+        else []
+    )
 
     metric_tables = Group(
-        *[create_y_pred_table(obj.classification, obj.y, obj.predictions)]
+        *input_analysis_table
         + [
             create_metric_table(
                 f"{category if category is not None else 'Unknown Category':>15s}",

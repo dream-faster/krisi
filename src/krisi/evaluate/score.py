@@ -15,7 +15,8 @@ def score(
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
-    custom_metrics: List[Metric] = [],
+    default_metrics: Optional[List[Metric]] = None,
+    custom_metrics: Optional[List[Metric]] = None,
     classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
@@ -30,6 +31,7 @@ def score(
         project_name=project_name,
         sample_type=sample_type,
         classification=classification,
+        default_metrics=default_metrics,
         custom_metrics=custom_metrics,
     )
 
@@ -54,7 +56,8 @@ def evaluate_in_outsample(
     model_name: str = "Unknown model",
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
-    custom_metrics: List[Metric] = [],
+    default_metrics: Optional[List[Metric]] = None,
+    custom_metrics: Optional[List[Metric]] = None,
     classification: Optional[bool] = None,
     calculation: Union[Calculation, str] = Calculation.single,
 ) -> Tuple[ScoreCard, ScoreCard]:
@@ -65,6 +68,7 @@ def evaluate_in_outsample(
         model_name,
         dataset_name,
         project_name,
+        default_metrics,
         custom_metrics,
         classification,
         SampleTypes.insample,
@@ -76,6 +80,7 @@ def evaluate_in_outsample(
         model_name,
         dataset_name,
         project_name,
+        default_metrics,
         custom_metrics,
         classification,
         SampleTypes.outofsample,

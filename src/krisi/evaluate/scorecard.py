@@ -8,11 +8,9 @@ from rich.pretty import Pretty
 
 from krisi.evaluate.assertions import is_dataset_classification_like
 from krisi.evaluate.library.default_metrics_classification import (
-    predefined_classification_metrics,
+    all_classification_metrics,
 )
-from krisi.evaluate.library.default_metrics_regression import (
-    predefined_regression_metrics,
-)
+from krisi.evaluate.library.default_metrics_regression import all_regression_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     MetricCategories,
@@ -73,8 +71,8 @@ class ScoreCard:
         project_name: Optional[str] = None,
         classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
-        default_metrics: List[Metric] = [],
-        custom_metrics: List[Metric] = [],
+        default_metrics: Optional[List[Metric]] = None,
+        custom_metrics: Optional[List[Metric]] = None,
     ) -> None:
         self.__dict__["y"] = y
         self.__dict__["predictions"] = predictions
@@ -91,19 +89,24 @@ class ScoreCard:
             self.__dict__["project_name"],
         ) = handle_unnamed(y, model_name, dataset_name, project_name)
 
-        default_metrics = (
-            predefined_classification_metrics
-            if self.classification
-            else predefined_regression_metrics
-        )
+        if default_metrics is None:
+            default_metrics = (
+                all_classification_metrics
+                if self.classification
+                else all_regression_metrics
+            )
 
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics
         ]
+        if custom_metrics is None:
+            custom_metrics = []
+
         self.__dict__["custom_metrics_keys"] = [metric.key for metric in custom_metrics]
 
         for metric in default_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
+
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
 
@@ -288,7 +291,10 @@ class ScoreCard:
         return self
 
     def print_summary(
-        self, with_info: bool = False, extended: bool = True
+        self,
+        with_info: bool = False,
+        extended: bool = True,
+        input_analysis: bool = True,
     ) -> "ScoreCard":
         if extended:
             summary = get_summary(
@@ -296,6 +302,7 @@ class ScoreCard:
                 repr=True,
                 categories=[el.value for el in MetricCategories],
                 with_info=with_info,
+                input_analysis=input_analysis,
             )
         else:
             summary = get_minimal_summary(self)

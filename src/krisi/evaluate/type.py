@@ -45,3 +45,9 @@ class PathConst:
     default_eval_output_path: str = "output/"
     html_report_template_url: str = "library/pdf_layouts/scorecard/report.html"
     css_report_template_url: str = "library/pdf_layouts/scorecard/report.css"
+
+
+class ComputationalComplexity(Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
