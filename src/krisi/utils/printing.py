@@ -63,11 +63,8 @@ def line_plot(data, width, height, title):
     return plx.build()
 
 
-def distribution_plot(data, width, height, title):
+def distribution_plot(data: pd.Series, width: float, height, title: str):
     plx.clf()
-    if isinstance(data, np.ndarray):
-        data = pd.Series(data)
-
     data = data.to_frame("values")
 
     groups = data.groupby("values").size()
@@ -163,6 +160,11 @@ def calculate_nans(ds: Union[Targets, Predictions]) -> int:
 def __create_y_pred_table(
     classification: bool, y: Targets, preds: Predictions
 ) -> Table:
+    if isinstance(y, np.ndarray):
+        y = pd.Series(y)
+    if isinstance(preds, np.ndarray):
+        preds = pd.Series(preds)
+
     table = Table(
         title="Targets and Predictions Analysis",
         # show_edge=False,
@@ -176,24 +178,37 @@ def __create_y_pred_table(
     vizualisation_name = "Category Imbalance" if classification else "Histogram"
     vizualisation_func = distribution_plot if classification else histogram_plot
     table.add_column(
-        "Series Type", justify="right", style="cyan", width=1, no_wrap=False
+        "Series Type", justify="right", style="cyan", width=2, no_wrap=False
     )
     table.add_column(
-        vizualisation_name, justify="right", style="cyan", width=5, no_wrap=False
+        vizualisation_name, justify="right", style="cyan", width=10, no_wrap=False
     )
     table.add_column(
-        "Number of NaN", justify="right", style="cyan", width=1, no_wrap=False
+        "Types",
+        justify="right",
+        style="cyan",
+        width=1,
+        no_wrap=False,
+    )
+    table.add_column(
+        "Indecies",
+        justify="right",
+        style="cyan",
+        width=1,
+        no_wrap=False,
     )
 
     table.add_row(
         "Targets",
         plotextMixin(y, vizualisation_func, title=vizualisation_name),
-        str(calculate_nans(preds)),
+        f"NaNs: {str(calculate_nans(y))}\ndtype: {str(y.dtype)}",
+        f"Start: {str(y.index[0])}\nEnd: {str(y.index[-1])}",
     )
     table.add_row(
         "Predictions",
         plotextMixin(preds, vizualisation_func, title=vizualisation_name),
-        str(calculate_nans(preds)),
+        f"NaNs: {str(calculate_nans(preds))}\ndtype: {str(preds.dtype)}",
+        f"Start: {str(preds.index[0])}\nEnd: {str(preds.index[-1])}",
     )
     return table
 
