@@ -1,13 +1,6 @@
-from time import sleep
-
-import plotext as plt
 from rich.ansi import AnsiDecoder
 from rich.console import Group
 from rich.jupyter import JupyterMixin
-from rich.layout import Layout
-from rich.live import Live
-from rich.panel import Panel
-from rich.text import Text
 
 
 class plotextMixin(JupyterMixin):

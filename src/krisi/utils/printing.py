@@ -1,31 +1,24 @@
-import numbers
 import os
-from collections.abc import Iterable
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, List, Optional, Union
+from typing import TYPE_CHECKING, List, Union
 
 import numpy as np
 import pandas as pd
-import plotext as plx
 from rich import box
-from rich.console import Console, Group
-from rich.layout import Layout
-from rich.panel import Panel
 from rich.pretty import Pretty
 from rich.table import Table
 
-from krisi.evaluate.type import MetricCategories, Predictions, SaveModes, Targets
+from krisi.evaluate.type import Predictions, Targets
 from krisi.report.library.console.diagrams import (
     distribution_plot,
     histogram_plot,
     line_plot,
 )
 from krisi.utils.console_plot import plotextMixin
-from krisi.utils.iterable_helpers import calculate_nans, group_by_categories, isiterable
+from krisi.utils.iterable_helpers import calculate_nans, isiterable
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
-    from krisi.evaluate.scorecard import ScoreCard
 
 
 def bold(text: str, rich: bool = True) -> str:
