@@ -41,5 +41,5 @@ f_one_score = Metric[float](
 )
 
 
-all_classification_metrics = [accuracy, recall, precision, fone_score]
-minimal_classification_metrics = [accuracy, fone_score]
+all_classification_metrics = [accuracy, recall, precision, f_one_score]
+minimal_classification_metrics = [accuracy, f_one_score]
