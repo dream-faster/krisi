@@ -1,93 +1,60 @@
-@page {
-  margin: 0;
-  padding: 5%;
-  size: A4;
-  @bottom-center {
-    height: 20%;
-    margin-bottom: 10%;
-    content: "Page " counter(page) " of " counter(pages);
+/* html{
+  @page{
+    size: 'a4'
   }
+} */
+
+page {
+  background: white;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 0.5cm;
+  box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: 100%;
+  padding: 24px;
 }
 
-* {
-  box-sizing: border-box;
+h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+  margin-top: 0px;
+  color: #3232d4;
 }
+h2 {
+  font-size: 18px;
+  margin: 0px;
+}
+
 body {
-  font-size: 14px;
+  padding: 24px;
 }
-.v1_2 {
-  width: 595px;
-  height: 842px;
-  background: rgba(255, 255, 255, 1);
-  opacity: 1;
-  position: relative;
-  top: 0px;
-  left: 0px;
+
+p {
+  margin-bottom: 6px;
+  margin-top: 0px;
+}
+
+section {
+  margin-bottom: 12px;
+  width: 100%;
   overflow: hidden;
 }
-.v1_3 {
-  width: 242px;
-  color: rgba(0, 0, 0, 1);
-  position: absolute;
-  top: 28px;
-  left: 32px;
-  font-family: Inter;
-  font-weight: Regular;
-  font-size: 36px;
-  opacity: 1;
-  text-align: left;
+
+.header {
+  justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+
+  width: 100%;
 }
-.v1_5 {
-  width: 242px;
-  color: rgba(0, 0, 0, 1);
-  position: absolute;
-  top: 145px;
-  left: 32px;
-  font-family: Inter;
-  font-weight: Bold;
-  font-size: 16px;
-  opacity: 1;
-  text-align: left;
+
+.wide {
+  width: 100%;
 }
-.v1_6 {
-  width: 242px;
-  color: rgba(0, 0, 0, 1);
-  position: absolute;
-  top: 80px;
-  left: 32px;
-  font-family: Inter;
-  font-weight: Regular;
-  font-size: 16px;
-  opacity: 1;
-  text-align: left;
+.half {
+  width: 100%;
 }
-.v1_4 {
-  width: 233px;
-  height: 271px;
-  background: rgba(217, 217, 217, 1);
-  opacity: 1;
-  position: absolute;
-  top: 181px;
-  left: 32px;
-  overflow: hidden;
-}
-.v1_7 {
-  width: 271px;
-  height: 131px;
-  background: rgba(217, 217, 217, 1);
-  opacity: 1;
-  position: absolute;
-  top: 181px;
-  left: 274px;
-  overflow: hidden;
-}
-.v1_8 {
-  width: 271px;
-  height: 131px;
-  background: rgba(217, 217, 217, 1);
-  opacity: 1;
-  position: absolute;
-  top: 321px;
-  left: 274px;
-  overflow: hidden;
+.two {
+  display: flex;
 }

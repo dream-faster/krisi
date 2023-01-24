@@ -181,7 +181,7 @@ def __create_y_pred_table(
         "Series Type", justify="right", style="cyan", width=2, no_wrap=False
     )
     table.add_column(
-        vizualisation_name, justify="right", style="cyan", width=10, no_wrap=False
+        vizualisation_name, justify="left", style="cyan", width=10, no_wrap=False
     )
     table.add_column(
         "Types",
@@ -247,19 +247,6 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
     )
 
 
-def handle_iterable_printing(obj: Any) -> Optional[str]:
-    if obj is None:
-        return "None"
-    elif isinstance(obj, (str, float, int)):
-        return str(obj)
-    elif isinstance(obj, str):
-        return obj
-    elif isinstance(obj, np.ndarray):
-        return f"List: {str(obj.shape)}"
-    else:
-        return f"List: {str(len(obj))}"
-
-
 def print_metric(obj: "Metric", repr: bool = False) -> str:
     hyperparams = ""
     if obj.parameters is not None:
@@ -307,8 +294,6 @@ def save_console(
         console.save_html(f"{path}/console.html", clear=False)
     if SaveModes.svg in save_modes or SaveModes.svg.value in save_modes:
         console.save_svg(f"{path}/console.svg", title="save_table_svg.py", clear=False)
-
-    # console.clear()
 
 
 def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
