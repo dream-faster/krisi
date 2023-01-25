@@ -72,7 +72,7 @@ def strip_builtin_functions(dict_to_strip: dict) -> dict:
     return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
 
 
-def __flatten(xs):
+def __flatten(xs: Iterable[Any]) -> Any:
     for x in xs:
         if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
             yield from flatten(x)
@@ -80,7 +80,7 @@ def __flatten(xs):
             yield x
 
 
-def flatten(xs):
+def flatten(xs: Iterable[Any]) -> Iterable[Any]:
     return list(__flatten(xs))
 
 

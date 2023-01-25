@@ -98,19 +98,21 @@ class Metric(Generic[MetricResult]):
             self.__dict__[key] = result
 
 
-def create_diagram_rolling(obj: Metric) -> Optional[InteractiveFigure]:
+def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_func_rolling is None:
         logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
         return None
     elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
         return None
     elif isiterable(obj.result_rolling):
-        return InteractiveFigure(
-            f"{obj.key}_{obj.plot_func_rolling.__name__}",
-            get_figure=plotly_interactive(
-                obj.plot_func_rolling, obj.result_rolling, name=obj.name
-            ),
-        )
+        return [
+            InteractiveFigure(
+                f"{obj.key}_{obj.plot_func_rolling.__name__}",
+                get_figure=plotly_interactive(
+                    obj.plot_func_rolling, obj.result_rolling, name=obj.name
+                ),
+            )
+        ]
     else:
         return None
 

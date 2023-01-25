@@ -1,11 +1,11 @@
 import base64
 import pkgutil
-from typing import TYPE_CHECKING, Dict, List
+from typing import TYPE_CHECKING, Dict, List, Tuple
 
 import plotly.graph_objects as go
 
 from krisi.report.type import InteractiveFigure, PathConst
-from krisi.utils.iterable_helpers import remove_nans
+from krisi.utils.iterable_helpers import flatten, remove_nans
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -60,26 +60,6 @@ def create_pdf_report(
     html_elements_to_inject["title"] = title
     report_html = __create_html_report(html_template_url, html_elements_to_inject)
     __convert_html_to_pdf(report_html, path, f"{title}.pdf", css_template_url)
-
-
-def get_waterfall_metric_html(metrics: List["Metric"]) -> str:
-    custom_metric_interactive_diagrams = remove_nans(
-        [metric.get_diagrams() for metric in metrics]
-    )
-    custom_diagrams = [
-        plot_func
-        for plot_funcs in custom_metric_interactive_diagrams
-        for plot_func in plot_funcs
-    ]
-
-    html_images = convert_figures_to_html(
-        [
-            interactive_diagram.get_figure(width=900.0)
-            for interactive_diagram in custom_diagrams
-        ]
-    )
-
-    return html_images
 
 
 def append_sizes(
