@@ -28,7 +28,7 @@ def run_app(
         className="p-24",
         children=[
             html.H1(
-                "Stock price analysis",
+                "Time Series Analysis",
                 className="py-3 text-5xl font-bold text-gray-800",
             ),
             html.Div(
