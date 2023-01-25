@@ -38,7 +38,8 @@ It can generate reports in:
 
 <div>
   <img src="docs/source/_static/pdf_example.png" alt="PDF Example" width="200" >
-  <img src="docs/source/_static/console_example.png" alt="Logo" width="290" >
+  <img src="docs/source/_static/console_example.png" alt="Console Example for Regression" width="290" >
+  <img src="docs/source/_static/console_example_classification.png" alt="Console Example for Classification" width="290" >
 
 </div>
   
