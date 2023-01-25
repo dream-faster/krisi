@@ -1,9 +1,15 @@
+import datetime
 from typing import List, Optional, Union
 
 import plotly.express as px
 
 from krisi.report.interactive import run_app
-from krisi.report.pdf import create_pdf_report
+from krisi.report.pdf import (
+    append_sizes,
+    convert_figures_to_html,
+    create_pdf_report,
+    get_waterfall_metric_html,
+)
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 
 
@@ -85,3 +91,46 @@ if __name__ == "__main__":
         ]
     )
     report.generate_launch()
+
+
+def create_pdf_report_from_scorecard(
+    obj: "ScoreCard",
+    display_modes: List[DisplayModes],
+    html_template_url: str,
+    css_template_url: str,
+    author: str,
+) -> Report:
+
+    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
+
+    diagrams = obj.get_diagram_dictionary()
+    diagrams = append_sizes(diagrams)
+
+    diagrams_static = {
+        interactive_figure.id: convert_figures_to_html(
+            [
+                interactive_figure.get_figure(
+                    width=interactive_figure.width,
+                    height=interactive_figure.height,
+                    title=interactive_figure.title,
+                )
+            ]
+        )
+        for key, interactive_figure in diagrams.items()
+    }
+    date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    return Report(
+        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
+        modes=display_modes,
+        figures=diagrams.values(),
+        html_template_url=html_template_url,
+        css_template_url=css_template_url,
+        html_elements_to_inject=dict(
+            author=author,
+            project_name=obj.project_name,
+            date=date,
+            custom_metric_html=custom_metric_html,
+            **diagrams_static,
+        ),
+    )

@@ -22,8 +22,7 @@ from krisi.evaluate.type import (
 )
 from krisi.evaluate.utils import handle_unnamed
 from krisi.report.console import get_minimal_summary, get_summary
-from krisi.report.pdf import convert_figures
-from krisi.report.report import Report
+from krisi.report.report import create_pdf_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.io import save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
@@ -350,7 +349,7 @@ class ScoreCard:
         css_template_url: str = PathConst.css_report_template_url,
         author: str = "",
     ) -> None:
-        report = create_report(
+        report = create_pdf_report_from_scorecard(
             self,
             display_modes,
             html_template_url,
@@ -358,87 +357,6 @@ class ScoreCard:
             author=author,
         )
         report.generate_launch()
-
-
-def get_waterfall_metric_html(metrics: List[Metric]) -> str:
-    custom_metric_interactive_diagrams = remove_nans(
-        [metric.get_diagrams() for metric in metrics]
-    )
-    custom_diagrams = [
-        plot_func
-        for plot_funcs in custom_metric_interactive_diagrams
-        for plot_func in plot_funcs
-    ]
-
-    html_images = convert_figures(
-        [
-            interactive_diagram.get_figure(width=900.0)
-            for interactive_diagram in custom_diagrams
-        ]
-    )
-
-    return html_images
-
-
-def append_sizes(
-    diagram_dict: Dict[str, InteractiveFigure]
-) -> Dict[str, InteractiveFigure]:
-
-    size_dict = dict(
-        residuals_display_acf_plot=(750.0, 750.0),
-        residuals_display_density_plot=(350.0, 350.0),
-        residuals_display_time_series=(1500.0, 750.0),
-    )
-
-    for key, value in size_dict.items():
-        if key in diagram_dict.keys():
-            diagram_dict[key].width = value[0]
-            diagram_dict[key].height = value[1]
-
-    return diagram_dict
-
-
-def create_report(
-    obj: "ScoreCard",
-    display_modes: List[DisplayModes],
-    html_template_url: str,
-    css_template_url: str,
-    author: str,
-) -> Report:
-
-    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
-
-    diagrams = obj.get_diagram_dictionary()
-    diagrams = append_sizes(diagrams)
-
-    diagrams_static = {
-        interactive_figure.id: convert_figures(
-            [
-                interactive_figure.get_figure(
-                    width=interactive_figure.width,
-                    height=interactive_figure.height,
-                    title=interactive_figure.title,
-                )
-            ]
-        )
-        for key, interactive_figure in diagrams.items()
-    }
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
-
-    return Report(
-        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
-        modes=display_modes,
-        figures=diagrams.values(),
-        html_template_url=html_template_url,
-        css_template_url=css_template_url,
-        html_elements_to_inject=dict(
-            author=author,
-            project_name=obj.project_name,
-            date=date,
-            custom_metric_html=custom_metric_html,
-            **diagrams_static,
-        ),
-    )
 
 
 def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
@@ -449,8 +367,3 @@ def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
         ]
         if diagram is not None
     ]
-
-
-def get_html(obj: "ScoreCard") -> str:
-    return """
-            sfadfadf"""
