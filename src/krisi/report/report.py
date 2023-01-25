@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import plotly.express as px
 
@@ -21,7 +21,7 @@ class Report:
         global_controllers: List[PlotlyInput] = [],
         html_template_url: str = "library/default/template.html",
         css_template_url: str = "library/default/template.css",
-        html_elements_to_inject: dict[str, str] = dict(),
+        get_html_elements: Optional[Callable] = None,
     ) -> None:
         self.title = title
         self.modes = modes
@@ -29,7 +29,7 @@ class Report:
         self.global_controllers = global_controllers
         self.html_template_url = html_template_url
         self.css_template_url = css_template_url
-        self.html_elements_to_inject = html_elements_to_inject
+        self.get_html_elements = get_html_elements
 
     def generate_launch(self):
 
@@ -43,7 +43,7 @@ class Report:
             create_pdf_report(
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
-                html_elements_to_inject=self.html_elements_to_inject,
+                html_elements_to_inject=self.get_html_elements(),
             )
 
         if DisplayModes.direct in self.modes or DisplayModes.direct.value in self.modes:
@@ -112,7 +112,43 @@ def get_waterfall_metric_html(
     return html_images, interactive_diagrams
 
 
-def create_pdf_report_from_scorecard(
+def get_html_elements_for_injection_scorecard(
+    obj: "ScoreCard",
+    author: str,
+    project_name: str,
+    date: str,
+    custom_metric_html: str,
+) -> Callable:
+    def func() -> dict[str, str]:
+
+        diagrams = obj.get_diagram_dictionary()
+        diagrams = append_sizes(diagrams)
+
+        diagrams_static = {
+            interactive_figure.id: convert_figures_to_html(
+                [
+                    interactive_figure.get_figure(
+                        width=interactive_figure.width,
+                        height=interactive_figure.height,
+                        title=interactive_figure.title,
+                    )
+                ]
+            )
+            for key, interactive_figure in diagrams.items()
+        }
+
+        return dict(
+            author=author,
+            project_name=project_name,
+            date=date,
+            custom_metric_html=custom_metric_html,
+            **diagrams_static,
+        )
+
+    return func
+
+
+def create_report_from_scorecard(
     obj: "ScoreCard",
     display_modes: List[DisplayModes],
     html_template_url: str,
@@ -124,22 +160,15 @@ def create_pdf_report_from_scorecard(
         obj.get_all_metrics()
     )
 
-    diagrams = obj.get_diagram_dictionary()
-    diagrams = append_sizes(diagrams)
-
-    diagrams_static = {
-        interactive_figure.id: convert_figures_to_html(
-            [
-                interactive_figure.get_figure(
-                    width=interactive_figure.width,
-                    height=interactive_figure.height,
-                    title=interactive_figure.title,
-                )
-            ]
+    get_html_elements = None
+    if DisplayModes.pdf in display_modes or DisplayModes.pdf.value in display_modes:
+        get_html_elements = get_html_elements_for_injection_scorecard(
+            obj=obj,
+            author=author,
+            project_name=obj.project_name,
+            date=datetime.datetime.now().strftime("%Y-%m-%d"),
+            custom_metric_html=custom_metric_html,
         )
-        for key, interactive_figure in diagrams.items()
-    }
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
@@ -147,11 +176,5 @@ def create_pdf_report_from_scorecard(
         figures=interactive_figures,
         html_template_url=html_template_url,
         css_template_url=css_template_url,
-        html_elements_to_inject=dict(
-            author=author,
-            project_name=obj.project_name,
-            date=date,
-            custom_metric_html=custom_metric_html,
-            **diagrams_static,
-        ),
+        get_html_elements=get_html_elements,
     )

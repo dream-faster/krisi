@@ -22,7 +22,7 @@ from krisi.evaluate.type import (
 )
 from krisi.evaluate.utils import handle_unnamed
 from krisi.report.console import get_minimal_summary, get_summary
-from krisi.report.report import create_pdf_report_from_scorecard
+from krisi.report.report import create_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.io import save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
@@ -349,7 +349,7 @@ class ScoreCard:
         css_template_url: str = PathConst.css_report_template_url,
         author: str = "",
     ) -> None:
-        report = create_pdf_report_from_scorecard(
+        report = create_report_from_scorecard(
             self,
             display_modes,
             html_template_url,
