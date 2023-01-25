@@ -31,17 +31,20 @@ class Report:
 
     def generate_launch(self):
 
-        if DisplayModes.interactive in self.modes:
+        if (
+            DisplayModes.interactive in self.modes
+            or DisplayModes.interactive.value in self.modes
+        ):
             run_app(self.figures, self.global_controllers)
 
-        if DisplayModes.pdf in self.modes:
+        if DisplayModes.pdf in self.modes or DisplayModes.pdf.value in self.modes:
             create_pdf_report(
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
                 html_elements_to_inject=self.html_elements_to_inject,
             )
 
-        if DisplayModes.direct in self.modes:
+        if DisplayModes.direct in self.modes or DisplayModes.direct.value in self.modes:
             [figure.get_figure(width=900.0).show() for figure in self.figures]
 
     def add(self, figures: Union[InteractiveFigure, List[InteractiveFigure]]) -> None:
