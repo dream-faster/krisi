@@ -18,12 +18,12 @@ from krisi.evaluate.type import (
     Predictions,
     SampleTypes,
     SaveModes,
+    ScoreCardMetadata,
     Targets,
 )
 from krisi.evaluate.utils import handle_unnamed
 from krisi.report.console import get_minimal_summary, get_summary
-from krisi.report.pdf import convert_figures
-from krisi.report.report import Report
+from krisi.report.report import create_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.io import save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
@@ -54,21 +54,22 @@ class ScoreCard:
 
     y: Targets
     predictions: Predictions
-    model_name: str
-    dataset_name: str
-    project_name: str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
     classification: bool  # TODO: Support multilabel classification
+    metadata: ScoreCardMetadata
 
     def __init__(
         self,
         y: Targets,
         predictions: Predictions,
         model_name: Optional[str] = None,
+        model_description: str = "",
         dataset_name: Optional[str] = None,
+        dataset_description: str = "",
         project_name: Optional[str] = None,
+        project_description: str = "",
         classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
@@ -82,12 +83,18 @@ class ScoreCard:
             if classification is None
             else classification
         )
+        model_name_, dataset_name_, project_name_ = handle_unnamed(
+            y, model_name, dataset_name, project_name
+        )
 
-        (
-            self.__dict__["model_name"],
-            self.__dict__["dataset_name"],
-            self.__dict__["project_name"],
-        ) = handle_unnamed(y, model_name, dataset_name, project_name)
+        self.__dict__["metadata"] = ScoreCardMetadata(
+            project_name_,
+            project_description,
+            model_name_,
+            model_description,
+            dataset_name_,
+            dataset_description,
+        )
 
         if default_metrics is None:
             default_metrics = (
@@ -295,7 +302,7 @@ class ScoreCard:
         with_info: bool = False,
         extended: bool = True,
         input_analysis: bool = True,
-    ) -> "ScoreCard":
+    ) -> None:
         if extended:
             summary = get_summary(
                 self,
@@ -308,7 +315,6 @@ class ScoreCard:
             summary = get_minimal_summary(self)
 
         print(summary)
-        return self
 
     def save(
         self,
@@ -320,9 +326,9 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> "ScoreCard":
-        if self.project_name:
-            path += f"{self.project_name}/"
-        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
+        if self.metadata.project_name:
+            path += f"{self.metadata.project_name}/"
+        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
         import os
 
         if not os.path.exists(path):
@@ -350,7 +356,7 @@ class ScoreCard:
         css_template_url: str = PathConst.css_report_template_url,
         author: str = "",
     ) -> None:
-        report = create_report(
+        report = create_report_from_scorecard(
             self,
             display_modes,
             html_template_url,
@@ -360,88 +366,7 @@ class ScoreCard:
         report.generate_launch()
 
 
-def get_waterfall_metric_html(metrics: List[Metric]) -> str:
-    custom_metric_interactive_diagrams = remove_nans(
-        [metric.get_diagrams() for metric in metrics]
-    )
-    custom_diagrams = [
-        plot_func
-        for plot_funcs in custom_metric_interactive_diagrams
-        for plot_func in plot_funcs
-    ]
-
-    html_images = convert_figures(
-        [
-            interactive_diagram.get_figure(width=900.0)
-            for interactive_diagram in custom_diagrams
-        ]
-    )
-
-    return html_images
-
-
-def append_sizes(
-    diagram_dict: Dict[str, InteractiveFigure]
-) -> Dict[str, InteractiveFigure]:
-
-    size_dict = dict(
-        residuals_display_acf_plot=(750.0, 750.0),
-        residuals_display_density_plot=(350.0, 350.0),
-        residuals_display_time_series=(1500.0, 750.0),
-    )
-
-    for key, value in size_dict.items():
-        if key in diagram_dict.keys():
-            diagram_dict[key].width = value[0]
-            diagram_dict[key].height = value[1]
-
-    return diagram_dict
-
-
-def create_report(
-    obj: "ScoreCard",
-    display_modes: List[DisplayModes],
-    html_template_url: str,
-    css_template_url: str,
-    author: str,
-) -> Report:
-
-    custom_metric_html = get_waterfall_metric_html(obj.get_custom_metrics())
-
-    diagrams = obj.get_diagram_dictionary()
-    diagrams = append_sizes(diagrams)
-
-    diagrams_static = {
-        interactive_figure.id: convert_figures(
-            [
-                interactive_figure.get_figure(
-                    width=interactive_figure.width,
-                    height=interactive_figure.height,
-                    title=interactive_figure.title,
-                )
-            ]
-        )
-        for key, interactive_figure in diagrams.items()
-    }
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
-
-    return Report(
-        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
-        modes=display_modes,
-        figures=diagrams.values(),
-        html_template_url=html_template_url,
-        css_template_url=css_template_url,
-        html_elements_to_inject=dict(
-            author=author,
-            project_name=obj.project_name,
-            date=date,
-            custom_metric_html=custom_metric_html,
-            **diagrams_static,
-        ),
-    )
-
-
-def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
+def get_rolling_diagrams(obj: "ScoreCard") -> List[List[InteractiveFigure]]:
     return [
         diagram
         for diagram in [
@@ -449,8 +374,3 @@ def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
         ]
         if diagram is not None
     ]
-
-
-def get_html(obj: "ScoreCard") -> str:
-    return """
-            sfadfadf"""

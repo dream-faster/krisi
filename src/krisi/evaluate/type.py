@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, List, Tuple, TypeVar, Union
 
@@ -51,3 +52,13 @@ class ComputationalComplexity(Enum):
     low = "low"
     medium = "medium"
     high = "high"
+
+
+@dataclass
+class ScoreCardMetadata:
+    project_name: str = ""
+    project_description: str = ""
+    model_name: str = ""
+    model_description: str = ""
+    dataset_name: str = ""
+    dataset_description: str = ""

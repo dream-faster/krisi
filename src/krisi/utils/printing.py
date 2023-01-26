@@ -138,7 +138,7 @@ def create_y_pred_table(classification: bool, y: Targets, preds: Predictions) ->
         no_wrap=False,
     )
     table.add_column(
-        "Indecies",
+        "Indicies",
         justify="right",
         style="cyan",
         width=1,

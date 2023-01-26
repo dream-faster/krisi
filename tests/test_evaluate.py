@@ -1,8 +1,8 @@
 def test_scorecard():
     from krisi.evaluate.type import SampleTypes
-    from krisi.examples.basic_report import basic_report
+    from krisi.examples.training_arima_report import training_arima_report
 
-    report_insample, report_outsample = basic_report()
+    report_insample, report_outsample = training_arima_report()
 
     assert (
         report_insample.sample_type == SampleTypes.insample

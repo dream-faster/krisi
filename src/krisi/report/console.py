@@ -74,5 +74,5 @@ def get_summary(
         ],
     )
 
-    title = f"Result of {obj.model_name if repr else bold(obj.model_name)} on {obj.dataset_name if repr else bold(obj.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
+    title = f"Result of {obj.metadata.model_name if repr else bold(obj.metadata.model_name)} on {obj.metadata.dataset_name if repr else bold(obj.metadata.dataset_name)} tested on {obj.sample_type.value if repr else bold(obj.sample_type.value)}"
     return Panel(metric_tables, title=title, padding=1, box=box.HEAVY_EDGE, expand=True)

@@ -22,7 +22,7 @@ def compare(
         )
 
         print(
-            f"{scorecard.model_name:>30s}    {bold(f'{scorecard[sort_metric_key].result:<15.5}', rich=False)} {metrics}"
+            f"{scorecard.metadata.model_name:>30s}    {bold(f'{scorecard[sort_metric_key].result:<15.5}', rich=False)} {metrics}"
         )
 
 
