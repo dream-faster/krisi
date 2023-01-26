@@ -48,11 +48,36 @@ def figure_with_controller(figure: InteractiveFigure):
         )
 
 
-# def category_block()->html.Div:
+def category_block(category: str, figures: List[InteractiveFigure]) -> html.Div:
+    return html.Div(
+        className="flex flex-col shadow-lg mb-4 p-6",
+        children=[
+            html.H2(
+                category, className="text-2xl font-normal leading-normal mt-0 mb-2"
+            ),
+            html.Div(
+                className="flex flex-wrap flex-row",
+                children=[
+                    *[figure_with_controller(figure) for figure in figures],
+                ],
+            ),
+        ],
+    )
+
+
+def global_input_controller_block(input_):
+    return input_.type(
+        className="h-full min-w-[150px] flex justify-center align-center",
+        id=input_.id,
+        options=input_.options,
+        value=input_.default_value,
+        clearable=False,
+    )
 
 
 def run_app(
-    components: Dict[str, InteractiveFigure], global_controllers: List[PlotlyInput]
+    components: Dict[str, List[InteractiveFigure]],
+    global_controllers: List[PlotlyInput],
 ) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
@@ -66,35 +91,17 @@ def run_app(
             ),
             html.Div(
                 children=[
-                    input_.type(
-                        className="h-full min-w-[150px] flex justify-center align-center",
-                        id=input_.id,
-                        options=input_.options,
-                        value=input_.default_value,
-                        clearable=False,
-                    )
+                    global_input_controller_block(input_)
                     for input_ in global_controllers
                 ]
             ),
             html.Div(
-                className="flex flex-wrap flex-row ",
+                className="flex flex-wrap flex-col",
                 children=[
                     *[
-                        html.Div(
-                            children=[
-                                html.P(category),
-                                html.Div(
-                                    className="flex flex-wrap flex-row m-4 shadow-lg",
-                                    children=[
-                                        *[
-                                            figure_with_controller(figure)
-                                            for figure in list_of_figures
-                                        ],
-                                    ],
-                                ),
-                            ]
-                        )
-                        for category, list_of_figures in components.items()
+                        category_block(category, figures)
+                        for category, figures in components.items()
+                        if len(figures) > 0
                     ],
                 ],
             ),
