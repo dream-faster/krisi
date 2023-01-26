@@ -1,8 +1,12 @@
-from typing import Any, Callable, Iterable, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Union
 
 import pandas as pd
 
 from krisi.evaluate.type import Predictions, Targets
+
+if TYPE_CHECKING:
+    from krisi.evaluate.metric import Metric
+    from krisi.report.type import InteractiveFigure
 
 
 def map_newdict_on_olddict(
@@ -17,13 +21,13 @@ def map_newdict_on_olddict(
 
 
 def group_by_categories(
-    flat_list: List[dict[str, Any]], categories: List[str]
-) -> dict[str, "Metric"]:
+    flat_list: List[Union["Metric", "InteractiveFigure"]], categories: List[str]
+) -> dict[str, Union["Metric", "InteractiveFigure"]]:
     category_groups = dict()
     for category in categories:
         category_groups[category] = list(
             filter(
-                lambda x: x["category"].value == category
+                lambda x: x.category.value == category
                 if hasattr(x, "category")
                 else False,
                 flat_list,
@@ -31,7 +35,7 @@ def group_by_categories(
         )
     category_groups[None] = list(
         filter(
-            lambda x: x["category"].value == None if hasattr(x, "category") else False,
+            lambda x: x.category.value == None if hasattr(x, "category") else False,
             flat_list,
         )
     )

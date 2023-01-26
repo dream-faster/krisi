@@ -111,6 +111,7 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
                 get_figure=plotly_interactive(
                     obj.plot_func_rolling, obj.result_rolling, name=obj.name
                 ),
+                category=obj.category,
             )
         ]
     else:
@@ -129,6 +130,7 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
                 f"{obj.key}_{plot_func.__name__}",
                 get_figure=plotly_interactive(plot_func, obj.result, name=obj.name),
                 title=f"{obj.name} - {plot_func.__name__}",
+                category=obj.category,
             )
             for plot_func in obj.plot_funcs
         ]

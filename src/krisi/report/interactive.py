@@ -1,8 +1,9 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from dash import Dash, Input, Output, dcc, html
 
 from krisi.report.type import InteractiveFigure, PlotlyInput
+from krisi.utils.iterable_helpers import flatten
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
@@ -18,8 +19,40 @@ def block(
     )
 
 
+def figure_with_controller(figure: InteractiveFigure):
+    if len(figure.inputs) > 0 or len(figure.global_input_ids) > 0:
+        return block(
+            graph=dcc.Graph(id=figure.id),
+            title=None,  # html.P("Select rolling window:"),
+            controllers=html.Div(
+                className="h-full flex align-center",
+                children=[
+                    input_.type(
+                        className="h-full min-w-[150px] flex justify-center align-center",
+                        id=input_.id,
+                        options=input_.options,
+                        value=input_.default_value,
+                        clearable=False,
+                    )
+                    for input_ in figure.inputs
+                ],
+            ),
+        )
+
+    else:
+        return dcc.Graph(
+            className="h-full flex align-center m-2",
+            id=figure.id,
+            figure=figure.get_figure(),
+            style={"display": "inline-block"},
+        )
+
+
+# def category_block()->html.Div:
+
+
 def run_app(
-    components: List[InteractiveFigure], global_controllers: List[PlotlyInput]
+    components: Dict[str, InteractiveFigure], global_controllers: List[PlotlyInput]
 ) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
@@ -44,42 +77,31 @@ def run_app(
                 ]
             ),
             html.Div(
-                className="flex flex-wrap flex-row",
+                className="flex flex-wrap flex-row ",
                 children=[
                     *[
-                        block(
-                            graph=dcc.Graph(id=component.id),
-                            title=None,  # html.P("Select rolling window:"),
-                            controllers=html.Div(
-                                className="h-full flex align-center",
-                                children=[
-                                    input_.type(
-                                        className="h-full min-w-[150px] flex justify-center align-center",
-                                        id=input_.id,
-                                        options=input_.options,
-                                        value=input_.default_value,
-                                        clearable=False,
-                                    )
-                                    for input_ in component.inputs
-                                ],
-                            ),
+                        html.Div(
+                            children=[
+                                html.P(category),
+                                html.Div(
+                                    className="flex flex-wrap flex-row m-4 shadow-lg",
+                                    children=[
+                                        *[
+                                            figure_with_controller(figure)
+                                            for figure in list_of_figures
+                                        ],
+                                    ],
+                                ),
+                            ]
                         )
-                        if len(component.inputs) > 0
-                        or len(component.global_input_ids) > 0
-                        else dcc.Graph(
-                            className="h-full flex align-center shadow-lg m-2",
-                            id=component.id,
-                            figure=component.get_figure(),
-                            style={"display": "inline-block"},
-                        )
-                        for component in components
+                        for category, list_of_figures in components.items()
                     ],
                 ],
             ),
         ],
     )
 
-    for component in components:
+    for component in flatten(list(components.values())):
         if len(component.inputs) > 0 or len(component.global_input_ids) > 0:
             app.callback(
                 Output(component.id, "figure"),

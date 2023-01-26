@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from dash import dcc
 
-from krisi.evaluate.type import MetricResult
+from krisi.evaluate.type import MetricCategories, MetricResult
 
 PlotFunction = Callable[
     [List[MetricResult], str, Optional[float]],
@@ -32,6 +32,7 @@ class InteractiveFigure:
     title: Optional[str] = ""
     width: Optional[float] = 900.0
     height: Optional[float] = 600.0
+    category: Optional[MetricCategories] = None
 
 
 class DisplayModes(Enum):

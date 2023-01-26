@@ -3,12 +3,14 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 
 import plotly.express as px
 
+from krisi.evaluate.type import MetricCategories
 from krisi.report.interactive import run_app
 from krisi.report.pdf import append_sizes, convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
-from krisi.utils.iterable_helpers import flatten, remove_nans
+from krisi.utils.iterable_helpers import flatten, group_by_categories, remove_nans
 
 if TYPE_CHECKING:
+    from krisi.evaluate.metric import Metric
     from krisi.evaluate.scorecard import ScoreCard
 
 
@@ -35,12 +37,15 @@ class Report:
         self.get_html_elements = get_html_elements
 
     def generate_launch(self) -> None:
+        figures_by_category = group_by_categories(
+            self.figures, [el.value for el in MetricCategories]
+        )
 
         if (
             DisplayModes.interactive in self.modes
             or DisplayModes.interactive.value in self.modes
         ):
-            run_app(self.figures, self.global_controllers)
+            run_app(figures_by_category, self.global_controllers)
 
         if DisplayModes.pdf in self.modes or DisplayModes.pdf.value in self.modes:
             create_pdf_report(
