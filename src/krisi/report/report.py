@@ -21,6 +21,7 @@ class Report:
     def __init__(
         self,
         title: str,
+        description: Optional[str] = "",
         modes: List[DisplayModes] = [DisplayModes.pdf],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
@@ -29,6 +30,7 @@ class Report:
         get_html_elements: Optional[Callable] = None,
     ) -> None:
         self.title = title
+        self.description = description
         self.modes = modes
         self.figures = figures
         self.global_controllers = global_controllers
@@ -45,7 +47,12 @@ class Report:
             DisplayModes.interactive in self.modes
             or DisplayModes.interactive.value in self.modes
         ):
-            run_app(figures_by_category, self.global_controllers)
+            run_app(
+                figures_by_category,
+                self.global_controllers,
+                self.title,
+                self.description,
+            )
 
         if DisplayModes.pdf in self.modes or DisplayModes.pdf.value in self.modes:
             create_pdf_report(
@@ -143,6 +150,7 @@ def create_report_from_scorecard(
 
     return Report(
         title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
+        description=f"{obj.project_description}\n{obj.model_description}\n{obj.dataset_description}",
         modes=display_modes,
         figures=interactive_figures,
         html_template_url=html_template_url,

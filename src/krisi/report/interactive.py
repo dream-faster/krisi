@@ -78,6 +78,8 @@ def global_input_controller_block(input_):
 def run_app(
     components: Dict[str, List[InteractiveFigure]],
     global_controllers: List[PlotlyInput],
+    title: str = "",
+    description: str = "",
 ) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
@@ -86,9 +88,10 @@ def run_app(
         className="p-24",
         children=[
             html.H1(
-                "Time Series Analysis",
+                title,
                 className="py-3 text-5xl font-bold text-gray-800",
             ),
+            html.P(description),
             html.Div(
                 children=[
                     global_input_controller_block(input_)

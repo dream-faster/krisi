@@ -54,8 +54,11 @@ class ScoreCard:
     y: Targets
     predictions: Predictions
     model_name: str
+    model_description:str
     dataset_name: str
+    dataset_description:str
     project_name: str
+    project_description:str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
@@ -66,8 +69,11 @@ class ScoreCard:
         y: Targets,
         predictions: Predictions,
         model_name: Optional[str] = None,
+        model_description: Optional[str] = "",
         dataset_name: Optional[str] = None,
+        dataset_description: Optional[str] = "",
         project_name: Optional[str] = None,
+        project_description: Optional[str] = "",
         classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
@@ -87,6 +93,10 @@ class ScoreCard:
             self.__dict__["dataset_name"],
             self.__dict__["project_name"],
         ) = handle_unnamed(y, model_name, dataset_name, project_name)
+
+        self.__dict__["model_description"] = model_description
+        self.__dict__["dataset_description"] = dataset_description
+        self.__dict__["project_description"] = project_description
 
         if default_metrics is None:
             default_metrics = (
