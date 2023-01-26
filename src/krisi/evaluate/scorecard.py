@@ -358,7 +358,7 @@ class ScoreCard:
         report.generate_launch()
 
 
-def get_rolling_diagrams(obj: "ScoreCard") -> List[InteractiveFigure]:
+def get_rolling_diagrams(obj: "ScoreCard") -> List[List[InteractiveFigure]]:
     return [
         diagram
         for diagram in [

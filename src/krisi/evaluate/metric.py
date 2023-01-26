@@ -81,7 +81,7 @@ class Metric(Generic[MetricResult]):
 
         self.__safe_set(result_rolling, key="result_rolling")
 
-    def get_diagram_over_time(self) -> Optional[InteractiveFigure]:
+    def get_diagram_over_time(self) -> Optional[List[InteractiveFigure]]:
         return create_diagram_rolling(self)
 
     def get_diagrams(
