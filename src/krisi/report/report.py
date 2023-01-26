@@ -1,5 +1,5 @@
 import datetime
-from typing import Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 
 import plotly.express as px
 
@@ -7,6 +7,9 @@ from krisi.report.interactive import run_app
 from krisi.report.pdf import append_sizes, convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.utils.iterable_helpers import flatten, remove_nans
+
+if TYPE_CHECKING:
+    from krisi.evaluate.scorecard import ScoreCard
 
 
 class Report:
@@ -50,45 +53,6 @@ class Report:
 
         if DisplayModes.direct in self.modes or DisplayModes.direct.value in self.modes:
             [figure.get_figure(width=900.0).show() for figure in self.figures]
-
-    def add(self, figures: Union[InteractiveFigure, List[InteractiveFigure]]) -> None:
-        if isinstance(figures, List):
-            self.figures += figures
-        else:
-            self.figures.append(figures)
-
-    def add_global_controller(
-        self, controller: Union[PlotlyInput, List[PlotlyInput]]
-    ) -> None:
-        if isinstance(controller, List):
-            self.global_controllers += controller
-        else:
-            self.global_controllers.append(controller)
-
-
-if __name__ == "__main__":
-
-    def display_time_series(
-        ticker: Optional[str] = "AAPL", width: Optional[float] = None
-    ):
-        df = px.data.stocks()
-        fig = px.line(df, x="date", y=ticker, width=width)
-        return fig
-
-    report = Report(title=f"Report on Apple", modes=[DisplayModes.pdf])
-    report.add(
-        [
-            InteractiveFigure(
-                id="time-series-chart",
-                get_figure=display_time_series,
-            ),
-            InteractiveFigure(
-                id="time-series-chart2",
-                get_figure=display_time_series,
-            ),
-        ]
-    )
-    report.generate_launch()
 
 
 def get_all_interactive_diagrams(metrics: List["Metric"]) -> List[InteractiveFigure]:
