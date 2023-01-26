@@ -31,7 +31,7 @@ class Report:
         self.css_template_url = css_template_url
         self.get_html_elements = get_html_elements
 
-    def generate_launch(self):
+    def generate_launch(self) -> None:
 
         if (
             DisplayModes.interactive in self.modes

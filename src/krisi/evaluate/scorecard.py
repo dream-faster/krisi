@@ -294,7 +294,7 @@ class ScoreCard:
         with_info: bool = False,
         extended: bool = True,
         input_analysis: bool = True,
-    ) -> "ScoreCard":
+    ) -> None:
         if extended:
             summary = get_summary(
                 self,
@@ -307,7 +307,6 @@ class ScoreCard:
             summary = get_minimal_summary(self)
 
         print(summary)
-        return self
 
     def save(
         self,
