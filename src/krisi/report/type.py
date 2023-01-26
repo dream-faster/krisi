@@ -68,6 +68,7 @@ def plotly_interactive(
         fig = plot_function(data_source, *args, **kwargs)
 
         # fig.update_layout(width=width)
+        # fig.update_layout(autosize=False, width=width, height=height)
         fig.update_layout(autosize=False, width=width, height=height)
         if title is not None:
             fig.update_layout(title=title)

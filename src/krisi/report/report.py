@@ -75,7 +75,7 @@ def get_waterfall_metric_html(
 
     html_images = convert_figures_to_html(
         [
-            interactive_diagram.get_figure(width=900.0)
+            interactive_diagram.get_figure()
             for interactive_diagram in interactive_diagrams
         ]
     )

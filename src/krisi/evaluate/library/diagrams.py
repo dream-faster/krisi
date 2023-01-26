@@ -9,19 +9,19 @@ from statsmodels.tsa.stattools import acf, pacf
 from krisi.evaluate.type import MetricResult
 
 
-def display_time_series(data: List[MetricResult], name: str = "") -> go.Figure:
-    df = pd.DataFrame(data, columns=[name])
+def display_time_series(data: List[MetricResult], title: str = "") -> go.Figure:
+    df = pd.DataFrame(data, columns=[title])
     df["iteration"] = list(range(len(data)))
     fig = px.line(
         df,
         x="iteration",
-        y=name,
+        y=title,
     )
-    fig.update_layout(title=name)
+    fig.update_layout(title=title)
     return fig
 
 
-def display_single_value(data: MetricResult, name: str = "") -> go.Figure:
+def display_single_value(data: MetricResult, title: str = "") -> go.Figure:
 
     fig = go.Figure()
 
@@ -34,21 +34,22 @@ def display_single_value(data: MetricResult, name: str = "") -> go.Figure:
         )
     )
 
-    fig.update_layout(title=name)
+    fig.update_layout(title=title)
     return fig
 
 
 def display_acf_plot(
     data: MetricResult,
-    name: str = "",
+    title: str = "",
     plot_pacf: bool = False,
 ) -> go.Figure:
-    if len(name) < 1:
-        title = (
-            "Partial Autocorrelation (PACF)" if plot_pacf else "Autocorrelation (ACF)"
-        )
-    else:
-        title = name
+
+    title = (
+        title + " - Partial Autocorrelation (PACF)"
+        if plot_pacf
+        else "Autocorrelation (ACF)"
+    )
+
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
 
@@ -96,12 +97,12 @@ def display_acf_plot(
 
 def display_density_plot(
     data: MetricResult,
-    name: str = "",
+    title: str = "",
     plot_pacf: bool = False,
 ) -> go.Figure:
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
     fig = px.histogram(data, marginal="box")  # or violin, rug
-    fig.update_layout(title=name)
+    fig.update_layout(title=title)
 
     return fig

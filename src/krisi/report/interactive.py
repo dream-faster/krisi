@@ -22,8 +22,8 @@ def block(
 def figure_with_controller(figure: InteractiveFigure):
     if len(figure.inputs) > 0 or len(figure.global_input_ids) > 0:
         return block(
-            graph=dcc.Graph(id=figure.id),
-            title=None,  # html.P("Select rolling window:"),
+            graph=dcc.Graph(id=figure.id, className="h-full flex align-center w-1/2"),
+            title=None,
             controllers=html.Div(
                 className="h-full flex align-center",
                 children=[
@@ -41,7 +41,7 @@ def figure_with_controller(figure: InteractiveFigure):
 
     else:
         return dcc.Graph(
-            className="h-full flex align-center m-2",
+            className="h-full flex align-center w-1/2",
             id=figure.id,
             figure=figure.get_figure(),
             style={"display": "inline-block"},
