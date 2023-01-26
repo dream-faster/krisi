@@ -14,7 +14,7 @@ def block(
 ) -> html.Div:
     return html.Div(
         children=[graph, title, controllers],
-        className="flex flex-row flex-wrap w-full min-h-[450px]",
+        className="flex flex-row flex-wrap min-h-[450px]",
     )
 
 
@@ -34,7 +34,7 @@ def run_app(
             html.Div(
                 children=[
                     input_.type(
-                        className="w-full h-full min-w-[150px] flex justify-center align-center",
+                        className="h-full min-w-[150px] flex justify-center align-center",
                         id=input_.id,
                         options=input_.options,
                         value=input_.default_value,
@@ -44,16 +44,17 @@ def run_app(
                 ]
             ),
             html.Div(
+                className="flex flex-wrap flex-row",
                 children=[
                     *[
                         block(
                             graph=dcc.Graph(id=component.id),
                             title=None,  # html.P("Select rolling window:"),
                             controllers=html.Div(
-                                className="w-full h-full flex align-center",
+                                className="h-full flex align-center",
                                 children=[
                                     input_.type(
-                                        className="w-full h-full min-w-[150px] flex justify-center align-center",
+                                        className="h-full min-w-[150px] flex justify-center align-center",
                                         id=input_.id,
                                         options=input_.options,
                                         value=input_.default_value,
@@ -66,14 +67,14 @@ def run_app(
                         if len(component.inputs) > 0
                         or len(component.global_input_ids) > 0
                         else dcc.Graph(
-                            className="w-full h-full flex align-center",
+                            className="h-full flex align-center shadow-lg m-2",
                             id=component.id,
                             figure=component.get_figure(),
                             style={"display": "inline-block"},
                         )
                         for component in components
                     ],
-                ]
+                ],
             ),
         ],
     )

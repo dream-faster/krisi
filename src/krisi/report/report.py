@@ -43,7 +43,9 @@ class Report:
             create_pdf_report(
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
-                html_elements_to_inject=self.get_html_elements(),
+                html_elements_to_inject=self.get_html_elements()
+                if self.get_html_elements is not None
+                else dict(),
             )
 
         if DisplayModes.direct in self.modes or DisplayModes.direct.value in self.modes:
