@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 
 from dash import Dash, Input, Output, dcc, html
 
+from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
 from krisi.utils.iterable_helpers import flatten
 
@@ -15,7 +16,7 @@ def block(
 ) -> html.Div:
     return html.Div(
         children=[graph, title, controllers],
-        className="flex flex-row flex-wrap min-h-[450px]",
+        className="flex flex-row flex-wrap",
     )
 
 
@@ -50,13 +51,19 @@ def figure_with_controller(figure: InteractiveFigure):
 
 def category_block(category: str, figures: List[InteractiveFigure]) -> html.Div:
     return html.Div(
-        className="flex flex-col shadow-lg mb-4 p-6",
+        className="flex flex-col shadow-lg mb-4",
         children=[
-            html.H2(
-                category, className="text-2xl font-normal leading-normal mt-0 mb-2"
+            html.Div(
+                className="flex items-center w-full h-12 bg-yellow-400 ",
+                children=[
+                    html.H2(
+                        category,
+                        className="flex m-0 items-center text-lg font-normal text-white leading-normal mt-0 mb-2 pl-6",
+                    )
+                ],
             ),
             html.Div(
-                className="flex flex-wrap flex-row",
+                className="flex flex-wrap flex-row  p-6",
                 children=[
                     *[figure_with_controller(figure) for figure in figures],
                 ],
@@ -75,11 +82,46 @@ def global_input_controller_block(input_):
     )
 
 
+def name_description_block(name: str, description: str) -> html.Div:
+    return html.Div(
+        className="flex flex-col h-full w-full p-2",
+        children=[
+            html.H3(name, className="flex-auto text-xl font-semibold text-slate-600"),
+            html.P(description),
+        ],
+    )
+
+
+def create_description_component(
+    scorecard_metadata: Optional[ScoreCardMetadata],
+) -> Optional[html.Div]:
+    if scorecard_metadata is not None:
+        return html.Div(
+            className="flex flex-row w-full h-20 mb-12",
+            children=[
+                name_description_block(
+                    scorecard_metadata.project_name,
+                    scorecard_metadata.project_description,
+                ),
+                name_description_block(
+                    scorecard_metadata.model_name, scorecard_metadata.model_description
+                ),
+                name_description_block(
+                    scorecard_metadata.dataset_name,
+                    scorecard_metadata.dataset_description,
+                ),
+            ],
+        )
+    else:
+        return None
+
+
 def run_app(
     components: Dict[str, List[InteractiveFigure]],
     global_controllers: List[PlotlyInput],
     title: str = "",
     description: str = "",
+    scorecard_metadata: Optional[ScoreCardMetadata] = None,
 ) -> None:
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
@@ -89,9 +131,9 @@ def run_app(
         children=[
             html.H1(
                 title,
-                className="py-3 text-5xl font-bold text-gray-800",
+                className="flex-auto text-3xl font-semibold text-yellow-400 p-2",
             ),
-            html.P(description),
+            create_description_component(scorecard_metadata),
             html.Div(
                 children=[
                     global_input_controller_block(input_)

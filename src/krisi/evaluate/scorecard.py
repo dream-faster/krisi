@@ -18,6 +18,7 @@ from krisi.evaluate.type import (
     Predictions,
     SampleTypes,
     SaveModes,
+    ScoreCardMetadata,
     Targets,
 )
 from krisi.evaluate.utils import handle_unnamed
@@ -53,27 +54,22 @@ class ScoreCard:
 
     y: Targets
     predictions: Predictions
-    model_name: str
-    model_description:str
-    dataset_name: str
-    dataset_description:str
-    project_name: str
-    project_description:str
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
     classification: bool  # TODO: Support multilabel classification
+    metadata: ScoreCardMetadata
 
     def __init__(
         self,
         y: Targets,
         predictions: Predictions,
         model_name: Optional[str] = None,
-        model_description: Optional[str] = "",
+        model_description: str = "",
         dataset_name: Optional[str] = None,
-        dataset_description: Optional[str] = "",
+        dataset_description: str = "",
         project_name: Optional[str] = None,
-        project_description: Optional[str] = "",
+        project_description: str = "",
         classification: Optional[bool] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
@@ -87,16 +83,18 @@ class ScoreCard:
             if classification is None
             else classification
         )
+        model_name_, dataset_name_, project_name_ = handle_unnamed(
+            y, model_name, dataset_name, project_name
+        )
 
-        (
-            self.__dict__["model_name"],
-            self.__dict__["dataset_name"],
-            self.__dict__["project_name"],
-        ) = handle_unnamed(y, model_name, dataset_name, project_name)
-
-        self.__dict__["model_description"] = model_description
-        self.__dict__["dataset_description"] = dataset_description
-        self.__dict__["project_description"] = project_description
+        self.__dict__["metadata"] = ScoreCardMetadata(
+            project_name_,
+            project_description,
+            model_name_,
+            model_description,
+            dataset_name_,
+            dataset_description,
+        )
 
         if default_metrics is None:
             default_metrics = (
@@ -328,9 +326,9 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> "ScoreCard":
-        if self.project_name:
-            path += f"{self.project_name}/"
-        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.model_name}_{self.dataset_name}"
+        if self.metadata.project_name:
+            path += f"{self.metadata.project_name}/"
+        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
         import os
 
         if not os.path.exists(path):

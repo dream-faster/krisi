@@ -1,9 +1,9 @@
 import datetime
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import plotly.express as px
 
-from krisi.evaluate.type import MetricCategories
+from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.interactive import run_app
 from krisi.report.pdf import append_sizes, convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
@@ -21,16 +21,18 @@ class Report:
     def __init__(
         self,
         title: str,
-        description: Optional[str] = "",
+        general_description: str = "",
         modes: List[DisplayModes] = [DisplayModes.pdf],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
         html_template_url: str = "library/default/template.html",
         css_template_url: str = "library/default/template.css",
         get_html_elements: Optional[Callable] = None,
+        scorecard_metadata: Optional[ScoreCardMetadata] = None,
     ) -> None:
         self.title = title
-        self.description = description
+        self.general_description = general_description
+        self.scorecard_metadata = scorecard_metadata
         self.modes = modes
         self.figures = figures
         self.global_controllers = global_controllers
@@ -51,7 +53,8 @@ class Report:
                 figures_by_category,
                 self.global_controllers,
                 self.title,
-                self.description,
+                self.general_description,
+                self.scorecard_metadata,
             )
 
         if DisplayModes.pdf in self.modes or DisplayModes.pdf.value in self.modes:
@@ -143,15 +146,16 @@ def create_report_from_scorecard(
         get_html_elements = get_html_elements_for_injection_scorecard(
             obj=obj,
             author=author,
-            project_name=obj.project_name,
+            project_name=obj.metadata.project_name,
             date=datetime.datetime.now().strftime("%Y-%m-%d"),
             custom_metric_html=custom_metric_html,
         )
 
     return Report(
-        title=f"{obj.project_name} - {obj.dataset_name} - {obj.model_name}",
-        description=f"{obj.project_description}\n{obj.model_description}\n{obj.dataset_description}",
+        title=f"Report on {obj.metadata.model_name}",
+        general_description=f"General Description",
         modes=display_modes,
+        scorecard_metadata=obj.metadata,
         figures=interactive_figures,
         html_template_url=html_template_url,
         css_template_url=css_template_url,
