@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from krisi.evaluate import SampleTypes, ScoreCard
@@ -18,6 +20,10 @@ sc = ScoreCard(
 
 """ A predefined metrics """
 sc.evaluate(defaults=True)
-sc.generate_report(
-    display_modes=[DisplayModes.interactive],
-)
+
+if "PYTEST_CURRENT_TEST" in os.environ:
+    print("Not testing Dash server currently")
+else:
+    sc.generate_report(
+        display_modes=[DisplayModes.interactive],
+    )
