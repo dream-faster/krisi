@@ -280,4 +280,6 @@ Contributors are continously adding new default metrics, press watch to keep tra
 
 The project uses ``isort`` and ``black`` for formatting.
 
-Submit an issue or reach out to us on info at dream-faster.ai for any inquiries.
+Submit an issue or reach out to us on info at dreamfaster.ai for any inquiries.
+
+[Join our Discord community!](https://discord.gg/EKJQgfuBpE)
