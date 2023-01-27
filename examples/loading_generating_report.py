@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from krisi import ScoreCard
@@ -27,4 +29,9 @@ def load_and_generate(project_name: str) -> None:
 
 project_name = "Example Project"
 create_scorecard(project_name)
-load_and_generate(project_name)
+
+
+if "PYTEST_CURRENT_TEST" in os.environ:
+    print("Not testing Dash server currently")
+else:
+    load_and_generate(project_name)

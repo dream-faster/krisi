@@ -351,7 +351,9 @@ class ScoreCard:
 
     def generate_report(
         self,
-        display_modes: List[DisplayModes] = [DisplayModes.interactive],
+        display_modes: Union[str, List[str], DisplayModes, List[DisplayModes]] = [
+            DisplayModes.interactive
+        ],
         html_template_url: str = PathConst.html_report_template_url,
         css_template_url: str = PathConst.css_report_template_url,
         author: str = "",

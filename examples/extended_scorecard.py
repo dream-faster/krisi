@@ -5,9 +5,9 @@ from krisi.evaluate import Metric, MetricCategories, SampleTypes, ScoreCard
 target, predictions = np.random.rand(100), np.random.rand(100)
 
 sc = ScoreCard(
-    "<your_model_name>",
     target,
     predictions,
+    "<your_model_name>",
     dataset_name="<your_dataset_name>",
     sample_type=SampleTypes.insample,
 )
