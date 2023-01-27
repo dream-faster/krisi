@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, Iterable, List, Union
 
 from rich import box
 from rich.console import Group
@@ -25,7 +25,11 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         hyperparams += "".join(
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
-    if obj.result is None and obj.result_rolling is not None:
+    if (
+        obj.result is None
+        and obj.result_rolling is not None
+        and isinstance(obj.result_rolling, Iterable)
+    ):
         result_ = (
             "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
         )
