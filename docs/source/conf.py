@@ -41,6 +41,14 @@ html_static_path = ["_static"]
 # Set link name generated in the top bar.
 html_title = "Krisi"
 
+autodoc_default_options = {
+    "members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
+}
+
 # Material theme options (see theme.conf for more information)
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
