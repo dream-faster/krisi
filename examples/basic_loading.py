@@ -15,6 +15,6 @@ for _ in range(5):
 
 
 compare(
-    load_scorecards(PathConst.default_eval_output_path, project_name),
+    load_scorecards(project_name, PathConst.default_eval_output_path),
     metrics_to_display=["mse"],
 )

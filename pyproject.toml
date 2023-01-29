@@ -38,6 +38,7 @@ dependencies = [
   "plotext",
   "plotly",
   "dash",
+  "jupyter_dash",
   "kaleido",
   "weasyprint",
 

@@ -1,10 +1,16 @@
 from typing import Dict, List, Optional
 
-from dash import Dash, Input, Output, dcc, html
-
 from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
+from krisi.utils.environment import is_notebook
 from krisi.utils.iterable_helpers import flatten
+
+if is_notebook():
+    from dash import Input, Output, dcc, html
+    from jupyter_dash import JupyterDash as Dash
+else:
+    from dash import Dash, Input, Output, dcc, html
+
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
