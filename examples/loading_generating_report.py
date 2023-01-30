@@ -23,7 +23,7 @@ def create_scorecard(project_name: str) -> None:
 
 
 def load_and_generate(project_name: str) -> None:
-    scorecard = load_scorecards(PathConst.default_eval_output_path, project_name)
+    scorecard = load_scorecards(project_name, PathConst.default_eval_output_path)
     scorecard[-1].generate_report()
 
 

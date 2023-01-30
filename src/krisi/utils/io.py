@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, List, Union
 
 from rich.console import Console
 
-from krisi.evaluate.type import MetricCategories, SaveModes
+from krisi.evaluate.type import MetricCategories, PathConst, SaveModes
 from krisi.report.console import get_minimal_summary, get_summary
 
 if TYPE_CHECKING:
@@ -49,7 +49,9 @@ def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
         f.write(text_summary)
 
 
-def load_scorecards(path: str, project_name: str) -> List["ScoreCard"]:
+def load_scorecards(
+    project_name: str, path: str = PathConst.default_eval_output_path
+) -> List["ScoreCard"]:
     import os
     import pickle
 

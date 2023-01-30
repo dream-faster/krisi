@@ -3,5 +3,6 @@ def test_all_examples():
 
     for entry in os.scandir("examples"):
         if entry.is_file():
-            string = f"from examples import {entry.name}"[:-3]
-            exec(string)
+            if entry.name.split(".")[-1] == "py":
+                string = f"from examples import {entry.name}"[:-3]
+                exec(string)
