@@ -4,6 +4,7 @@ theme:
   
 plugins:
   - search
+  - autorefs
   - mkdocstrings:
       handlers:
         python:
@@ -15,3 +16,6 @@ plugins:
             show_signature_annotations: true
           import:
           - https://docs.python-requests.org/en/master/objects.inv
+      theme:
+        features:
+          - navigation.instant
