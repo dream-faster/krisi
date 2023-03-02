@@ -72,10 +72,6 @@ tests = [
   "pytest~=7.1.2",
   "pytest-cov>=4.0",
 ]
-docs = [
-  "sphinx",
-  "sphinx-material"
-]
 
 [tool.hatch.envs.quality]
 dependencies = [
@@ -121,6 +117,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 pythonpath = [
-  "src"
+  "src",
+  "examples"
 ]
-testpaths = ["tests"]
+testpaths = ["tests"] 

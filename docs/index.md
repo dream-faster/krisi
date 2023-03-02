@@ -14,9 +14,7 @@ It can generate reports in:
 - pretty formatted for **console** (with ``rich`` and ``plotext``)
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
+##Contents
 
    installation
    get_started
@@ -26,11 +24,4 @@ It can generate reports in:
 
 Get Started
 ===========
-* :doc:`api`
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+* api
