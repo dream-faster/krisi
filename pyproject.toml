@@ -70,10 +70,13 @@ quality = [
 ]
 tests = [
   "pytest~=7.1.2",
+  "pytest-cov>=4.0",
 ]
 docs = [
-  "sphinx",
-  "sphinx-material"
+  "mkdocs-material",
+  "mkdocstrings-python",
+  "mkdocs-include-markdown-plugin",
+  "mkdocs-autorefs"
 ]
 
 [tool.hatch.envs.quality]
@@ -117,3 +120,10 @@ exclude = [
   "/.gitignore",
   "/tests",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src",
+  ".",
+]
+testpaths = ["tests"] 
