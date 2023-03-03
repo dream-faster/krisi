@@ -39,9 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[tests]"
       - name: run-tests
-        run: pytest . -s --cov --durations 0
-
-      - uses: codecov/codecov-action@v3
+        run: pytest . -s --durations 0
 
   publish-package:
     needs: run-tests
