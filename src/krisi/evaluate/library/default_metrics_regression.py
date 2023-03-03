@@ -1,5 +1,6 @@
 from typing import List
 
+import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     mean_absolute_error,
@@ -37,6 +38,18 @@ mape = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+
+smape = Metric[float](
+    name="Symmetric Mean Absolute Percentage Error",
+    key="smape",
+    category=MetricCategories.reg_err,
+    func=lambda y_true, y_pred: np.mean(
+        np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0
+    ),
+    plot_funcs=[display_single_value],
+    plot_func_rolling=display_time_series,
+)
+
 mse = Metric[float](
     name="Mean Squared Error",
     key="mse",
@@ -112,6 +125,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
 all_regression_metrics = [
     mae,
     mape,
+    smape,
     mse,
     rmse,
     rmsle,

@@ -1,11 +1,12 @@
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-
-from krisi.evaluate.library.diagrams import (
-    display_acf_plot,
-    display_density_plot,
-    display_single_value,
-    display_time_series,
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    matthews_corrcoef,
+    precision_score,
+    recall_score,
 )
+
+from krisi.evaluate.library.diagrams import display_single_value, display_time_series
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories
 
@@ -43,12 +44,21 @@ f_one_score = Metric[float](
     key="f_one_score",
     category=MetricCategories.class_err,
     info="The F1 score can be interpreted as a harmonic mean of the precision and recall, where an F1 score reaches its best value at 1 and worst score at 0. The relative contribution of precision and recall to the F1 score are equal. https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html",
-    parameters={"average": "binary"},
+    parameters={"average": "macro"},
     func=f1_score,
+    plot_funcs=[display_single_value],
+    plot_func_rolling=display_time_series,
+)
+matthew_corr = Metric[float](
+    name="Matthew Correlation Coefficient",
+    key="matthew_corr",
+    category=MetricCategories.class_err,
+    info="The Matthews correlation coefficient is used in machine learning as a measure of the quality of binary and multiclass classifications. It takes into account true and false positives and negatives and is generally regarded as a balanced measure which can be used even if the classes are of very different sizes. The MCC is in essence a correlation coefficient value between -1 and +1. A coefficient of +1 represents a perfect prediction, 0 an average random prediction and -1 an inverse prediction. The statistic is also known as the phi coefficient.",
+    func=matthews_corrcoef,
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
 
 
-all_classification_metrics = [accuracy, recall, precision, f_one_score]
+all_classification_metrics = [accuracy, recall, precision, f_one_score, matthew_corr]
 minimal_classification_metrics = [accuracy, f_one_score]
