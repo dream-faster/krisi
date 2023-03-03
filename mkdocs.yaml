@@ -1,7 +1,8 @@
 site_name: Krisi
 theme:
   name: material
-  
+  features:
+    - navigation.instant
 plugins:
   - search
   - autorefs
@@ -16,6 +17,3 @@ plugins:
             show_signature_annotations: true
           import:
           - https://docs.python-requests.org/en/master/objects.inv
-      theme:
-        features:
-          - navigation.instant

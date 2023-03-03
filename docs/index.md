@@ -16,12 +16,7 @@ It can generate reports in:
 
 ##Contents
 
-[Installation](installation)
-[Get started](get_started)
-[API](api)
-[Contribute](contribute)
+* [Get started](get_started)
+* [API](api)
+* [Contribute](contribute)
    
-
-Get Started
-===========
-[API](api)

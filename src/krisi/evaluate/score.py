@@ -1,7 +1,5 @@
-import uuid
 from typing import List, Optional, Tuple, Union
 
-import numpy as np
 import pandas as pd
 
 from krisi.evaluate.metric import Metric
@@ -22,6 +20,27 @@ def score(
     calculation: Union[Calculation, str] = Calculation.single,
     window: int = 30,
 ) -> ScoreCard:
+    """_summary_
+
+    Args:
+        y (Targets): _description_
+        predictions (Predictions): _description_
+        model_name (Optional[str], optional): _description_. Defaults to None.
+        dataset_name (Optional[str], optional): _description_. Defaults to None.
+        project_name (Optional[str], optional): _description_. Defaults to None.
+        default_metrics (Optional[List[Metric]], optional): _description_. Defaults to None.
+        custom_metrics (Optional[List[Metric]], optional): _description_. Defaults to None.
+        classification (Optional[bool], optional): _description_. Defaults to None.
+        sample_type (SampleTypes, optional): _description_. Defaults to SampleTypes.outofsample.
+        calculation (Union[Calculation, str], optional): _description_. Defaults to Calculation.single.
+        window (int, optional): _description_. Defaults to 30.
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        ScoreCard: _description_
+    """
 
     sc = ScoreCard(
         y=y,
