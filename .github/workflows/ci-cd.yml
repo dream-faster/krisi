@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[tests]"
       - name: run-tests
-        run: pytest . -s --durations 0
+        run: pytest tests/ -s --durations 0
 
   publish-package:
     needs: run-tests
