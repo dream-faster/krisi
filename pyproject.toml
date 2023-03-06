@@ -6,8 +6,8 @@ build-backend = "hatchling.build"
 name = "krisi"
 version = "0.0.1"
 authors = [
-  { name="Mark Szulyovszky", email="mark.szulyovszky@gmail.com" },
-  { name="Daniel Szemerey", email="daniel@szemerey.eu" },
+  { name="Mark Szulyovszky", email="mark@dreamfaster.ai" },
+  { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
 ]
 description = "Testing, Reporting and EDA framework for Time Series Analysis"
 readme = "README.md"
@@ -57,7 +57,7 @@ Issues = "https://github.com/dream-faster/krisi/issues"
 Source = "https://github.com/dream-faster/krisi"
 
 [tool.hatch.version]
-path = "src/drift/__init__.py"
+path = "src/krisi/__init__.py"
 
 
 [project.optional-dependencies]
