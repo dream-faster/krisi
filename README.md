@@ -11,7 +11,7 @@
 <br />
 <div align="center">
   <a href="https://dream-faster.github.io/krisi/">
-    <img src="docs/images/logo.svg" alt="Logo" width="90" >
+    <img src="https://raw.githubusercontent.com/dream-faster/krisi/main/docs/images/logo.svg" alt="Logo" width="90" >
   </a>
 
 <h3 align="center"> <i>(/creesee/)</i></h3>
@@ -37,7 +37,7 @@ It can generate reports in:
 <br/>
 
 <div>
-  <img src="docs/images/output_examples.png" alt="Output Examples: HTML, Console, PDF" width="100%" >
+  <img src="https://raw.githubusercontent.com/dream-faster/krisi/main/docs/images/output_examples.png" alt="Output Examples: HTML, Console, PDF" width="100%" >
 
 </div>
   
