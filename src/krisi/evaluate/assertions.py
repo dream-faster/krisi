@@ -19,7 +19,7 @@ def flatten_type(complex_type: Any) -> Union[List, Any]:
         return complex_type
     else:
         add_list = []
-        if get_origin(complex_type) == type([]):
+        if isinstance(get_origin(complex_type), type([])):
             add_list = [type([])]
         return add_list + [flatten_type(type_) for type_ in get_args(complex_type)]
 

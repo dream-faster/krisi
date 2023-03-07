@@ -4,14 +4,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from krisi.evaluate.type import (
-    MetricCategories,
-    PathConst,
-    Predictions,
-    SampleTypes,
-    SaveModes,
-    Targets,
-)
+from krisi.evaluate.type import Targets
 
 
 def handle_unnamed(

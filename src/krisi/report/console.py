@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
     from krisi.evaluate.scorecard import ScoreCard
 
-from krisi.utils.printing import bold, get_term_size
+from krisi.utils.printing import bold
 
 
 def print_metric(obj: "Metric", repr: bool = False) -> str:
@@ -40,7 +40,7 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
 
 
 def get_minimal_summary(obj: "ScoreCard") -> str:
-    return f"\n".join(
+    return "\n".join(
         [
             f"{metric.name:>40s} - {metric.result:<15.5}"
             for metric in obj.get_all_metrics()

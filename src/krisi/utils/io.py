@@ -31,7 +31,7 @@ def save_console(
     )
 
     console = Console(record=True, width=120)
-    with console.capture() as capture:
+    with console.capture():
         console.print(summary)
 
     if SaveModes.text in save_modes or SaveModes.text.value in save_modes:

@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
+from krisi.evaluate.type import ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
 from krisi.utils.environment import is_notebook
 from krisi.utils.iterable_helpers import flatten

@@ -1,14 +1,10 @@
 import base64
 import pkgutil
-from typing import TYPE_CHECKING, Dict, List, Tuple
+from typing import Dict, List
 
 import plotly.graph_objects as go
 
 from krisi.report.type import InteractiveFigure, PathConst
-from krisi.utils.iterable_helpers import flatten, remove_nans
-
-if TYPE_CHECKING:
-    from krisi.evaluate.metric import Metric
 
 
 def __figure_to_html(figure: go.Figure) -> str:

@@ -5,14 +5,14 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
 
 project = "Krisi - Forecasting Evaluation and Exploration"
 copyright = "2022, Myalo UG - Daniel Szemerey, Mark Aron Szulyovszky"
 author = "Myalo UG - Daniel Szemerey, Mark Aron Szulyovszky"
 release = "0.0.1"
 
-import os
-import sys
 
 sys.path.insert(0, os.path.abspath("../../src/krisi"))
 
