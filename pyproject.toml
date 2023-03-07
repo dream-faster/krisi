@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "krisi"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Mark Szulyovszky", email="mark@dreamfaster.ai" },
   { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
@@ -129,7 +129,7 @@ pythonpath = [
 testpaths = ["tests"] 
 
 [tool.bumpver]
-current_version = "0.0.1"
+current_version = "0.0.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
