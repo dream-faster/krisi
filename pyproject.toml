@@ -132,7 +132,7 @@ testpaths = ["tests"]
 [tool.bumpver]
 current_version = "0.0.3"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "bump version {old_version} -> {new_version}"
+commit_message = "chore(Release): Bump version from {old_version} -> {new_version}"
 commit = true
 tag = true
 push = false
