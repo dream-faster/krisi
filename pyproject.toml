@@ -76,7 +76,8 @@ plotting = [
   "plotly",
   "dash",
   "jupyter_dash",
-  "weasyprint"
+  "weasyprint",
+  "kaleido"
 ]
 
 [tool.hatch.envs.quality]
