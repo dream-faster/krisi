@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
-from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
+from statsmodels.tsa.arima.model import ARIMA
 
 from krisi.utils.modeling_types import InSamplePredictions, OutSamplePredictions, X, y
 

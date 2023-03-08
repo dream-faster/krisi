@@ -161,7 +161,7 @@ def create_report_from_scorecard(
 
     return Report(
         title=f"Report on {obj.metadata.model_name}",
-        general_description=f"General Description",
+        general_description="General Description",
         modes=display_modes_,
         scorecard_metadata=obj.metadata,
         figures=interactive_figures,

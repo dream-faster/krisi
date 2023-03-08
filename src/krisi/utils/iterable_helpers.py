@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Union
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.type import Predictions, Targets
@@ -35,7 +36,7 @@ def group_by_categories(
         )
     category_groups[None] = list(
         filter(
-            lambda x: x.category.value == None if hasattr(x, "category") else False,
+            lambda x: x.category.value is None if hasattr(x, "category") else False,
             flat_list,
         )
     )

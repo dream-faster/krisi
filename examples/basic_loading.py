@@ -1,7 +1,7 @@
 import numpy as np
 
 from krisi import compare, score
-from krisi.evaluate.type import PathConst, SaveModes
+from krisi.evaluate.type import PathConst
 from krisi.utils.io import load_scorecards
 
 project_name = "Example Load"

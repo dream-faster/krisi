@@ -53,7 +53,7 @@ def plotly_interactive(
     *args,
     **kwargs
 ) -> Callable:
-    default_args = args
+    # default_args = args
     default_kwargs = kwargs
 
     def wrapper(*args, **kwargs) -> go.Figure:
