@@ -36,12 +36,6 @@ dependencies = [
   "rich",
   "tqdm",
   "plotext",
-  "plotly",
-  "dash",
-  "jupyter_dash",
-  "kaleido",
-  "weasyprint",
-
 
   #TS and Modeling libraries
   "statsmodels >=0.12.1",
@@ -77,6 +71,12 @@ docs = [
   "mkdocstrings-python",
   "mkdocs-include-markdown-plugin",
   "mkdocs-autorefs"
+]
+plotting = [
+  "plotly",
+  "dash",
+  "jupyter_dash",
+  "weasyprint"
 ]
 
 [tool.hatch.envs.quality]

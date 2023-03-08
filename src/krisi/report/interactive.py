@@ -1,25 +1,21 @@
-from typing import Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from krisi.evaluate.type import ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
-from krisi.utils.environment import is_notebook
 from krisi.utils.iterable_helpers import flatten
 
-if is_notebook():
-    from dash import Input, Output, dcc, html
-    from jupyter_dash import JupyterDash as Dash
-else:
-    from dash import Dash, Input, Output, dcc, html
+if TYPE_CHECKING:
+    from dash import dcc, html
 
 
 external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
 
 
 def block(
-    graph: dcc.Graph,
-    title: Optional[html.P] = None,
-    controllers: Optional[html.Div] = None,
-) -> html.Div:
+    graph: "dcc.Graph",
+    title: Optional["html.P"] = None,
+    controllers: Optional["html.Div"] = None,
+) -> "html.Div":
     return html.Div(
         children=[graph, title, controllers],
         className="flex flex-row flex-wrap",
@@ -55,7 +51,7 @@ def figure_with_controller(figure: InteractiveFigure):
         )
 
 
-def category_block(category: str, figures: List[InteractiveFigure]) -> html.Div:
+def category_block(category: str, figures: List[InteractiveFigure]) -> "html.Div":
     return html.Div(
         className="flex flex-col shadow-lg mb-4",
         children=[
@@ -88,7 +84,7 @@ def global_input_controller_block(input_):
     )
 
 
-def name_description_block(name: str, description: str) -> html.Div:
+def name_description_block(name: str, description: str) -> "html.Div":
     return html.Div(
         className="flex flex-col h-full w-full p-2",
         children=[
@@ -100,7 +96,7 @@ def name_description_block(name: str, description: str) -> html.Div:
 
 def create_description_component(
     scorecard_metadata: Optional[ScoreCardMetadata],
-) -> Optional[html.Div]:
+) -> Optional["html.Div"]:
     if scorecard_metadata is not None:
         return html.Div(
             className="flex flex-row w-full h-20 mb-12",
@@ -129,6 +125,13 @@ def run_app(
     description: str = "",
     scorecard_metadata: Optional[ScoreCardMetadata] = None,
 ) -> None:
+    import sys
+
+    from dash import Dash, Input, Output, dcc, html
+
+    sys.modules[__name__].html = html
+    sys.modules[__name__].dcc = dcc
+
     app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
 
