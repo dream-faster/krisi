@@ -1,15 +1,19 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
+
 from statsmodels.tsa.stattools import acf, pacf
 
 from krisi.evaluate.type import MetricResult
 
 
-def display_time_series(data: List[MetricResult], title: str = "") -> go.Figure:
+def display_time_series(data: List[MetricResult], title: str = "") -> "go.Figure":
+    import plotly.express as px
+
     df = pd.DataFrame(data, columns=[title])
     df["iteration"] = list(range(len(data)))
     fig = px.line(
@@ -21,7 +25,8 @@ def display_time_series(data: List[MetricResult], title: str = "") -> go.Figure:
     return fig
 
 
-def display_single_value(data: MetricResult, title: str = "") -> go.Figure:
+def display_single_value(data: MetricResult, title: str = "") -> "go.Figure":
+    import plotly.graph_objects as go
 
     fig = go.Figure()
 
@@ -42,7 +47,8 @@ def display_acf_plot(
     data: MetricResult,
     title: str = "",
     plot_pacf: bool = False,
-) -> go.Figure:
+) -> "go.Figure":
+    import plotly.graph_objects as go
 
     title = (
         title + " - Partial Autocorrelation (PACF)"
@@ -99,7 +105,9 @@ def display_density_plot(
     data: MetricResult,
     title: str = "",
     plot_pacf: bool = False,
-) -> go.Figure:
+) -> "go.Figure":
+    import plotly.express as px
+
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
     fig = px.histogram(data, marginal="box")  # or violin, rug
