@@ -1,13 +1,14 @@
-import base64
-import pkgutil
-from typing import Dict, List
+from typing import TYPE_CHECKING, Dict, List
 
-import plotly.graph_objects as go
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 from krisi.report.type import InteractiveFigure, PathConst
 
 
-def __figure_to_html(figure: go.Figure) -> str:
+def __figure_to_html(figure: "go.Figure") -> str:
+    import base64
+
     image = str(base64.b64encode(figure.to_image(format="png", scale=5)))[2:-1]
     return f'<img style="max-width:100%; max-height:100%;" src="data:image/png;base64,{image}"/>'
 
@@ -15,6 +16,8 @@ def __figure_to_html(figure: go.Figure) -> str:
 def __create_html_report(
     template_file: str, html_elements_to_inject: dict[str, str]
 ) -> str:
+    import pkgutil
+
     template_html = pkgutil.get_data(__name__, template_file)
     template_html = template_html.decode()
 
@@ -27,6 +30,7 @@ def __convert_html_to_pdf(
     source_html: str, output_path: str, report_name: str, css_template_url: str
 ) -> None:
     import os
+    import pkgutil
 
     from weasyprint import CSS, HTML
 
@@ -42,7 +46,7 @@ def __convert_html_to_pdf(
     open(f"{output_path}/{report_name}", "wb").write(pdf)
 
 
-def convert_figures_to_html(figures: List[go.Figure]) -> str:
+def convert_figures_to_html(figures: List["go.Figure"]) -> str:
     return "<br>".join([__figure_to_html(figure) for figure in figures])
 
 
@@ -61,7 +65,6 @@ def create_pdf_report(
 def append_sizes(
     diagram_dict: Dict[str, InteractiveFigure]
 ) -> Dict[str, InteractiveFigure]:
-
     size_dict = dict(
         residuals_display_acf_plot=(750.0, 750.0),
         residuals_display_density_plot=(350.0, 350.0),

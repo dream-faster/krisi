@@ -1,22 +1,25 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Callable, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, Callable, List, Literal, Optional, Union
 
 import pandas as pd
-import plotly.graph_objects as go
-from dash import dcc
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 from krisi.evaluate.type import MetricCategories, MetricResult
 
 PlotFunction = Callable[
     [List[MetricResult], str, Optional[float]],
-    go.Figure,
+    "go.Figure",
 ]
 
 
 @dataclass
 class PlotlyInput:
-    type: Literal[dcc.Dropdown, dcc.Input, dcc.Checklist, dcc.Slider, dcc.RangeSlider]
+    type: Literal[
+        "dcc.Dropdown", "dcc.Input", "dcc.Checklist", "dcc.Slider", "dcc.RangeSlider"
+    ]
     id: str
     value_name: str
     default_value: Union[str, float, int]
@@ -56,7 +59,7 @@ def plotly_interactive(
     # default_args = args
     default_kwargs = kwargs
 
-    def wrapper(*args, **kwargs) -> go.Figure:
+    def wrapper(*args, **kwargs) -> "go.Figure":
         width = kwargs.pop("width", None)
         height = kwargs.pop("height", None)
         title = kwargs.pop("title", None)
