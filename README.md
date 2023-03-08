@@ -3,6 +3,7 @@
 <p align="center">
   <a href="https://dream-faster.github.io/krisi/"><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/docs.yaml?logo=readthedocs"></a>
   <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+  <a href="https://github.com/dream-faster/fold/actions/workflows/tests.yaml"><img alt="Tests" src="https://github.com/dream-faster/fold/actions/workflows/tests.yaml/badge.svg"/></a>
   <a href="https://discord.gg/EKJQgfuBpE"><img alt="Discord Community" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>
 </p>
 
