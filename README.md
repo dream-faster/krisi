@@ -68,9 +68,13 @@ Prerequisites
 * ``python >= 3.7`` and ``pip``
 
 
-Install from git directly
+Then run:
 
-*  ``pip install https://github.com/dream-faster/krisi/archive/main.zip ``
+*  ``pip install krisi``
+
+If you'd like to also use interactive plotting (html) and pdf generation then run:
+
+*  ``pip install krisi "krisi[plotting]"``
 
 <br/>
 
