@@ -1,8 +1,9 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
+import pandas as pd
 from rich import print
 from rich.pretty import Pretty
 
@@ -202,6 +203,18 @@ class ScoreCard:
             else:
                 metric["result"] = item
                 self.__dict__[key] = metric
+
+    def get_ds(self) -> pd.Series:
+        metrics = [
+            metric
+            for metric in self.get_all_metrics()
+            if not isinstance(metric.result, Iterable)
+        ]
+
+        return pd.Series(
+            [metric.result for metric in metrics],
+            index=[metric.name for metric in metrics],
+        )
 
     def get_default_metrics(self) -> List[Metric]:
         """Returns a List of Predefined Metrics according to task type:
