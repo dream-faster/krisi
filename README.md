@@ -15,7 +15,7 @@
     <img src="https://raw.githubusercontent.com/dream-faster/krisi/main/docs/images/logo.svg" alt="Logo" width="90" >
   </a>
 
-<h3 align="center"> <i>(/creesee/)</i></h3>
+<h3 align="center"> <b>KRISI</b><br> <i>(/creesee/)</i></h3>
   <p align="center">
     Testing and Reporting Framework for Time Series Analysis
     <br />
