@@ -1,7 +1,8 @@
-from typing import Any, Iterable, List, Tuple, Union, get_args, get_origin
+from typing import Any, Iterable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from typing_utils import get_args, get_origin
 
 from krisi.evaluate.type import Predictions, Targets
 from krisi.utils.iterable_helpers import flatten, isiterable

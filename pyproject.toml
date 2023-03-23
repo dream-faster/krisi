@@ -31,6 +31,7 @@ dependencies = [
   "numpy",
   "pandas",
   "dill",
+  "typing-utils",
 
   #Plotting libraries
   "rich",
