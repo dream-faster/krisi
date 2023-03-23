@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "krisi"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   { name="Mark Szulyovszky", email="mark@dreamfaster.ai" },
   { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
@@ -131,7 +131,7 @@ testpaths = ["tests"]
 
 # bumpver command: ``bumpver update --patch``
 [tool.bumpver]
-current_version = "0.0.5"
+current_version = "0.0.6"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "chore(Release): Bump version from {old_version} -> {new_version}"
 commit = true
