@@ -85,7 +85,7 @@ class ScoreCard:
             else classification
         )
         model_name_, dataset_name_, project_name_ = handle_unnamed(
-            y, model_name, dataset_name, project_name
+            y, predictions, model_name, dataset_name, project_name
         )
 
         self.__dict__["metadata"] = ScoreCardMetadata(
