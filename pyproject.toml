@@ -9,7 +9,7 @@ authors = [
   { name="Mark Szulyovszky", email="mark@dreamfaster.ai" },
   { name="Daniel Szemerey", email="daniel@dreamfaster.ai" },
 ]
-description = "Testing, Reporting and EDA framework for Time Series Analysis"
+description = "Testing and Reporting framework for Time Series Analysis"
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.7"
