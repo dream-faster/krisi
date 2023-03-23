@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
 from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
@@ -25,8 +26,8 @@ class Report:
         ],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
-        html_template_url: str = "library/default/template.html",
-        css_template_url: str = "library/default/template.css",
+        html_template_url: Path = Path("library/default/template.html"),
+        css_template_url: Path = Path("library/default/template.css"),
         get_html_elements: Optional[Callable] = None,
         scorecard_metadata: Optional[ScoreCardMetadata] = None,
     ) -> None:
@@ -135,8 +136,8 @@ def get_html_elements_for_injection_scorecard(
 def create_report_from_scorecard(
     obj: "ScoreCard",
     display_modes: Union[str, List[str], DisplayModes, List[DisplayModes]],
-    html_template_url: str,
-    css_template_url: str,
+    html_template_url: Path,
+    css_template_url: Path,
     author: str,
 ) -> Report:
     if isinstance(display_modes, (str, DisplayModes)):

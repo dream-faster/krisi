@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
 from rich.console import Console
@@ -9,20 +11,21 @@ if TYPE_CHECKING:
     from krisi.evaluate.scorecard import ScoreCard
 
 
-def save_object(obj: "ScoreCard", path: str) -> None:
+def save_object(obj: "ScoreCard", path: Path) -> None:
     import dill
 
-    with open(f"{path}/scorecard.pickle", "wb") as file:
+    final_path = Path(os.path.join(path, Path("scorecard.pickle")))
+
+    with open(final_path, "wb") as file:
         dill.dump(obj, file)
 
 
 def save_console(
     obj: "ScoreCard",
-    path: str,
+    path: Path,
     with_info: bool,
     save_modes: List[Union[SaveModes, str]],
 ) -> None:
-
     summary = get_summary(
         obj,
         repr=True,
@@ -35,31 +38,43 @@ def save_console(
         console.print(summary)
 
     if SaveModes.text in save_modes or SaveModes.text.value in save_modes:
-        console.save_text(f"{path}/console.txt", clear=False)
+        console.save_text(os.path.join(path, Path("console.txt")), clear=False)
     if SaveModes.html in save_modes or SaveModes.html.value in save_modes:
-        console.save_html(f"{path}/console.html", clear=False)
+        console.save_html(os.path.join(path, Path("console.html")), clear=False)
     if SaveModes.svg in save_modes or SaveModes.svg.value in save_modes:
-        console.save_svg(f"{path}/console.svg", title="save_table_svg.py", clear=False)
+        console.save_svg(
+            os.path.join(path, Path("console.svg")),
+            title="save_table_svg.py",
+            clear=False,
+        )
 
 
-def save_minimal_summary(obj: "ScoreCard", path: str) -> None:
+def save_minimal_summary(obj: "ScoreCard", path: Path) -> None:
     text_summary = get_minimal_summary(obj)
 
-    with open(f"{path}/minimal.txt", "w") as f:
+    final_path = Path(os.path.join(path, Path("minimal.txt")))
+
+    with open(final_path, "w") as f:
         f.write(text_summary)
 
 
 def load_scorecards(
-    project_name: str, path: str = PathConst.default_eval_output_path
+    project_name: str, path: Union[str, Path] = PathConst.default_eval_output_path
 ) -> List["ScoreCard"]:
     import os
     import pickle
 
-    files = os.listdir(f"{path}/{project_name}")
+    if isinstance(path, str):
+        path = Path(path)
+
+    path = Path(os.path.join(path, Path(f"{project_name}")))
+    files = os.listdir(path)
 
     loaded_scorecards = []
     for file in files:
-        with open(f"{path}{project_name}/{file}/scorecard.pickle", "rb") as f:
+        with open(
+            Path(os.path.join(path, Path(f"{file}/scorecard.pickle"))), "rb"
+        ) as f:
             loaded_scorecards.append(pickle.load(f))
 
     return loaded_scorecards

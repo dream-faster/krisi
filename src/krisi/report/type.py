@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
 import pandas as pd
@@ -46,9 +47,9 @@ class DisplayModes(Enum):
 
 
 class PathConst:
-    default_save_path = "output/report/"
-    html_template_url = "libary/default/template.html"
-    css_template_url = "libary/default/template.css"
+    default_save_path: Path = Path("output/report/")
+    html_template_url: Path = Path("libary/default/template.html")
+    css_template_url: Path = Path("libary/default/template.css")
 
 
 def plotly_interactive(

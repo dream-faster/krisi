@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Callable, List, Tuple, TypeVar, Union
 
 import numpy as np
@@ -43,9 +44,9 @@ class SaveModes(Enum):
 
 
 class PathConst:
-    default_eval_output_path: str = "output/"
-    html_report_template_url: str = "library/pdf_layouts/scorecard/report.html"
-    css_report_template_url: str = "library/pdf_layouts/scorecard/report.css"
+    default_eval_output_path: Path = Path("output/")
+    html_report_template_url: Path = Path("library/pdf_layouts/scorecard/report.html")
+    css_report_template_url: Path = Path("library/pdf_layouts/scorecard/report.css")
 
 
 class ComputationalComplexity(Enum):
