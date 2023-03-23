@@ -16,7 +16,7 @@ def save_object(obj: "ScoreCard", path: Path) -> None:
 
     final_path = Path(os.path.join(path, Path("scorecard.pickle")))
 
-    with open(final_path, "wb") as file:
+    with open(final_path, "wb", encoding="utf-8") as file:
         dill.dump(obj, file)
 
 
@@ -54,7 +54,7 @@ def save_minimal_summary(obj: "ScoreCard", path: Path) -> None:
 
     final_path = Path(os.path.join(path, Path("minimal.txt")))
 
-    with open(final_path, "w") as f:
+    with open(final_path, "w", encoding="utf-8") as f:
         f.write(text_summary)
 
 
