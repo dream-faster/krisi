@@ -28,7 +28,7 @@ classifiers = [
 dependencies = [
   # Base libraries
   "pytest",
-  "numpy",
+  "numpy >= 1.22.0",
   "pandas",
   "dill",
   "typing-extensions",
