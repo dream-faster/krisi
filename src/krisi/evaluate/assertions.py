@@ -59,11 +59,15 @@ def check_valid_pred_target(y: Targets, predictions: Predictions):
 
 
 def is_dataset_classification_like(y: Targets):
-    # TODO: Should work with booleans and also check for arrays of whole floats, eg.: [1.0,2.0,3.0]
+    # TODO: Should work with booleans
     # TODO: Create multilabel heuristic to be passed on to ScoreCard
     if isinstance(y, pd.Series):
         return pd.api.types.is_integer_dtype(y)
     elif isinstance(y, np.ndarray):
-        return all([i.is_integer() for i in y if i is not None])
+        if hasattr(y[0], "is_integer"):
+            # Using this is faster, if available use this.
+            return all([i.is_integer() for i in y if i is not None])
+        else:
+            return np.all(np.mod(y, 1) == 0)
     else:
         return all([isinstance(i, int) for i in y if i is not None])
