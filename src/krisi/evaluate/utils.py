@@ -21,15 +21,15 @@ def handle_unnamed(
         if isinstance(y, pd.Series) and y.name is not None:
             dataset_name = str(y.name)
         else:
-            dataset_name = f"Dataset:{display_time+str(uuid.uuid4()).split('-')[0]}"
+            dataset_name = f"Dataset_{display_time+str(uuid.uuid4()).split('-')[0]}"
 
     if model_name is None:
         if isinstance(predictions, pd.Series) and predictions.name is not None:
             model_name = str(predictions.name)
         else:
-            model_name = f"Model:{display_time+str(uuid.uuid4()).split('-')[0]}"
+            model_name = f"Model_{display_time+str(uuid.uuid4()).split('-')[0]}"
 
     if project_name is None:
-        project_name = f"Project:{display_time+str(uuid.uuid4()).split('-')[0]}"
+        project_name = f"Project_{display_time+str(uuid.uuid4()).split('-')[0]}"
 
     return model_name, dataset_name, project_name

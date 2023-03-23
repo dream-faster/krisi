@@ -348,7 +348,7 @@ class ScoreCard:
             os.path.join(
                 path,
                 Path(
-                    f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
+                    f"{datetime.datetime.now().strftime('%H-%M-%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
                 ),
             )
         )
