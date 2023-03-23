@@ -45,7 +45,7 @@ def __convert_html_to_pdf(
     css = CSS(string=css_string)
     pdf = HTML(string=source_html).write_pdf(stylesheets=[css])
 
-    open(f"{output_path}/{report_name}", "w").write(pdf)
+    open(f"{output_path}/{report_name}", "wb").write(pdf)
 
 
 def convert_figures_to_html(figures: List["go.Figure"]) -> str:
