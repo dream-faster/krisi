@@ -31,7 +31,7 @@ dependencies = [
   "numpy",
   "pandas",
   "dill",
-  "typing-utils",
+  "typing-extensions",
 
   #Plotting libraries
   "rich",
@@ -78,7 +78,8 @@ plotting = [
   "dash",
   "jupyter_dash",
   "weasyprint",
-  "kaleido"
+  "kaleido",
+  "pangocffi"
 ]
 
 [tool.hatch.envs.quality]

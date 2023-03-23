@@ -1,6 +1,7 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pandas as pd
@@ -85,7 +86,7 @@ class ScoreCard:
             else classification
         )
         model_name_, dataset_name_, project_name_ = handle_unnamed(
-            y, model_name, dataset_name, project_name
+            y, predictions, model_name, dataset_name, project_name
         )
 
         self.__dict__["metadata"] = ScoreCardMetadata(
@@ -331,7 +332,7 @@ class ScoreCard:
 
     def save(
         self,
-        path: str = PathConst.default_eval_output_path,
+        path: Path = PathConst.default_eval_output_path,
         with_info: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
@@ -339,10 +340,18 @@ class ScoreCard:
             SaveModes.text,
         ],
     ) -> "ScoreCard":
-        if self.metadata.project_name:
-            path += f"{self.metadata.project_name}/"
-        path += f"{datetime.datetime.now().strftime('%H:%M:%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
         import os
+
+        if self.metadata.project_name:
+            path = Path(os.path.join(path, Path(f"{self.metadata.project_name}")))
+        path = Path(
+            os.path.join(
+                path,
+                Path(
+                    f"{datetime.datetime.now().strftime('%H-%M-%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
+                ),
+            )
+        )
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -367,8 +376,8 @@ class ScoreCard:
         display_modes: Union[str, List[str], DisplayModes, List[DisplayModes]] = [
             DisplayModes.interactive
         ],
-        html_template_url: str = PathConst.html_report_template_url,
-        css_template_url: str = PathConst.css_report_template_url,
+        html_template_url: Path = PathConst.html_report_template_url,
+        css_template_url: Path = PathConst.css_report_template_url,
         author: str = "",
     ) -> None:
         report = create_report_from_scorecard(

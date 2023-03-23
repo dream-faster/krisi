@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Union
 
 import numpy as np
 import pandas as pd
@@ -23,7 +23,7 @@ def map_newdict_on_olddict(
 
 def group_by_categories(
     flat_list: List[Union["Metric", "InteractiveFigure"]], categories: List[str]
-) -> dict[str, Union["Metric", "InteractiveFigure"]]:
+) -> Dict[str, Union["Metric", "InteractiveFigure"]]:
     category_groups = dict()
     for category in categories:
         category_groups[category] = list(
