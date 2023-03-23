@@ -16,7 +16,7 @@ def save_object(obj: "ScoreCard", path: Path) -> None:
 
     final_path = Path(os.path.join(path, Path("scorecard.pickle")))
 
-    with open(final_path, "w", encoding="utf-8") as file:
+    with open(final_path, "wb") as file:
         dill.dump(obj, file)
 
 
