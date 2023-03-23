@@ -78,7 +78,8 @@ plotting = [
   "dash",
   "jupyter_dash",
   "weasyprint",
-  "kaleido"
+  "kaleido",
+  "pango"
 ]
 
 [tool.hatch.envs.quality]
