@@ -14,7 +14,7 @@ def __figure_to_html(figure: "go.Figure") -> str:
 
 
 def __create_html_report(
-    template_file: str, html_elements_to_inject: dict[str, str]
+    template_file: str, html_elements_to_inject: Dict[str, str]
 ) -> str:
     import pkgutil
 
@@ -55,7 +55,7 @@ def create_pdf_report(
     title: str = "Time Series Report",
     html_template_url: str = PathConst.html_template_url,
     css_template_url: str = PathConst.css_template_url,
-    html_elements_to_inject: dict[str, str] = dict(),
+    html_elements_to_inject: Dict[str, str] = dict(),
 ):
     html_elements_to_inject["title"] = title
     report_html = __create_html_report(html_template_url, html_elements_to_inject)

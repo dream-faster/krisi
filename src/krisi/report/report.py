@@ -1,5 +1,5 @@
 import datetime
-from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
 from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.interactive import run_app
@@ -104,8 +104,7 @@ def get_html_elements_for_injection_scorecard(
     date: str,
     custom_metric_html: str,
 ) -> Callable:
-    def func() -> dict[str, str]:
-
+    def func() -> Dict[str, str]:
         diagrams = obj.get_diagram_dictionary()
         diagrams = append_sizes(diagrams)
 
