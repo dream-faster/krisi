@@ -14,7 +14,7 @@ def plot_y_predictions(
 ) -> None:
     if isinstance(preds, List):
         preds = pd.concat(preds, axis="columns")
-    df = y.copy().to_frame()
+    df = y.to_frame()
     df = pd.concat([y, preds], axis="columns")
 
     labels = dict(index=index_name, value=value_name, variable=variable_name)
