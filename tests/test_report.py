@@ -15,3 +15,6 @@ def test_plot_y_predictions():
     predictions["second_model"] = y.shift(5)[cutoff:]
 
     plot_y_predictions(y, predictions, index_name="time", value_name="magnitude")
+
+
+test_plot_y_predictions()
