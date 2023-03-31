@@ -24,22 +24,19 @@ def plot_y_predictions(
     y: pd.Series,
     preds: Union[List[pd.Series], pd.DataFrame],
     title: Optional[str] = "",
-    index_name: str = "index",
-    value_name: str = "value",
+    x_name: str = "index",
+    y_name: str = "value",
     variable_name: str = "models",
     modes: List[Union[str, VizualisationMethod]] = [
         VizualisationMethod.seperate,
-        VizualisationMethod.overlapped,
+        # VizualisationMethod.overlapped,
     ],
 ) -> None:
     modes = [VizualisationMethod.from_str(mode) for mode in modes]
-
-    if isinstance(preds, List):
-        df = pd.concat(preds, axis="columns")
-    else:
-        df = preds
+    df = pd.concat(preds, axis="columns") if isinstance(preds, List) else preds
 
     if pkgutil.find_loader("plotly"):
+        import plotly as plt
         import plotly.graph_objects as go
         from plotly.subplots import make_subplots
 
@@ -49,9 +46,9 @@ def plot_y_predictions(
                 name_of_plots = name_of_plots + list(df.columns)
             if mode == VizualisationMethod.overlapped:
                 name_of_plots.append("Joint Plot")
-
+        num_plots = len(name_of_plots)
         fig = make_subplots(
-            rows=len(name_of_plots),
+            rows=num_plots,
             cols=1,
             shared_xaxes=True,
             subplot_titles=name_of_plots,
@@ -65,21 +62,29 @@ def plot_y_predictions(
                 line_color="red",
                 legendwidth=0.0,
                 legendgroup="y",
+                showlegend=True,
             )
+            traces = [
+                go.Scatter(
+                    x=df.index,
+                    y=df[column],
+                    name=column,
+                    legendgroup="models",
+                    opacity=0.5,
+                    line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
+                )
+                for i, column in enumerate(df.columns)
+            ]
 
             if mode == VizualisationMethod.seperate:
                 for i, column in enumerate(df.columns):
                     fig.append_trace(
-                        go.Scatter(
-                            x=df.index,
-                            y=df[column],
-                            name=column,
-                            legendgroup="models",
-                            opacity=0.5,
-                        ),
+                        traces[i],
                         row=i + 1,
                         col=1,
                     )
+                    if i == 1:
+                        y_trace.showlegend = False
                     fig.append_trace(
                         y_trace,
                         row=i + 1,
@@ -87,24 +92,23 @@ def plot_y_predictions(
                     )
 
             if mode == VizualisationMethod.overlapped:
+                if num_plots == 1:
+                    y_trace.showlegend = True
                 fig.append_trace(
                     y_trace,
-                    row=len(name_of_plots),
+                    row=num_plots,
                     col=1,
                 )
-                for column in df.columns:
+                for i, column in enumerate(df.columns):
                     fig.append_trace(
-                        go.Scatter(
-                            x=df.index,
-                            y=df[column],
-                            name=column,
-                            legendgroup="models",
-                            opacity=0.5,
-                        ),
-                        row=len(name_of_plots),
+                        traces[i],
+                        row=num_plots,
                         col=1,
                     )
 
+        for row in range(num_plots):
+            fig.update_xaxes(title_text=x_name, row=row + 1, col=1)
+            fig.update_yaxes(title_text=y_name, row=row + 1, col=1)
         fig.update_layout(title=title)
         fig.show()
     else:
