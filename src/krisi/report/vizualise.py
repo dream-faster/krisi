@@ -54,28 +54,27 @@ def plot_y_predictions(
             subplot_titles=name_of_plots,
         )
 
-        for mode in modes:
-            y_trace = go.Scatter(
+        y_trace = go.Scatter(
+            x=df.index,
+            y=y,
+            name="y",
+            line_color="red",
+            legendwidth=0.0,
+            legendgroup="y",
+            showlegend=True,
+        )
+        traces = [
+            go.Scatter(
                 x=df.index,
-                y=y,
-                name="y",
-                line_color="red",
-                legendwidth=0.0,
-                legendgroup="y",
-                showlegend=True,
+                y=df[column],
+                name=column,
+                legendgroup="models",
+                opacity=0.5,
+                line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
             )
-            traces = [
-                go.Scatter(
-                    x=df.index,
-                    y=df[column],
-                    name=column,
-                    legendgroup="models",
-                    opacity=0.5,
-                    line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
-                )
-                for i, column in enumerate(df.columns)
-            ]
-
+            for i, column in enumerate(df.columns)
+        ]
+        for mode in modes:
             if mode == VizualisationMethod.seperate:
                 for i, column in enumerate(df.columns):
                     fig.append_trace(
