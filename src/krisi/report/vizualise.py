@@ -1,7 +1,23 @@
 import pkgutil
+from enum import Enum
 from typing import List, Optional, Union
 
 import pandas as pd
+
+
+class VizualisationMethod(Enum):
+    overlapped = "overlapped"
+    seperate = "seperate"
+
+    @staticmethod
+    def from_str(value: Union[str, "VizualisationMethod"]) -> "VizualisationMethod":
+        if isinstance(value, VizualisationMethod):
+            return value
+        for strategy in VizualisationMethod:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown VizualisationMethod: {value}")
 
 
 def plot_y_predictions(
@@ -11,7 +27,10 @@ def plot_y_predictions(
     index_name: str = "index",
     value_name: str = "value",
     variable_name: str = "models",
+    modes: List[Union[str, VizualisationMethod]] = [VizualisationMethod.overlapped],
 ) -> None:
+    modes = [VizualisationMethod.from_str(mode) for mode in modes]
+
     if isinstance(preds, List):
         preds = pd.concat(preds, axis="columns")
     df = y.to_frame()
