@@ -14,4 +14,7 @@ def test_plot_y_predictions():
     predictions["first_model"] = y[cutoff:] * -1.0
     predictions["second_model"] = y.shift(5)[cutoff:]
 
-    plot_y_predictions(y, predictions, index_name="time", value_name="magnitude")
+    plot_y_predictions(y, predictions, x_name="time", y_name="magnitude")
+
+
+test_plot_y_predictions()
