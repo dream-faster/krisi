@@ -1,4 +1,5 @@
 <p align="center">
+
  [![Docs badge](https://img.shields.io/github/actions/workflow/status/dream-faster/krisi/docs.yaml?logo=readthedocs)](https://dream-faster.github.io/krisi/)
  [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
  [![Tests Badge](https://github.com/dream-faster/fold/actions/workflows/tests.yaml/badge.svg)](https://github.com/dream-faster/fold/actions/workflows/tests.yaml)
