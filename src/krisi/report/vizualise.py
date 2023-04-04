@@ -29,18 +29,20 @@ def plot_y_predictions(
     variable_name: str = "models",
     modes: List[Union[str, VizualisationMethod]] = [
         VizualisationMethod.seperate,
-        # VizualisationMethod.overlapped,
+        VizualisationMethod.overlapped,
     ],
+    y_separate: bool = True,
 ) -> None:
     modes = [VizualisationMethod.from_str(mode) for mode in modes]
     df = pd.concat(preds, axis="columns") if isinstance(preds, List) else preds
+    df = df.reindex(y.index.union(df.index))
 
     if pkgutil.find_loader("plotly"):
         import plotly as plt
         import plotly.graph_objects as go
         from plotly.subplots import make_subplots
 
-        name_of_plots = []
+        name_of_plots = [] + ["y"] if y_separate else []
         for mode in modes:
             if mode == VizualisationMethod.seperate:
                 name_of_plots = name_of_plots + list(df.columns)
@@ -52,6 +54,8 @@ def plot_y_predictions(
             cols=1,
             shared_xaxes=True,
             subplot_titles=name_of_plots,
+            horizontal_spacing=0.05,
+            vertical_spacing=0.05,
         )
 
         y_trace = go.Scatter(
@@ -74,21 +78,32 @@ def plot_y_predictions(
             )
             for i, column in enumerate(df.columns)
         ]
+
+        if y_separate:
+            y_trace.showlegend = False
+            fig.append_trace(
+                y_trace,
+                row=1,
+                col=1,
+            )
+
         for mode in modes:
             if mode == VizualisationMethod.seperate:
                 for i, column in enumerate(df.columns):
                     fig.append_trace(
                         traces[i],
-                        row=i + 1,
+                        row=i + (2 if y_separate else 1),
                         col=1,
                     )
-                    if i == 1:
-                        y_trace.showlegend = False
-                    fig.append_trace(
-                        y_trace,
-                        row=i + 1,
-                        col=1,
-                    )
+
+                    if not y_separate:
+                        if i == 0:
+                            y_trace.showlegend = False
+                        fig.append_trace(
+                            y_trace,
+                            row=i + 1,
+                            col=1,
+                        )
 
             if mode == VizualisationMethod.overlapped:
                 if num_plots == 1:
@@ -108,7 +123,14 @@ def plot_y_predictions(
         for row in range(num_plots):
             fig.update_xaxes(title_text=x_name, row=row + 1, col=1)
             fig.update_yaxes(title_text=y_name, row=row + 1, col=1)
-        fig.update_layout(title=title)
+            fig.update_layout(**{f"xaxis{str(row+1)}_showticklabels": True})
+
+        fig.update_layout(
+            title=title,
+            autosize=True,
+            height=350.0 * num_plots,
+            margin=dict(l=50, r=50, b=50, t=100, pad=2),
+        )
         fig.show()
     else:
         raise AssertionError(
