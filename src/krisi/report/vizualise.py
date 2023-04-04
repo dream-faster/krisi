@@ -29,9 +29,9 @@ def plot_y_predictions(
     variable_name: str = "models",
     modes: List[Union[str, VizualisationMethod]] = [
         VizualisationMethod.seperate,
-        VizualisationMethod.overlapped,
+        # VizualisationMethod.overlapped,
     ],
-    y_separate: bool = True,
+    y_separate: bool = False,
 ) -> None:
     modes = [VizualisationMethod.from_str(mode) for mode in modes]
     df = pd.concat(preds, axis="columns") if isinstance(preds, List) else preds
