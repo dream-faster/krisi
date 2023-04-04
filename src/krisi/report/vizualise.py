@@ -20,69 +20,87 @@ class VizualisationMethod(Enum):
             raise ValueError(f"Unknown VizualisationMethod: {value}")
 
 
-def plot_y_predictions(
+def __calc_plot_names(
+    df: pd.DataFrame, modes: List[VizualisationMethod], y_separate: bool
+) -> List[str]:
+    name_of_plots = [] + ["y"] if y_separate else []
+    for mode in modes:
+        if mode == VizualisationMethod.seperate:
+            name_of_plots = name_of_plots + list(df.columns)
+        if mode == VizualisationMethod.overlapped:
+            name_of_plots.append("Joint Plot")
+
+    return name_of_plots
+
+
+def __vizualise_with_plotly(
     y: pd.Series,
     preds: Union[List[pd.Series], pd.DataFrame],
-    title: Optional[str] = "",
-    x_name: str = "index",
-    y_name: str = "value",
-    variable_name: str = "models",
-    modes: List[Union[str, VizualisationMethod]] = [
-        VizualisationMethod.seperate,
-        # VizualisationMethod.overlapped,
-    ],
-) -> None:
-    modes = [VizualisationMethod.from_str(mode) for mode in modes]
+    title: Optional[str],
+    x_name: str,
+    y_name: str,
+    modes: List[VizualisationMethod],
+    y_separate: bool,
+):
+    import plotly as plt
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
     df = pd.concat(preds, axis="columns") if isinstance(preds, List) else preds
+    df = df.reindex(y.index.union(df.index))
 
-    if pkgutil.find_loader("plotly"):
-        import plotly as plt
-        import plotly.graph_objects as go
-        from plotly.subplots import make_subplots
+    name_of_plots = __calc_plot_names(df, modes, y_separate)
+    num_plots = len(name_of_plots)
 
-        name_of_plots = []
-        for mode in modes:
-            if mode == VizualisationMethod.seperate:
-                name_of_plots = name_of_plots + list(df.columns)
-            if mode == VizualisationMethod.overlapped:
-                name_of_plots.append("Joint Plot")
-        num_plots = len(name_of_plots)
-        fig = make_subplots(
-            rows=num_plots,
-            cols=1,
-            shared_xaxes=True,
-            subplot_titles=name_of_plots,
-        )
-
-        y_trace = go.Scatter(
+    fig = make_subplots(
+        rows=num_plots,
+        cols=1,
+        shared_xaxes=True,
+        subplot_titles=name_of_plots,
+        horizontal_spacing=0.07,
+        vertical_spacing=0.07,
+    )
+    y_trace = go.Scatter(
+        x=df.index,
+        y=y,
+        name="y",
+        line_color="red",
+        legendwidth=0.0,
+        legendgroup="y",
+        showlegend=True,
+    )
+    traces = [
+        go.Scatter(
             x=df.index,
-            y=y,
-            name="y",
-            line_color="red",
-            legendwidth=0.0,
-            legendgroup="y",
-            showlegend=True,
+            y=df[column],
+            name=column,
+            legendgroup="models",
+            opacity=0.5,
+            line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
         )
-        traces = [
-            go.Scatter(
-                x=df.index,
-                y=df[column],
-                name=column,
-                legendgroup="models",
-                opacity=0.5,
-                line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
-            )
-            for i, column in enumerate(df.columns)
-        ]
-        for mode in modes:
-            if mode == VizualisationMethod.seperate:
-                for i, column in enumerate(df.columns):
-                    fig.append_trace(
-                        traces[i],
-                        row=i + 1,
-                        col=1,
-                    )
-                    if i == 1:
+        for i, column in enumerate(df.columns)
+    ]
+
+    if y_separate:
+        y_trace.showlegend = False
+        fig.append_trace(
+            y_trace,
+            row=1,
+            col=1,
+        )
+
+    for mode in modes:
+        if mode == VizualisationMethod.seperate:
+            for i, column in enumerate(df.columns):
+                fig.append_trace(
+                    traces[i],
+                    row=i + (2 if y_separate else 1),
+                    col=1,
+                )
+                if not y_separate:
+                    if i == 0:
+                        y_trace.showlegend = True
+                    else:
                         y_trace.showlegend = False
                     fig.append_trace(
                         y_trace,
@@ -90,26 +108,57 @@ def plot_y_predictions(
                         col=1,
                     )
 
-            if mode == VizualisationMethod.overlapped:
-                if num_plots == 1:
-                    y_trace.showlegend = True
+        if mode == VizualisationMethod.overlapped:
+            if num_plots == 1:
+                y_trace.showlegend = True
+            fig.append_trace(
+                y_trace,
+                row=num_plots,
+                col=1,
+            )
+            for i, column in enumerate(df.columns):
                 fig.append_trace(
-                    y_trace,
+                    traces[i],
                     row=num_plots,
                     col=1,
                 )
-                for i, column in enumerate(df.columns):
-                    fig.append_trace(
-                        traces[i],
-                        row=num_plots,
-                        col=1,
-                    )
 
-        for row in range(num_plots):
-            fig.update_xaxes(title_text=x_name, row=row + 1, col=1)
-            fig.update_yaxes(title_text=y_name, row=row + 1, col=1)
-        fig.update_layout(title=title)
-        fig.show()
+    for row in range(num_plots):
+        fig.update_xaxes(title_text=x_name, row=row + 1, col=1)
+        fig.update_yaxes(title_text=y_name, row=row + 1, col=1)
+        fig.update_layout(**{f"xaxis{str(row+1)}_showticklabels": True})
+
+    fig.update_layout(
+        title=title,
+        autosize=True,
+        height=350.0 * num_plots,
+        margin=dict(l=50, r=50, b=50, t=100, pad=2),
+    )
+    fig.show()
+
+
+def plot_y_predictions(
+    y: pd.Series,
+    preds: Union[List[pd.Series], pd.DataFrame],
+    title: Optional[str] = "",
+    x_name: str = "index",
+    y_name: str = "value",
+    modes: List[Union[str, VizualisationMethod]] = [
+        VizualisationMethod.seperate,
+        # VizualisationMethod.overlapped,
+    ],
+    y_separate: bool = False,
+) -> None:
+    if pkgutil.find_loader("plotly"):
+        __vizualise_with_plotly(
+            y,
+            preds=preds,
+            title=title,
+            x_name=x_name,
+            y_name=y_name,
+            modes=[VizualisationMethod.from_str(mode) for mode in modes],
+            y_separate=y_separate,
+        )
     else:
         raise AssertionError(
             "`Plotly` is not installed. Install Plotly by running `pip install plotly` or unlock all reporting capability by `pip install krisi[plotting]`."
