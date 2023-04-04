@@ -4,9 +4,11 @@ from typing import List, Optional, Union
 
 import pandas as pd
 
+from krisi.utils.iterable_helpers import wrap_in_list
+
 
 class VizualisationMethod(Enum):
-    overlapped = "overlapped"
+    overlap = "overlap"
     seperate = "seperate"
 
     @staticmethod
@@ -27,7 +29,7 @@ def __calc_plot_names(
     for mode in modes:
         if mode == VizualisationMethod.seperate:
             name_of_plots = name_of_plots + list(df.columns)
-        if mode == VizualisationMethod.overlapped:
+        if mode == VizualisationMethod.overlap:
             name_of_plots.append("Joint Plot")
 
     return name_of_plots
@@ -58,7 +60,7 @@ def __vizualise_with_plotly(
         shared_xaxes=True,
         subplot_titles=name_of_plots,
         horizontal_spacing=0.07,
-        vertical_spacing=0.07,
+        vertical_spacing=0.15,
     )
     y_trace = go.Scatter(
         x=df.index,
@@ -108,14 +110,15 @@ def __vizualise_with_plotly(
                         col=1,
                     )
 
-        if mode == VizualisationMethod.overlapped:
-            if num_plots == 1:
-                y_trace.showlegend = True
-            fig.append_trace(
-                y_trace,
-                row=num_plots,
-                col=1,
-            )
+        if mode == VizualisationMethod.overlap:
+            if not y_separate:
+                if num_plots == 1:
+                    y_trace.showlegend = True
+                fig.append_trace(
+                    y_trace,
+                    row=num_plots,
+                    col=1,
+                )
             for i, column in enumerate(df.columns):
                 fig.append_trace(
                     traces[i],
@@ -133,6 +136,7 @@ def __vizualise_with_plotly(
         autosize=True,
         height=350.0 * num_plots,
         margin=dict(l=50, r=50, b=50, t=100, pad=2),
+        hovermode="x unified",
     )
     fig.show()
 
@@ -143,12 +147,13 @@ def plot_y_predictions(
     title: Optional[str] = "",
     x_name: str = "index",
     y_name: str = "value",
-    modes: List[Union[str, VizualisationMethod]] = [
-        VizualisationMethod.seperate,
-        # VizualisationMethod.overlapped,
+    mode: Union[str, VizualisationMethod, List[Union[str, VizualisationMethod]]] = [
+        # VizualisationMethod.seperate,
+        VizualisationMethod.overlap,
     ],
     y_separate: bool = False,
 ) -> None:
+    modes = wrap_in_list(mode)
     if pkgutil.find_loader("plotly"):
         __vizualise_with_plotly(
             y,

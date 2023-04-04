@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -98,3 +98,10 @@ def remove_nans(iter):
 
 def calculate_nans(ds: Union[Targets, Predictions]) -> int:
     return ds.isna().sum() if isinstance(ds, pd.Series) else sum(np.isnan(ds))
+
+
+T = TypeVar("T")
+
+
+def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
+    return input if isinstance(input, List) else [input]
