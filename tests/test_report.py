@@ -18,6 +18,3 @@ def test_plot_y_predictions():
     predictions["fifth_model"] = y.shift(30)[cutoff:]
 
     plot_y_predictions(y, predictions, x_name="time", y_name="magnitude")
-
-
-test_plot_y_predictions()
