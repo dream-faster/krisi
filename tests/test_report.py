@@ -17,4 +17,14 @@ def test_plot_y_predictions():
     predictions["fourth_model"] = y.shift(20)[cutoff:]
     predictions["fifth_model"] = y.shift(30)[cutoff:]
 
-    plot_y_predictions(y, predictions, x_name="time", y_name="magnitude")
+    plot_y_predictions(
+        y,
+        predictions,
+        x_name="time",
+        y_name="magnitude",
+        y_separate=False,
+        mode=["overlap"],
+    )
+
+
+test_plot_y_predictions()
