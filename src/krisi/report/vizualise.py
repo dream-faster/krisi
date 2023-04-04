@@ -136,6 +136,7 @@ def __vizualise_with_plotly(
         autosize=True,
         height=350.0 * num_plots,
         margin=dict(l=50, r=50, b=50, t=100, pad=2),
+        hovermode="x unified",
     )
     fig.show()
 

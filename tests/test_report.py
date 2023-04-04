@@ -22,9 +22,9 @@ def test_plot_y_predictions():
         predictions,
         x_name="time",
         y_name="magnitude",
-        y_separate=False,
+        y_separate=True,
         mode=["overlap"],
     )
 
 
-test_plot_y_predictions()
+# test_plot_y_predictions()
