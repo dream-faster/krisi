@@ -12,7 +12,7 @@ def check_frequency(df):
     return pd.infer_freq(df.index)
 
 
-def check_consistency(df, name):
+def check_consistency(df: pd.DataFrame, name: str):
     print(f"-- Consistency for {name} --")
     print(f"Gaps should be 1: {len(check_gaps(df))}")
     print(f"Frequency should be 'H': {check_frequency(df)}")
