@@ -73,7 +73,7 @@ class ScoreCard:
     ... sc = ScoreCard()
     ... sc.evaluate(y_pred, y_true, defaults=True) # Calculate predefined metrics
     ... sc["own_metric"] = (y_pred - y_true).mean() # Add a metric result directly
-    ... sc.print(extended=True)
+    ... sc.print('extended')
     """
 
     y: Targets
@@ -347,7 +347,7 @@ class ScoreCard:
 
     def print(
         self,
-        mode: Union[PrintMode, List[PrintMode]] = PrintMode.extended,
+        mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended,
         with_info: bool = False,
         extended: bool = True,
         input_analysis: bool = True,
