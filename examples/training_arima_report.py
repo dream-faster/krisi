@@ -41,7 +41,7 @@ def training_arima_report() -> Tuple[ScoreCard, ScoreCard]:
 
     """ Console log Reports """
     report_outsample.print()
-    report_insample.print(extended=True)
+    report_insample.print("extended")
 
     return report_insample, report_outsample
 
