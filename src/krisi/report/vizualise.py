@@ -23,14 +23,20 @@ class VizualisationMethod(Enum):
 
 
 def __calc_plot_names(
-    df: pd.DataFrame, modes: List[VizualisationMethod], y_separate: bool
+    df: pd.DataFrame,
+    modes: List[VizualisationMethod],
+    y_separate: bool,
+    joint_plot_name: str,
+    target_plot_name: str,
 ) -> List[str]:
-    name_of_plots = [] + ["y"] if y_separate else []
+    name_of_plots = [] + [target_plot_name] if y_separate else []
+
     for mode in modes:
         if mode == VizualisationMethod.seperate:
-            name_of_plots = name_of_plots + list(df.columns)
+            name_of_plots += list(df.columns)
+
         if mode == VizualisationMethod.overlap:
-            name_of_plots.append("Joint Plot")
+            name_of_plots += [joint_plot_name]
 
     return name_of_plots
 
@@ -43,6 +49,10 @@ def __vizualise_with_plotly(
     y_name: str,
     modes: List[VizualisationMethod],
     y_separate: bool,
+    target_opacity: float,
+    predictions_opacity: float,
+    joint_plot_name: str,
+    target_plot_name: str,
 ):
     import plotly as plt
     import plotly.graph_objects as go
@@ -55,7 +65,9 @@ def __vizualise_with_plotly(
     )
     df = df.reindex(y.index.union(df.index))
 
-    name_of_plots = __calc_plot_names(df, modes, y_separate)
+    name_of_plots = __calc_plot_names(
+        df, modes, y_separate, joint_plot_name, target_plot_name
+    )
     num_plots = len(name_of_plots)
 
     fig = make_subplots(
@@ -64,7 +76,7 @@ def __vizualise_with_plotly(
         shared_xaxes=True,
         subplot_titles=name_of_plots,
         horizontal_spacing=0.05,
-        vertical_spacing=0.05,
+        vertical_spacing=0.10,
     )
     y_trace = go.Scatter(
         x=df.index,
@@ -74,6 +86,7 @@ def __vizualise_with_plotly(
         legendwidth=0.0,
         legendgroup="y",
         showlegend=True,
+        opacity=target_opacity,
     )
     traces = [
         go.Scatter(
@@ -81,7 +94,7 @@ def __vizualise_with_plotly(
             y=df[column],
             name=column,
             legendgroup="models",
-            opacity=0.5,
+            opacity=predictions_opacity,
             line_color=plt.colors.DEFAULT_PLOTLY_COLORS[i],
         )
         for i, column in enumerate(df.columns)
@@ -139,7 +152,7 @@ def __vizualise_with_plotly(
         title=title,
         autosize=True,
         height=350.0 * num_plots,
-        margin=dict(l=50, r=50, b=50, t=100, pad=2),
+        margin=dict(l=75, r=75, b=50, t=75, pad=0),
         hovermode="x unified",
     )
     fig.show()
@@ -156,6 +169,10 @@ def plot_y_predictions(
         VizualisationMethod.overlap,
     ],
     y_separate: bool = False,
+    target_opacity: float = 1.0,
+    predictions_opacity: float = 0.75,
+    joint_plot_name: str = "Joint Plot",
+    target_plot_name: str = "Target (y)",
 ) -> None:
     modes = wrap_in_list(mode)
     if pkgutil.find_loader("plotly"):
@@ -167,6 +184,10 @@ def plot_y_predictions(
             y_name=y_name,
             modes=[VizualisationMethod.from_str(mode) for mode in modes],
             y_separate=y_separate,
+            target_opacity=target_opacity,
+            predictions_opacity=predictions_opacity,
+            joint_plot_name=joint_plot_name,
+            target_plot_name=target_plot_name,
         )
     else:
         raise AssertionError(
