@@ -24,6 +24,10 @@ def test_plot_y_predictions():
         y_name="magnitude",
         y_separate=True,
         mode=["overlap"],
+        target_opacity=0.9,
+        predictions_opacity=0.2,
+        joint_plot_name="This is a Joint plot",
+        target_plot_name="Sin Wave Target",
     )
 
 
