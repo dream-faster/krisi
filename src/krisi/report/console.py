@@ -4,6 +4,7 @@ from rich import box
 from rich.console import Group
 from rich.layout import Layout
 from rich.panel import Panel
+from rich.table import Table
 
 from krisi.utils.iterable_helpers import group_by_categories
 from krisi.utils.printing import (
@@ -33,6 +34,10 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         result_ = (
             "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
         )
+    elif obj.result is None:
+        result_ = ""
+    elif isinstance(obj.result, Iterable) and not isinstance(obj.result, str):
+        result_ = obj.result
     else:
         result_ = f"{obj.result:<15.5}"
 
@@ -49,6 +54,15 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
     )
 
 
+def get_large_metric_summary(obj: "ScoreCard", title: str) -> Table:
+    return create_metric_table(
+        title=title,
+        metrics=obj.get_all_metrics(),
+        with_info=False,
+        with_parameters=False,
+    )
+
+
 def get_summary(
     obj: "ScoreCard",
     categories: List[str],
@@ -56,7 +70,6 @@ def get_summary(
     with_info: bool = False,
     input_analysis: bool = True,
 ) -> Union[Panel, Layout]:
-
     category_groups = group_by_categories(list(vars(obj).values()), categories)
     input_analysis_table = (
         [create_y_pred_table(obj.classification, obj.y, obj.predictions)]

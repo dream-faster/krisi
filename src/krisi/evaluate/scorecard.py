@@ -1,6 +1,7 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -24,7 +25,11 @@ from krisi.evaluate.type import (
     Targets,
 )
 from krisi.evaluate.utils import handle_unnamed
-from krisi.report.console import get_minimal_summary, get_summary
+from krisi.report.console import (
+    get_large_metric_summary,
+    get_minimal_summary,
+    get_summary,
+)
 from krisi.report.report import create_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.io import save_console, save_minimal_summary, save_object
@@ -33,7 +38,24 @@ from krisi.utils.iterable_helpers import (
     map_newdict_on_olddict,
     remove_nans,
     strip_builtin_functions,
+    wrap_in_list,
 )
+
+
+class PrintMode(Enum):
+    extended = "extended"
+    minimal = "minimal"
+    minimal_table = "minimal_table"
+
+    @staticmethod
+    def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
+        if isinstance(value, PrintMode):
+            return value
+        for strategy in PrintMode:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown PrintMode: {value}")
 
 
 @dataclass
@@ -51,7 +73,7 @@ class ScoreCard:
     ... sc = ScoreCard()
     ... sc.evaluate(y_pred, y_true, defaults=True) # Calculate predefined metrics
     ... sc["own_metric"] = (y_pred - y_true).mean() # Add a metric result directly
-    ... sc.print_summary(extended=True)
+    ... sc.print('extended')
     """
 
     y: Targets
@@ -122,17 +144,23 @@ class ScoreCard:
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
 
-    def __getitem__(self, key: str) -> Any:
-        return getattr(self, key, "Unknown metric")
+    def __getitem__(self, key: Union[str, List[str]]) -> Union["ScoreCard", Metric]:
+        if isinstance(key, List):
+            scorecard_copy = deepcopy(self)
+            all_keys = list(scorecard_copy.__dict__.keys())
+            for k in all_keys:
+                if k not in key:
+                    if isinstance(scorecard_copy.__dict__[k], Metric):
+                        del scorecard_copy.__dict__[k]
+
+            return scorecard_copy
+        elif isinstance(key, str):
+            return getattr(self, key, Metric("Unknown Metric"))
 
     def __delitem__(self, key: str) -> None:
-        setattr(self, key, None)
+        del self[key]
 
     def __str__(self) -> str:
-        print(Pretty(self.__dict__))
-        return ""
-
-    def __repr__(self) -> str:
         print(Pretty(self.__dict__))
         return ""
 
@@ -226,7 +254,11 @@ class ScoreCard:
         -------
         List of Metrics
         """
-        return [self.__dict__[key] for key in self.default_metrics_keys]
+        return [
+            self.__dict__[key]
+            for key in self.default_metrics_keys
+            if key in self.__dict__
+        ]
 
     def get_custom_metrics(self) -> List[Metric]:
         """Returns a List of Custom ``Metric``s defined by the user on initalization
@@ -237,7 +269,9 @@ class ScoreCard:
         List of Metrics
         """
         predifined_custom_metrics = [
-            self.__dict__[key] for key in self.custom_metrics_keys
+            self.__dict__[key]
+            for key in self.custom_metrics_keys
+            if key in self.__dict__
         ]
         modified_custom_metrics = [
             value
@@ -311,24 +345,32 @@ class ScoreCard:
                 metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
 
-    def print_summary(
+    def print(
         self,
+        mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended,
         with_info: bool = False,
         extended: bool = True,
         input_analysis: bool = True,
+        title: Optional[str] = None,
     ) -> None:
-        if extended:
-            summary = get_summary(
-                self,
-                repr=True,
-                categories=[el.value for el in MetricCategories],
-                with_info=with_info,
-                input_analysis=input_analysis,
-            )
-        else:
-            summary = get_minimal_summary(self)
-
-        print(summary)
+        modes = [PrintMode.from_str(mode_) for mode_ in wrap_in_list(mode)]
+        if title is None:
+            title = self.metadata.project_name
+        for mode in modes:
+            if mode is PrintMode.extended:
+                print(
+                    get_summary(
+                        self,
+                        repr=True,
+                        categories=[el.value for el in MetricCategories],
+                        with_info=with_info,
+                        input_analysis=input_analysis,
+                    )
+                )
+            elif mode is PrintMode.minimal:
+                print(get_minimal_summary(self))
+            elif mode is PrintMode.minimal_table:
+                print(get_large_metric_summary(self, title))
 
     def save(
         self,

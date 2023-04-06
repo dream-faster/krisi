@@ -84,7 +84,7 @@ You can quickly evaluate your predictions by running:
 import numpy as np
 from krisi.evaluate import score
 
-score(y=np.random.rand(1000), predictions=np.random.rand(1000)).print_summary()
+score(y=np.random.rand(1000), predictions=np.random.rand(1000)).print()
 ```
 
 Krisi's main object is the ``ScoreCard`` that contains predefined ``Metric``s and which you can add further ``Metric``s to.
@@ -106,7 +106,7 @@ sc.evaluate(defaults=True)
 sc["own_metric"] = (target - predictions).mean()
 
 # Print the result
-sc.print_summary()
+sc.print()
 ```
 Outputs:
 ```
@@ -182,7 +182,7 @@ sc["metric_with_metadata"] = Metric(
 sc.metric_barebones = dict(info="Giving description to a metric")
 
 # Print a pretty summary to the console
-sc.print_summary(with_info=True)
+sc.print(with_info=True)
 ```
 Outputs:
 ```

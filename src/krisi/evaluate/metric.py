@@ -89,6 +89,16 @@ class Metric(Generic[MetricResult]):
     ) -> Optional[List[InteractiveFigure]]:
         return create_diagram(self)
 
+    def print(
+        self,
+        mode: Union[str, List[str]] = "dummy",
+        with_info: bool = False,
+        extended: bool = True,
+        input_analysis: bool = True,
+        title: Optional[str] = None,
+    ) -> None:
+        pass
+
     def __safe_set(
         self, result: Union[Exception, MetricResult, List[MetricResult]], key: str
     ):
