@@ -33,6 +33,10 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
         result_ = (
             "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
         )
+    elif obj.result is None:
+        result_ = ""
+    elif isinstance(obj.result, Iterable) and not isinstance(obj.result, str):
+        result_ = obj.result
     else:
         result_ = f"{obj.result:<15.5}"
 
@@ -49,6 +53,16 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
     )
 
 
+def get_large_metric_summary(obj: "ScoreCard") -> str:
+    return "\n".join(
+        [
+            f"{metric.name:>40s} - {metric.result:<15.5}"
+            for metric in obj.get_all_metrics()
+            if isinstance(metric.result, (float, int))
+        ]
+    )
+
+
 def get_summary(
     obj: "ScoreCard",
     categories: List[str],
@@ -56,7 +70,6 @@ def get_summary(
     with_info: bool = False,
     input_analysis: bool = True,
 ) -> Union[Panel, Layout]:
-
     category_groups = group_by_categories(list(vars(obj).values()), categories)
     input_analysis_table = (
         [create_y_pred_table(obj.classification, obj.y, obj.predictions)]

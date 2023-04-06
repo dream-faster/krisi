@@ -18,4 +18,4 @@ sc.evaluate(defaults=True)
 sc["own_metric"] = (target - predictions).mean()
 
 """ Print scorecard summary """
-sc.print_summary(extended=True)
+sc.print(extended=True)

@@ -41,7 +41,7 @@ def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
 
     """ Console log Reports """
     print(report_outsample)
-    report_insample.print_summary()
+    report_insample.print()
 
     return report_insample, report_outsample
 
