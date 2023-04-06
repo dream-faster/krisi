@@ -63,3 +63,19 @@ class ScoreCardMetadata:
     model_description: str = ""
     dataset_name: str = ""
     dataset_description: str = ""
+
+
+class PrintMode(Enum):
+    extended = "extended"
+    minimal = "minimal"
+    minimal_table = "minimal_table"
+
+    @staticmethod
+    def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
+        if isinstance(value, PrintMode):
+            return value
+        for strategy in PrintMode:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown PrintMode: {value}")

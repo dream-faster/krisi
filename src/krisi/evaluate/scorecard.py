@@ -1,7 +1,6 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -19,6 +18,7 @@ from krisi.evaluate.type import (
     MetricCategories,
     PathConst,
     Predictions,
+    PrintMode,
     SampleTypes,
     SaveModes,
     ScoreCardMetadata,
@@ -40,22 +40,6 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
-
-
-class PrintMode(Enum):
-    extended = "extended"
-    minimal = "minimal"
-    minimal_table = "minimal_table"
-
-    @staticmethod
-    def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
-        if isinstance(value, PrintMode):
-            return value
-        for strategy in PrintMode:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown PrintMode: {value}")
 
 
 @dataclass
