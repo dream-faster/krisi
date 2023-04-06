@@ -159,16 +159,12 @@ class ScoreCard:
         else:
             return getattr(self, key, "Unknown metric")
 
-    # def __delitem__(self, key: str) -> None:
-    #     del self[key] #setattr(self, key, None)
+    def __delitem__(self, key: str) -> None:
+        del self[key]
 
     def __str__(self) -> str:
         print(Pretty(self.__dict__))
         return ""
-
-    # def __repr__(self) -> str:
-    #     print(Pretty(self.__dict__))
-    #     return ""
 
     def __setattr__(self, key: str, item: Any) -> None:
         """Defines Dictionary like behaviour and ensures that a Metric can be
