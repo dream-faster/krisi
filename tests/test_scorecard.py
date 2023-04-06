@@ -21,7 +21,7 @@ def test_slicing():
 
     sc = sc[["mse", "rmse"]]
 
-    sc.print("minimal_table")
+    sc.print("minimal_table", title="Results of Naive")
 
     assert list(
         [key_ for key_ in sc.__dict__.keys() if isinstance(sc[key_], Metric)]

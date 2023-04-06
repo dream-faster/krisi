@@ -54,9 +54,9 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
     )
 
 
-def get_large_metric_summary(obj: "ScoreCard") -> Table:
+def get_large_metric_summary(obj: "ScoreCard", title: str) -> Table:
     return create_metric_table(
-        title=obj.metadata.project_name,
+        title=title,
         metrics=obj.get_all_metrics(),
         with_info=False,
         with_parameters=False,

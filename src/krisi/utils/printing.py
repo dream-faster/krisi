@@ -64,7 +64,6 @@ def __create_metric(
         + ([Pretty(metric.parameters)] if with_parameters else [])
         + ([Pretty(metric.info)] if with_info else [])
     )
-    # metric_summarized = metric_summarized if with_info else metric_summarized[:-1]
 
     return metric_summarized
 
