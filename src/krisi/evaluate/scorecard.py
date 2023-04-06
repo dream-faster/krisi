@@ -144,9 +144,7 @@ class ScoreCard:
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
 
-    def __getitem__(
-        self, key: Union[str, List[str]]
-    ) -> Union["ScoreCard", Metric, List[Metric]]:
+    def __getitem__(self, key: Union[str, List[str]]) -> Union["ScoreCard", Metric]:
         if isinstance(key, List):
             scorecard_copy = deepcopy(self)
             all_keys = list(scorecard_copy.__dict__.keys())
@@ -156,8 +154,8 @@ class ScoreCard:
                         del scorecard_copy.__dict__[k]
 
             return scorecard_copy
-        else:
-            return getattr(self, key, "Unknown metric")
+        elif isinstance(key, str):
+            return getattr(self, key, Metric("Unknown Metric"))
 
     def __delitem__(self, key: str) -> None:
         del self[key]
