@@ -4,6 +4,7 @@ from rich import box
 from rich.console import Group
 from rich.layout import Layout
 from rich.panel import Panel
+from rich.table import Table
 
 from krisi.utils.iterable_helpers import group_by_categories
 from krisi.utils.printing import (
@@ -53,13 +54,12 @@ def get_minimal_summary(obj: "ScoreCard") -> str:
     )
 
 
-def get_large_metric_summary(obj: "ScoreCard") -> str:
-    return "\n".join(
-        [
-            f"{metric.name:>40s} - {metric.result:<15.5}"
-            for metric in obj.get_all_metrics()
-            if isinstance(metric.result, (float, int))
-        ]
+def get_large_metric_summary(obj: "ScoreCard") -> Table:
+    return create_metric_table(
+        title=obj.metadata.project_name,
+        metrics=obj.get_all_metrics(),
+        with_info=False,
+        with_parameters=False,
     )
 
 

@@ -20,7 +20,8 @@ def test_slicing():
     sc["own_metric"] = (target - predictions).mean()
 
     sc = sc[["mse", "rmse"]]
-    sc.print()
+
+    sc.print("minimal_table")
 
     assert list(
         [key_ for key_ in sc.__dict__.keys() if isinstance(sc[key_], Metric)]

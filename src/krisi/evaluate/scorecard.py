@@ -45,7 +45,7 @@ from krisi.utils.iterable_helpers import (
 class PrintMode(Enum):
     extended = "extended"
     minimal = "minimal"
-    minimal_large = "minimal_large"
+    minimal_table = "minimal_table"
 
     @staticmethod
     def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
@@ -254,7 +254,11 @@ class ScoreCard:
         -------
         List of Metrics
         """
-        return [self.__dict__[key] for key in self.default_metrics_keys]
+        return [
+            self.__dict__[key]
+            for key in self.default_metrics_keys
+            if key in self.__dict__
+        ]
 
     def get_custom_metrics(self) -> List[Metric]:
         """Returns a List of Custom ``Metric``s defined by the user on initalization
@@ -265,7 +269,9 @@ class ScoreCard:
         List of Metrics
         """
         predifined_custom_metrics = [
-            self.__dict__[key] for key in self.custom_metrics_keys
+            self.__dict__[key]
+            for key in self.custom_metrics_keys
+            if key in self.__dict__
         ]
         modified_custom_metrics = [
             value
@@ -341,13 +347,15 @@ class ScoreCard:
 
     def print(
         self,
+        mode: Union[PrintMode, List[PrintMode]] = PrintMode.extended,
         with_info: bool = False,
         extended: bool = True,
         input_analysis: bool = True,
-        mode: Union[PrintMode, List[PrintMode]] = PrintMode.extended,
+        title: Optional[str] = None,
     ) -> None:
         modes = [PrintMode.from_str(mode_) for mode_ in wrap_in_list(mode)]
-        # summary = []
+        if title is None:
+            title = self.metadata.project_name
         for mode in modes:
             if mode is PrintMode.extended:
                 print(
@@ -361,12 +369,8 @@ class ScoreCard:
                 )
             elif mode is PrintMode.minimal:
                 print(get_minimal_summary(self))
-            elif mode is PrintMode.minimal_large:
+            elif mode is PrintMode.minimal_table:
                 print(get_large_metric_summary(self))
-
-        # summary = "/n/n".join(summary)
-        # print(summary)
-        # return summary
 
     def save(
         self,
