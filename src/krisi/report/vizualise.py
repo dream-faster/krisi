@@ -37,7 +37,7 @@ def __calc_plot_names(
 
 def __vizualise_with_plotly(
     y: pd.Series,
-    preds: Union[List[pd.Series], pd.DataFrame],
+    preds: Union[pd.Series, List[pd.Series], pd.DataFrame],
     title: Optional[str],
     x_name: str,
     y_name: str,
@@ -48,7 +48,11 @@ def __vizualise_with_plotly(
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
 
-    df = pd.concat(preds, axis="columns") if isinstance(preds, List) else preds
+    df = (
+        pd.concat(preds, axis="columns")
+        if isinstance(preds, List)
+        else (preds.to_frame() if isinstance(preds, pd.Series) else preds)
+    )
     df = df.reindex(y.index.union(df.index))
 
     name_of_plots = __calc_plot_names(df, modes, y_separate)
