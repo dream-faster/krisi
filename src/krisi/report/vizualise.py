@@ -63,8 +63,8 @@ def __vizualise_with_plotly(
         cols=1,
         shared_xaxes=True,
         subplot_titles=name_of_plots,
-        horizontal_spacing=0.07,
-        vertical_spacing=0.15,
+        horizontal_spacing=0.05,
+        vertical_spacing=0.05,
     )
     y_trace = go.Scatter(
         x=df.index,
