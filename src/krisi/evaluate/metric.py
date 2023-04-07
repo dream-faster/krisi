@@ -93,7 +93,6 @@ class Metric(Generic[MetricResult]):
         self,
         mode: Union[str, List[str]] = "dummy",
         with_info: bool = False,
-        extended: bool = True,
         input_analysis: bool = True,
         title: Optional[str] = None,
     ) -> None:

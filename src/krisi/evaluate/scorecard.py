@@ -1,7 +1,6 @@
 import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -19,6 +18,7 @@ from krisi.evaluate.type import (
     MetricCategories,
     PathConst,
     Predictions,
+    PrintMode,
     SampleTypes,
     SaveModes,
     ScoreCardMetadata,
@@ -40,22 +40,6 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
-
-
-class PrintMode(Enum):
-    extended = "extended"
-    minimal = "minimal"
-    minimal_table = "minimal_table"
-
-    @staticmethod
-    def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
-        if isinstance(value, PrintMode):
-            return value
-        for strategy in PrintMode:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown PrintMode: {value}")
 
 
 @dataclass
@@ -349,10 +333,29 @@ class ScoreCard:
         self,
         mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended,
         with_info: bool = False,
-        extended: bool = True,
         input_analysis: bool = True,
         title: Optional[str] = None,
     ) -> None:
+        """
+        Prints the ScoreCard to the console.
+
+        Parameters
+        ----------
+        mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended
+            - PrintMode.extended or 'extended' prints the full ScoreCard, with targets, predictions, residuals, etc.
+            - PrintMode.minimal or 'minimal' prints the name and the matching result of each metric in the ScoreCard, without fancy formatting
+            - PrintMode.minimal_table or 'minimal_table' creates a table format of just the metric name and the accompanying result
+
+        with_info: bool
+            Wether descriptions of each metrics should be printed or not
+
+        input_analysis: bool = True
+            Wether it should print analysis about the raw `targets` and `predictions`
+
+        title: Optional[str] = None
+            Title of the table when mode = 'minimal_table'
+        """
+
         modes = [PrintMode.from_str(mode_) for mode_ in wrap_in_list(mode)]
         if title is None:
             title = self.metadata.project_name

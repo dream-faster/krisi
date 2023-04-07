@@ -33,4 +33,4 @@ sc["yet_another_metric"] = Metric(
 sc.yet_another_metric = dict(info="Giving description to a metric")
 
 """ Print scorecard summary """
-sc.print(with_info=True, extended=True)
+sc.print("extended", with_info=True)
