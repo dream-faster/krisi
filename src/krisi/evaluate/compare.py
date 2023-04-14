@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -11,7 +11,7 @@ def compare(
     sort_metric_key: str = "rmse",
     metrics_to_display: List[str] = [],
     dataframe: bool = True,
-) -> None:
+) -> Optional[pd.DataFrame]:
     scorecards.sort(reverse=True, key=lambda x: x[sort_metric_key].result)
     if dataframe:
         df = pd.concat(
@@ -25,7 +25,7 @@ def compare(
             ],
             axis="columns",
         )
-        print(df)
+        return df
 
     else:
         metric_title = "".join([f"{metric:<15s}" for metric in metrics_to_display])
