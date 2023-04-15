@@ -49,8 +49,10 @@ def save_console(
         )
 
 
-def save_minimal_summary(obj: "ScoreCard", path: Path) -> None:
-    text_summary = get_minimal_summary(obj)
+def save_minimal_summary(
+    obj: "ScoreCard", path: Path, frame_or_series: bool = True
+) -> None:
+    text_summary = get_minimal_summary(obj, dataseries=frame_or_series)
 
     final_path = Path(os.path.join(path, Path("minimal.txt")))
 
