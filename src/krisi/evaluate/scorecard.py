@@ -335,6 +335,7 @@ class ScoreCard:
         with_info: bool = False,
         input_analysis: bool = True,
         title: Optional[str] = None,
+        frame_or_series: bool = True,
     ) -> None:
         """
         Prints the ScoreCard to the console.
@@ -371,7 +372,7 @@ class ScoreCard:
                     )
                 )
             elif mode is PrintMode.minimal:
-                print(get_minimal_summary(self))
+                print(get_minimal_summary(self, dataseries=frame_or_series))
             elif mode is PrintMode.minimal_table:
                 print(get_large_metric_summary(self, title))
 

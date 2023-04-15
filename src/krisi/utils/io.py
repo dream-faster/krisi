@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
+import pandas as pd
 from rich.console import Console
 
 from krisi.evaluate.type import MetricCategories, PathConst, SaveModes
@@ -49,8 +50,13 @@ def save_console(
         )
 
 
-def save_minimal_summary(obj: "ScoreCard", path: Path) -> None:
-    text_summary = get_minimal_summary(obj)
+def save_minimal_summary(
+    obj: "ScoreCard", path: Path, frame_or_series: bool = True
+) -> None:
+    text_summary = get_minimal_summary(obj, dataseries=frame_or_series)
+
+    if isinstance(text_summary, (pd.Series, pd.DataFrame)):
+        text_summary = text_summary.to_string()
 
     final_path = Path(os.path.join(path, Path("minimal.txt")))
 
