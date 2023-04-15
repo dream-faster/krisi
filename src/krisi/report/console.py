@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Iterable, List, Union
 
+import pandas as pd
 from rich import box
 from rich.console import Group
 from rich.layout import Layout
@@ -44,7 +45,19 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
     return f"{obj.name:>40s} ({obj.key}): {result_}{hyperparams:>15s}"
 
 
-def get_minimal_summary(obj: "ScoreCard") -> str:
+def get_minimal_summary(obj: "ScoreCard", dataseries: bool) -> Union[pd.Series, str]:
+    if dataseries:
+        all_metrics = [
+            metric
+            for metric in obj.get_all_metrics()
+            if isinstance(metric.result, (float, int))
+        ]
+        return pd.Series(
+            [metric.result for metric in all_metrics],
+            name=obj.metadata.model_name,
+            index=[f"{metric.name:>40s}" for metric in all_metrics],
+        )
+
     return "\n".join(
         [
             f"{metric.name:>40s} - {metric.result:<15.5}"

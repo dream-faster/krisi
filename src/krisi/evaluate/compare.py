@@ -14,7 +14,7 @@ def compare(
 ) -> Optional[pd.DataFrame]:
     scorecards.sort(reverse=True, key=lambda x: x[sort_metric_key].result)
     if dataframe:
-        df = pd.concat(
+        return pd.concat(
             [
                 pd.Series(
                     [scorecard[metric].result for scorecard in scorecards],
@@ -25,8 +25,6 @@ def compare(
             ],
             axis="columns",
         )
-        return df
-
     else:
         metric_title = "".join([f"{metric:<15s}" for metric in metrics_to_display])
         print(
