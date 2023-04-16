@@ -43,15 +43,8 @@ def compare(
         return pd.concat(
             [
                 pd.Series(
-                    [
-                        bold(f"{scorecard[metric_key].result:>10.5}", rich=False)
-                        if metric_key == sort_metric_key
-                        else scorecard[metric_key].result
-                        for scorecard in scorecards
-                    ],
-                    name=bold(metric_key, rich=False)
-                    if metric_key == sort_metric_key
-                    else metric_key,
+                    [scorecard[metric_key].result for scorecard in scorecards],
+                    name=metric_key,
                     index=[scorecard.metadata.model_name for scorecard in scorecards],
                 )
                 for metric_key in metrics_to_display
