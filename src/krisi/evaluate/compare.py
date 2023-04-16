@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -7,8 +7,8 @@ from krisi.utils.printing import bold
 
 
 def __handle_empty_metrics_to_display(
-    scorecard: ScoreCard, sort_metric_key: str, metrics_to_display: List[str]
-) -> List[str]:
+    scorecard: ScoreCard, sort_metric_key: Optional[str], metrics_to_display: List[str]
+) -> Tuple[List[str], Optional[str]]:
     if len(metrics_to_display) == 0:
         metrics_to_display = [
             metric.key
@@ -16,21 +16,25 @@ def __handle_empty_metrics_to_display(
             if isinstance(metric.result, (float, int))
         ]
 
-    if sort_metric_key not in metrics_to_display:
-        metrics_to_display.insert(0, sort_metric_key)
+    if sort_metric_key is not None:
+        if sort_metric_key not in metrics_to_display:
+            metrics_to_display.insert(0, sort_metric_key)
+        else:
+            metrics_to_display.remove(sort_metric_key)
+            metrics_to_display.insert(0, sort_metric_key)
+
     else:
-        metrics_to_display.remove(sort_metric_key)
-        metrics_to_display.insert(0, sort_metric_key)
-    return metrics_to_display
+        sort_metric_key = metrics_to_display[0]
+    return metrics_to_display, sort_metric_key
 
 
 def compare(
     scorecards: List[ScoreCard],
-    sort_metric_key: str = "rmse",
     metrics_to_display: List[str] = [],
+    sort_metric_key: Optional[str] = None,
     dataframe: bool = True,
 ) -> Union[pd.DataFrame, str]:
-    metrics_to_display = __handle_empty_metrics_to_display(
+    metrics_to_display, sort_metric_key = __handle_empty_metrics_to_display(
         scorecards[0], sort_metric_key, metrics_to_display
     )
 

@@ -15,3 +15,4 @@ print(
     ),
 )
 print(compare(scorecards, sort_metric_key="rmse"))
+print(compare(scorecards, ["rmse", "mse"]))
