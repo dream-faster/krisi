@@ -81,6 +81,12 @@ class Metric(Generic[MetricResult]):
 
         self.__safe_set(result_rolling, key="result_rolling")
 
+    def is_evaluated(self, rolling: bool = False):
+        if rolling:
+            return self.result_rolling is not None
+        else:
+            return self.result is not None
+
     def get_diagram_over_time(self) -> Optional[List[InteractiveFigure]]:
         return create_diagram_rolling(self)
 

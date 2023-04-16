@@ -266,11 +266,18 @@ class ScoreCard:
 
         return predifined_custom_metrics + modified_custom_metrics
 
-    def get_all_metrics(self, defaults: bool = True) -> List[Metric]:
+    def get_all_metrics(
+        self, defaults: bool = True, only_evaluated: bool = False
+    ) -> List[Metric]:
         if defaults:
-            return self.get_default_metrics() + self.get_custom_metrics()
+            metrics = self.get_default_metrics() + self.get_custom_metrics()
         else:
-            return self.get_custom_metrics()
+            metrics = self.get_custom_metrics()
+
+        if only_evaluated:
+            return [metric for metric in metrics if metric.is_evaluated()]
+        else:
+            return metrics
 
     def evaluate(self, defaults: bool = True) -> "ScoreCard":
         """Evaluates ``Metric``s present on the ``ScoreCard``
