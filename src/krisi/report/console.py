@@ -45,8 +45,8 @@ def print_metric(obj: "Metric", repr: bool = False) -> str:
     return f"{obj.name:>40s} ({obj.key}): {result_}{hyperparams:>15s}"
 
 
-def get_minimal_summary(obj: "ScoreCard", dataseries: bool) -> Union[pd.Series, str]:
-    if dataseries:
+def get_minimal_summary(obj: "ScoreCard", dataframe: bool) -> Union[pd.DataFrame, str]:
+    if dataframe:
         all_metrics = [
             metric
             for metric in obj.get_all_metrics()
@@ -56,7 +56,7 @@ def get_minimal_summary(obj: "ScoreCard", dataseries: bool) -> Union[pd.Series, 
             [metric.result for metric in all_metrics],
             name=obj.metadata.model_name,
             index=[f"{metric.name:>40s}" for metric in all_metrics],
-        )
+        ).to_frame()
 
     return "\n".join(
         [

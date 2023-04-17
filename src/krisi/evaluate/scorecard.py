@@ -379,7 +379,7 @@ class ScoreCard:
                     )
                 )
             elif mode is PrintMode.minimal:
-                print(get_minimal_summary(self, dataseries=frame_or_series))
+                print(get_minimal_summary(self, dataframe=frame_or_series))
             elif mode is PrintMode.minimal_table:
                 print(get_large_metric_summary(self, title))
 

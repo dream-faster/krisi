@@ -53,7 +53,7 @@ def save_console(
 def save_minimal_summary(
     obj: "ScoreCard", path: Path, frame_or_series: bool = True
 ) -> None:
-    text_summary = get_minimal_summary(obj, dataseries=frame_or_series)
+    text_summary = get_minimal_summary(obj, dataframe=frame_or_series)
 
     if isinstance(text_summary, (pd.Series, pd.DataFrame)):
         text_summary = text_summary.to_string()
