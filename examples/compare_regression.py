@@ -13,6 +13,6 @@ print(
         dataframe=False,
     ),
 )
-print(compare(scorecards, sort_metric_key="mae"))
+print(compare(scorecards, sort_by="mae"))
 print(compare(scorecards, ["mse", "rmse"]))
 print(compare(scorecards, ["rmse", "mse"]))
