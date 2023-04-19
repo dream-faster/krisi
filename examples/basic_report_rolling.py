@@ -1,3 +1,9 @@
+"""
+Report with rolling metrics
+===========================
+"""
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+
 from typing import Tuple
 
 import pandas as pd

@@ -1,3 +1,9 @@
+"""
+Training an ARIMA, then Report
+===========================
+"""
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+
 from typing import Tuple
 
 import pandas as pd
