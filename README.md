@@ -17,8 +17,8 @@
   <p align="center">
     Testing and Reporting Framework for Time Series Analysis
     <br />
-    <a href="https://github.com/dream-faster/krisi">View Demo</a>  ~
-    <a href="https://github.com/dream-faster/krisi/tree/main/src/krisi/examples">Check Examples</a> ~
+    <!-- <a href="https://github.com/dream-faster/krisi">View Demo</a>  ~ -->
+    <a href="https://dream-faster.github.io/krisi/generated/gallery/">Check Examples</a> ~
     <a href="https://dream-faster.github.io/krisi/"><strong>Explore the docs »</strong></a>
   </p>
 </div>
