@@ -1,6 +1,5 @@
 def test_scorecard():
-    from examples.training_arima_report import training_arima_report
-
+    from docs.examples.training_arima_report import training_arima_report
     from krisi.evaluate.type import SampleTypes
 
     report_insample, report_outsample = training_arima_report()
