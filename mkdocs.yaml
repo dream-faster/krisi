@@ -1,11 +1,65 @@
 site_name: Krisi
+repo_url: https://github.com/dream-faster/krisi
+repo_name: GitHub
+site_author: Dream Faster
+copyright: Myalo UG(haftungsbeschränkt)
 theme:
   name: material
+  logo: images/logo_white.svg
+  favicon: images/logo.svg
   features:
-    - navigation.instant
+    - navigation.indexes
+    - search.suggest
+    - toc.follow
+    - navigation.top
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+      primary: amber
+      accent: deep orange
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to light mode
+      primary: amber
+      accent: deep orange
+
+nav:
+    - Home: 'index.md'
+    - Walkthroughs: 'walkthrough'
+    - Examples: generated/gallery
+    - API: 'api.md'
+
+markdown_extensions:
+  - tables
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 plugins:
   - search
+  - include-markdown
+  - glightbox:
+      touchNavigation: true
+      loop: true
+      zoomable: true
+      auto_caption: true
   - autorefs
+  - gallery:
+      examples_dirs: docs/examples        # path to your example scripts
+      gallery_dirs: docs/generated/gallery  # where to save generated gallery
   - mkdocstrings:
       handlers:
         python:
@@ -15,5 +69,36 @@ plugins:
             separate_signature: true
             show_submodules: true
             show_signature_annotations: true
+            docstring_style: 'numpy'
+            show_root_toc_entry: false
+            group_by_category: true
+            # show_root_heading: true
+            show_category_heading: false
           import:
           - https://docs.python-requests.org/en/master/objects.inv
+
+extra:
+  analytics: 
+    provider: google
+    property: G-FBLB9N9026
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >- 
+            Thanks for your feedback! Help us improve this page by
+            using our <a href="..." target="_blank" rel="noopener">feedback form</a>.
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.

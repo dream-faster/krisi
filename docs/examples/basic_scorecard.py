@@ -1,3 +1,9 @@
+"""
+Basic ScoreCard
+===========================
+"""
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+
 import numpy as np
 
 from krisi.evaluate import SampleTypes, ScoreCard

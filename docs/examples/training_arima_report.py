@@ -1,3 +1,9 @@
+"""
+Training an ARIMA, then Report
+===========================
+"""
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+
 from typing import Tuple
 
 import pandas as pd
@@ -11,7 +17,7 @@ from krisi.utils.models import default_arima_model
 from krisi.utils.runner import fit_model, generate_univariate_predictions
 
 
-def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
+def training_arima_report() -> Tuple[ScoreCard, ScoreCard]:
     """Create syntethic Data"""
     target_col = "arima_synthetic"
     df = generating_arima_synthetic_data(target_col).to_frame(name=target_col)
@@ -32,7 +38,7 @@ def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
     report_insample, report_outsample = evaluate_in_outsample(
         model_name="default_arima_model",
         dataset_name="synthetic_arima",
-        calculation=Calculation.rolling,
+        calculation=Calculation.single,
         y_insample=train[target_col],
         insample_predictions=insample_prediction,
         y_outsample=test[target_col],
@@ -40,11 +46,11 @@ def basic_report_rolling() -> Tuple[ScoreCard, ScoreCard]:
     )
 
     """ Console log Reports """
-    print(report_outsample)
-    report_insample.print()
+    report_outsample.print()
+    report_insample.print("extended")
 
     return report_insample, report_outsample
 
 
 if __name__ == "__main__":
-    basic_report_rolling()
+    training_arima_report()
