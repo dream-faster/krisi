@@ -39,7 +39,9 @@ nav:
     - API: 
       - 'api/index.md'
       - Evaluate: 'api/evaluate.md'
-      - Report: 'api/report.md'
+      - Scorecard: 'api/scorecard.md'
+      - Evaluate: 'api/metric.md'
+      - Library: 'api/library.md'
     - Product, Licencing & Roadmap: 
       - License: product/license.md
       - Roadmap: 'product/roadmap.md'
