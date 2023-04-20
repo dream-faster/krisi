@@ -29,6 +29,7 @@ mae = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
 
 mape = Metric[float](
     name="Mean Absolute Percentage Error",
@@ -38,6 +39,7 @@ mape = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
 
 smape = Metric[float](
     name="Symmetric Mean Absolute Percentage Error",
@@ -49,6 +51,7 @@ smape = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
 
 mse = Metric[float](
     name="Mean Squared Error",
@@ -60,6 +63,8 @@ mse = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 rmse = Metric[float](
     name="Root Mean Squared Error",
     key="rmse",
@@ -70,6 +75,8 @@ rmse = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 rmsle = Metric[float](
     name="Root Mean Squared Log Error",
     key="rmsle",
@@ -79,6 +86,8 @@ rmsle = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 r_two = Metric[float](
     name="R-squared",
     key="r_two",
@@ -88,6 +97,8 @@ r_two = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 residuals = Metric[List[float]](
     name="Residuals",
     key="residuals",
@@ -96,6 +107,8 @@ residuals = Metric[List[float]](
     plot_func_rolling=display_time_series,
     plot_funcs=[display_acf_plot, display_density_plot, display_time_series],
 )
+""" ~ """
+
 residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
@@ -104,6 +117,8 @@ residuals_mean = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 residuals_std = Metric[float](
     name="Standard Deviation of the Residuals",
     key="residuals_std",
@@ -112,6 +127,8 @@ residuals_std = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+""" ~ """
+
 ljung_box_statistics = Metric[pd.DataFrame](
     name="Ljung Box Statistics",
     key="ljung_box_statistics",
@@ -121,6 +138,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
     restrict_to_sample=SampleTypes.insample,
     comp_complexity=ComputationalComplexity.high,
 )
+""" ~ """
 
 all_regression_metrics = [
     mae,
@@ -135,6 +153,7 @@ all_regression_metrics = [
     residuals_std,
     ljung_box_statistics,
 ]
+""" ~ """
 
 minimal_regression_metrics = [
     mae,
@@ -144,9 +163,11 @@ minimal_regression_metrics = [
     rmsle,
     r_two,
 ]
+""" ~ """
 
 low_computation_regression_mterics = [
     metric
     for metric in all_regression_metrics
     if metric.comp_complexity is not ComputationalComplexity.high
 ]
+""" ~ """

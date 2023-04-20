@@ -19,6 +19,37 @@ from krisi.utils.iterable_helpers import isiterable, string_to_id
 
 @dataclass
 class Metric(Generic[MetricResult]):
+    """
+    Class representing a metric.
+
+    Parameters
+    ----------
+    name: str
+        The name of the metric.
+    key: str
+        The key used to reference the metric.
+    category: MetricCategories
+        The category of the metric.
+    result: Optional[Union[Exception, MetricResult, List[MetricResult]]]
+        The result of the evaluated `Metric`, by default None
+    result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]]
+        The result of the evaluated `Metric` over time, by default None
+    parameters: dict
+        The paramaters that are passed into the evaluation function (param: `func`), by default field(default_factory=dict)
+    func: Callable
+        The function used to compute the metric.
+    plot_funcs: List[Callable]
+        List of functions used to plot the metric.
+    plot_func_rolling: Callable
+        Function used to plot the rolling metric value.
+    info: str
+        Additional information about the metric.
+    restrict_to_sample: Optional[SampleTypes]
+        Weather the `Metric` should only be evaluated on insample or out of sample data, by default None
+    comp_complexity: Optional[ComputationalComplexity]
+        How resource intensive the calculation is, by default None
+    """
+
     name: str
     key: str = ""
     category: Optional[MetricCategories] = None

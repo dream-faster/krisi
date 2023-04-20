@@ -19,7 +19,7 @@ accuracy = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
-"""　"""
+""" ~ """
 
 recall = Metric[float](
     name="Recall",
@@ -31,6 +31,7 @@ recall = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+"""~"""
 precision = Metric[float](
     name="Precision",
     key="precision",
@@ -41,6 +42,7 @@ precision = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+"""~"""
 f_one_score = Metric[float](
     name="F1 Score",
     key="f_one_score",
@@ -51,6 +53,7 @@ f_one_score = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
+"""~"""
 matthew_corr = Metric[float](
     name="Matthew Correlation Coefficient",
     key="matthew_corr",
@@ -60,7 +63,8 @@ matthew_corr = Metric[float](
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
-
-
+"""~"""
 all_classification_metrics = [accuracy, recall, precision, f_one_score, matthew_corr]
+"""~"""
 minimal_classification_metrics = [accuracy, f_one_score]
+"""~"""

@@ -34,14 +34,13 @@ nav:
     - Concepts:
       - ScoreCard: 'concepts/scorecard.md'
     - Walkthroughs: 
-      - Start Here (Core Walkthrough): 'walkthroughs/walkthrough.md'
+      - Start Here: 'walkthroughs/walkthrough.md'
     - Examples: generated/gallery
     - API: 
       - 'api/index.md'
       - Evaluate: 'api/evaluate.md'
-      - Scorecard: 'api/scorecard.md'
-      - Evaluate: 'api/metric.md'
-      - Library: 'api/library.md'
+      - Scorecard & Metric: 'api/scorecard.md'
+      - Default Metric Library: 'api/library.md'
     - Product, Licencing & Roadmap: 
       - License: product/license.md
       - Roadmap: 'product/roadmap.md'
