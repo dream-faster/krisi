@@ -1,31 +1,10 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 
 from krisi.evaluate.scorecard import ScoreCard
+from krisi.evaluate.utils import handle_empty_metrics_to_display
 from krisi.utils.printing import bold
-
-
-def __handle_empty_metrics_to_display(
-    scorecard: ScoreCard, sort_by: Optional[str], metric_keys: Optional[List[str]]
-) -> Tuple[List[str], Optional[str]]:
-    if metric_keys is None:
-        metric_keys = [
-            metric.key
-            for metric in scorecard.get_all_metrics(only_evaluated=True)
-            if isinstance(metric.result, (float, int))
-        ]
-
-    if sort_by is not None:
-        if sort_by not in metric_keys:
-            metric_keys.insert(0, sort_by)
-        else:
-            metric_keys.remove(sort_by)
-            metric_keys.insert(0, sort_by)
-
-    else:
-        sort_by = metric_keys[0]
-    return metric_keys, sort_by
 
 
 def compare(
@@ -42,7 +21,7 @@ def compare(
     scorecards : List[ScoreCard]
         ScoreCards to compare.
     metric_keys : Optional[List[str]], optional
-        List of metrics to dispaly. If not set it will return all
+        List of metrics to display. If not set it will return all
         evaluated metrics on the first scorecard.
         Sorts the results by the first element of this list if `sort_by` is not specified., by default None
     sort_by : Optional[str], optional
@@ -58,7 +37,7 @@ def compare(
         A comparison table, either in `pd.DataFrame` or `string` format.
     """
 
-    metric_keys, sort_by = __handle_empty_metrics_to_display(
+    metric_keys, sort_by = handle_empty_metrics_to_display(
         scorecards[0], sort_by, metric_keys
     )
 
