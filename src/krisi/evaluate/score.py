@@ -67,7 +67,7 @@ def score(
     return sc
 
 
-def evaluate_in_outsample(
+def score_in_outsample(
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,
@@ -80,7 +80,6 @@ def evaluate_in_outsample(
     classification: Optional[bool] = None,
     calculation: Union[Calculation, str] = Calculation.single,
 ) -> Tuple[ScoreCard, ScoreCard]:
-
     insample_summary = score(
         y_insample,
         insample_predictions,

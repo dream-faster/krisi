@@ -1,10 +1,35 @@
 import datetime
 import uuid
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import pandas as pd
 
 from krisi.evaluate.type import Predictions, Targets
+
+if TYPE_CHECKING:
+    from krisi.evaluate.scorecard import ScoreCard
+
+
+def handle_empty_metrics_to_display(
+    scorecard: "ScoreCard", sort_by: Optional[str], metric_keys: Optional[List[str]]
+) -> Tuple[List[str], Optional[str]]:
+    if metric_keys is None:
+        metric_keys = [
+            metric.key
+            for metric in scorecard.get_all_metrics(only_evaluated=True)
+            if isinstance(metric.result, (float, int))
+        ]
+
+    if sort_by is not None:
+        if sort_by not in metric_keys:
+            metric_keys.insert(0, sort_by)
+        else:
+            metric_keys.remove(sort_by)
+            metric_keys.insert(0, sort_by)
+
+    else:
+        sort_by = metric_keys[0]
+    return metric_keys, sort_by
 
 
 def handle_unnamed(

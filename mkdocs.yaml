@@ -31,9 +31,18 @@ theme:
 
 nav:
     - Home: 'index.md'
-    - Walkthroughs: 'walkthrough'
+    - Concepts:
+      - ScoreCard: 'concepts/scorecard.md'
+    - Walkthroughs: 
+      - Start Here (Core Walkthrough): 'walkthroughs/walkthrough.md'
     - Examples: generated/gallery
-    - API: 'api.md'
+    - API: 
+      - 'api/index.md'
+      - Evaluate: 'api/evaluate.md'
+      - Report: 'api/report.md'
+    - Product, Licencing & Roadmap: 
+      - License: product/license.md
+      - Roadmap: 'product/roadmap.md'
 
 markdown_extensions:
   - tables
