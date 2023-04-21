@@ -41,6 +41,7 @@ nav:
       - Evaluate: 'api/evaluate.md'
       - Scorecard & Metric: 'api/scorecard.md'
       - Default Metric Library: 'api/library.md'
+      - Detaset helpers: 'api/dataset.md'
     - Product, Licencing & Roadmap: 
       - License: product/license.md
       - Roadmap: 'product/roadmap.md'
@@ -82,7 +83,7 @@ plugins:
             docstring_style: 'numpy'
             show_root_toc_entry: false
             group_by_category: true
-            # show_root_heading: true
+            show_root_heading: true
             show_category_heading: false
           import:
           - https://docs.python-requests.org/en/master/objects.inv
