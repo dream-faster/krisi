@@ -74,7 +74,7 @@ docs = [
   "mkdocs-autorefs",
   "mkdocs-jupyter",
   "image",
-  "mkdocs-gallery>=0.7.6",
+  "mkdocs-gallery==0.7.6",
   "mkdocs-glightbox>=0.3"
 ]
 plotting = [
