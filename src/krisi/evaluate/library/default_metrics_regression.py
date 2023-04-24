@@ -149,6 +149,7 @@ residual_group = Group(
     metrics=[residuals_mean, residuals_std],
     func=lambda y, preds: y - preds,
 )
+""" ~ """
 
 all_regression_metrics = [
     mae,
