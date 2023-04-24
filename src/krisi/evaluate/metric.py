@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Generic, List, Optional, Union
+from typing import Any, Callable, Generic, List, Optional, Union
 
 from krisi.evaluate.assertions import check_valid_pred_target
 from krisi.evaluate.type import (
@@ -56,12 +56,13 @@ class Metric(Generic[MetricResult]):
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
-    func: MetricFunction = lambda x, y: None
+    func: Optional[MetricFunction] = None
     plot_funcs: Optional[List[PlotFunction]] = None
     plot_func_rolling: Optional[PlotFunction] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
+    func_group: Optional[Callable] = None
 
     def __post_init__(self):
         if self.key == "":
@@ -80,6 +81,7 @@ class Metric(Generic[MetricResult]):
         return print_metric(self, repr=True)
 
     def evaluate(self, y: Targets, predictions: Predictions) -> None:
+        assert self.func is not None, "`func` has to be set to calculate Metric result."
         check_valid_pred_target(y, predictions)
 
         try:
@@ -88,11 +90,50 @@ class Metric(Generic[MetricResult]):
             result = e
         self.__safe_set(result, key="result")
 
+    def evaluate_in_group(self, *args) -> "Metric":
+        assert (
+            self.func_group is not None
+        ), "Group Function has to be set to be able to `evaluate_in_group`."
+        try:
+            result = self.func_group(*args, **self.parameters)
+        except Exception as e:
+            result = e
+        self.__safe_set(result, key="result")
+
+        return self
+
+    def evaluate_over_time_in_group(
+        self, *args, window: Optional[int] = None
+    ) -> "Metric":
+        assert (
+            self.func_group is not None
+        ), "Group Function has to be set to be able to `evaluate_in_group`."
+        try:
+            if window is not None:
+                result_rolling = [
+                    self.func_group(
+                        *[el[i : i + window] for el in args],
+                        **self.parameters,
+                    )
+                    for i in range(0, len(args[0]) - 1, window)
+                ]
+            else:
+                # expanding
+                result_rolling = [
+                    self.func_group(*[el[: i + 1] for el in args], **self.parameters)
+                    for i in range(len(args[0]) - 1)
+                ]
+        except Exception as e:
+            result_rolling = e
+
+        self.__safe_set(result_rolling, key="result_rolling")
+        return self
+
     def evaluate_over_time(
         self, y: Targets, predictions: Predictions, window: Optional[int] = None
     ) -> None:
         try:
-            if window:
+            if window is not None:
                 result_rolling = [
                     self.func(
                         y[i : i + window],

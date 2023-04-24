@@ -10,6 +10,7 @@ from sklearn.metrics import (
     r2_score,
 )
 
+from krisi.evaluate.group import Group
 from krisi.evaluate.library.diagrams import (
     display_acf_plot,
     display_density_plot,
@@ -114,6 +115,7 @@ residuals_mean = Metric[float](
     key="residuals_mean",
     category=MetricCategories.residual,
     func=lambda y, pred: (y - pred).mean(),
+    func_group=lambda res: res.mean(),
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
@@ -124,6 +126,7 @@ residuals_std = Metric[float](
     key="residuals_std",
     category=MetricCategories.residual,
     func=lambda y, pred: (y - pred).std(),
+    func_group=lambda res: res.std(),
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
@@ -140,6 +143,13 @@ ljung_box_statistics = Metric[pd.DataFrame](
 )
 """ ~ """
 
+residual_group = Group(
+    name="residual_group",
+    key="residual_group",
+    metrics=[residuals_mean, residuals_std],
+    func=lambda y, preds: y - preds,
+)
+
 all_regression_metrics = [
     mae,
     mape,
@@ -148,9 +158,7 @@ all_regression_metrics = [
     rmse,
     rmsle,
     r_two,
-    residuals,
-    residuals_mean,
-    residuals_std,
+    residual_group,
     ljung_box_statistics,
 ]
 """ ~ """
