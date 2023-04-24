@@ -158,6 +158,7 @@ all_regression_metrics = [
     rmse,
     rmsle,
     r_two,
+    residuals,
     residual_group,
     ljung_box_statistics,
 ]
