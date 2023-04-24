@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from krisi.evaluate.assertions import check_valid_pred_target
 
@@ -16,9 +16,6 @@ class Group(Metric):
         self.group_func = func
         self.key = key
         self.name = name
-
-    def __getitem__(self, key: str) -> Any:
-        return [metric[key] for metric in self.metrics]
 
     def evaluate(self, y: Targets, predictions: Predictions) -> List[Metric]:
         check_valid_pred_target(y, predictions)
