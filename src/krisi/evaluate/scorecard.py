@@ -6,6 +6,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from IPython.display import display
 from rich import print
 from rich.pretty import Pretty
 
@@ -37,6 +38,7 @@ from krisi.report.console import (
 )
 from krisi.report.report import create_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
+from krisi.utils.environment import is_notebook
 from krisi.utils.io import save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
     flatten,
@@ -467,19 +469,22 @@ class ScoreCard:
             title = self.metadata.project_name
         for mode in modes:
             if mode is PrintMode.extended:
-                print(
-                    get_summary(
-                        self,
-                        repr=True,
-                        categories=[el.value for el in MetricCategories],
-                        with_info=with_info,
-                        input_analysis=input_analysis,
-                    )
+                to_display = get_summary(
+                    self,
+                    repr=True,
+                    categories=[el.value for el in MetricCategories],
+                    with_info=with_info,
+                    input_analysis=input_analysis,
                 )
+
             elif mode is PrintMode.minimal:
-                print(get_minimal_summary(self, dataframe=frame_or_series))
+                to_display = get_minimal_summary(self, dataframe=frame_or_series)
             elif mode is PrintMode.minimal_table:
-                print(get_large_metric_summary(self, title))
+                to_display = get_large_metric_summary(self, title)
+            if isinstance(to_display, (pd.DataFrame, pd.Series)) and is_notebook():
+                display(to_display)
+            else:
+                print(to_display)
 
     def save(
         self,
