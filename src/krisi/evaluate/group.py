@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from .metric import Metric
 from .type import MetricFunction, PredictionsDS, TargetsDS
@@ -21,12 +21,15 @@ class Group(Metric):
         return [metric.evaluation_(results) for metric in self.metrics]
 
     def evaluate_over_time(
-        self, y: TargetsDS, predictions: PredictionsDS, window: Optional[int] = None
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        rolling_args: Optional[dict[str, Any]],
     ) -> List[Metric]:
         results = self.group_func(y, predictions)
 
         return [
-            metric.rolling_evaluation_(results, window=window)
+            metric.rolling_evaluation_(results, rolling_args=rolling_args)
             for metric in self.metrics
         ]
 

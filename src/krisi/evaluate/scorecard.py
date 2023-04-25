@@ -124,6 +124,7 @@ class ScoreCard:
     custom_metrics_keys: List[str]
     classification: bool  # TODO: Support multilabel classification
     metadata: ScoreCardMetadata
+    rolling_args: Dict[str, Any]
 
     def __init__(
         self,
@@ -139,11 +140,13 @@ class ScoreCard:
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
+        rolling_args: Dict[str, Any] = dict(window=None, step=None),
     ) -> None:
         check_valid_pred_target(y, predictions)
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["sample_type"] = sample_type
+        self.__dict__["rolling_args"] = rolling_args
         self.__dict__["classification"] = (
             is_dataset_classification_like(y)
             if classification is None
@@ -390,11 +393,7 @@ class ScoreCard:
 
         return self
 
-    def evaluate_over_time(
-        self,
-        defaults: bool = True,
-        window: Optional[int] = None,
-    ) -> "ScoreCard":
+    def evaluate_over_time(self, defaults: bool = True) -> "ScoreCard":
         """
         Evaluates `Metric`s present on the `ScoreCard` over time, either with expanding
         or fixed sized window. Assigns list of results to `results_over_time`.
@@ -419,11 +418,13 @@ class ScoreCard:
             if metric.restrict_to_sample is not self.sample_type:
                 if isinstance(metric, Group):
                     for metric in metric.evaluate_over_time(
-                        self.y, self.predictions, window=window
+                        self.y, self.predictions, rolling_args=self.rolling_args
                     ):
                         self[metric.key] = metric
                 else:
-                    metric.evaluate_over_time(self.y, self.predictions, window=window)
+                    metric.evaluate_over_time(
+                        self.y, self.predictions, rolling_args=self.rolling_args
+                    )
         return self
 
     def print(

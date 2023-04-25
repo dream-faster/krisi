@@ -18,7 +18,7 @@ def score(
     classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
-    window: int = 30,
+    rolling_args=dict(window=None, step=1),
 ) -> ScoreCard:
     """
     Creates a ScoreCard based on the passed in arguments, evaluates and then returns the ScoreCard.
@@ -53,8 +53,12 @@ def score(
             - `Calculation.single`
             - `Calculation.rolling`
             - `Calculation.both`
-    window : int, optional
-        The window size of the rolling metric evaluation, by default 30
+    rolling_args : dict[str, Any], optional
+        Arguments to be passed onto `pd.DataFrame.rolling`.
+        Default:
+
+        - The window size of the rolling metric evaluation. If `None` evaluation over time will be on expanding window basis, by default None
+        - The step size of the rolling metric evaluation, by default 1
 
     Returns
     -------
@@ -77,15 +81,16 @@ def score(
         classification=classification,
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
+        rolling_args=rolling_args,
     )
 
     if calculation == Calculation.single or calculation == Calculation.single.value:
         sc.evaluate()
     elif calculation == Calculation.rolling or calculation == Calculation.rolling.value:
-        sc.evaluate_over_time(window=window)
+        sc.evaluate_over_time()
     elif calculation == Calculation.both or calculation == Calculation.both.value:
         sc.evaluate()
-        sc.evaluate_over_time(window=window)
+        sc.evaluate_over_time()
     else:
         raise ValueError(f"Calculation type {calculation} not recognized.")
 

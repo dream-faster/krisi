@@ -97,18 +97,13 @@ class Metric(Generic[MetricResult]):
 
         self.evaluation_(y, predictions)
 
-    def rolling_evaluation_(
-        self,
-        *args,
-        window: Optional[int] = None,
-        step: Optional[int] = None,
-    ) -> "Metric":
+    def rolling_evaluation_(self, *args, rolling_args: dict) -> "Metric":
         _df = pd.concat(args, axis="columns")
         try:
             df_rolled = (
                 _df.expanding()
-                if window is None
-                else _df.rolling(window=window, step=step)
+                if rolling_args["window"] is None
+                else _df.rolling(**rolling_args)
             )
 
             result_rolling = [
@@ -122,18 +117,9 @@ class Metric(Generic[MetricResult]):
         return self
 
     def evaluate_over_time(
-        self,
-        y: TargetsDS,
-        predictions: PredictionsDS,
-        window: Optional[int] = None,
-        step: Optional[int] = None,
+        self, y: TargetsDS, predictions: PredictionsDS, rolling_args: dict
     ) -> None:
-        self.rolling_evaluation_(
-            y,
-            predictions,
-            window=window,
-            step=step,
-        )
+        self.rolling_evaluation_(y, predictions, rolling_args=rolling_args)
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:
