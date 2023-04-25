@@ -51,6 +51,10 @@ class Metric(Generic[MetricResult]):
         Weather the `Metric` should only be evaluated on insample or out of sample data, by default None
     comp_complexity: Optional[ComputationalComplexity]
         How resource intensive the calculation is, by default None
+    disable_rolling: bool
+        Whether the metric should not be evaluated on a rolling basis, by default False
+        If this is switched on, the metric will still be evaluated when `evaluate_over_time` is called
+        but not on a rolling basis.
     """
 
     name: str
@@ -65,6 +69,7 @@ class Metric(Generic[MetricResult]):
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
+    disable_rolling: bool = False
 
     def __post_init__(self):
         if self.key == "":
@@ -98,21 +103,24 @@ class Metric(Generic[MetricResult]):
         self.evaluation_(y, predictions)
 
     def rolling_evaluation_(self, *args, rolling_args: dict) -> "Metric":
-        _df = pd.concat(args, axis="columns")
-        try:
-            df_rolled = (
-                _df.expanding()
-                if rolling_args["window"] is None
-                else _df.rolling(**rolling_args)
-            )
+        if self.disable_rolling:
+            self.evaluation_(*args)
+        else:
+            _df = pd.concat(args, axis="columns")
+            try:
+                df_rolled = (
+                    _df.expanding()
+                    if rolling_args["window"] is None
+                    else _df.rolling(**rolling_args)
+                )
 
-            result_rolling = [
-                self.func(*single_window.values.T, **self.parameters)
-                for single_window in df_rolled
-            ]
-        except Exception as e:
-            result_rolling = e
-        self.__safe_set(result_rolling, key="result_rolling")
+                result_rolling = [
+                    self.func(*single_window.values.T, **self.parameters)
+                    for single_window in df_rolled
+                ]
+            except Exception as e:
+                result_rolling = e
+            self.__safe_set(result_rolling, key="result_rolling")
 
         return self
 

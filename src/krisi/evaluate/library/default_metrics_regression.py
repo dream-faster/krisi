@@ -105,8 +105,8 @@ residuals = Metric[List[float]](
     key="residuals",
     category=MetricCategories.residual,
     func=lambda y, pred: y - pred,
-    plot_func_rolling=display_time_series,
     plot_funcs=[display_acf_plot, display_density_plot, display_time_series],
+    disable_rolling=True,
 )
 """ ~ """
 
