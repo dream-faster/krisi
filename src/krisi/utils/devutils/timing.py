@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
 
+from krisi import score
+from krisi.evaluate.type import Calculation
+
 np.random.seed(42)
 func = mean_absolute_error
 lengthofdataset = 1000000
@@ -54,10 +57,20 @@ def func4():
     ]
 
 
-res1 = timeingit(func1)
-res2 = timeingit(func2)
-# res3 = timeingit(func3)
-res4 = timeingit(func4)
+def func_actual():
+    score(
+        y=np.random.rand(lengthofdataset),
+        predictions=np.random.rand(lengthofdataset),
+        calculation=Calculation.rolling,
+        rolling_args={"window": lengthofdataset // 100, "step": lengthofdataset // 100},
+    )
 
-assert res1 == res2 == res4
+
+# res1 = timeingit(func1)
+# res2 = timeingit(func2)
+# # res3 = timeingit(func3)
+# res4 = timeingit(func4)
+timeingit(func_actual)
+
+# assert res1 == res2 == res4
 # assert res1 == res2 == res3 == res4

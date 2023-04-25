@@ -106,6 +106,12 @@ class ScoreCard:
     custom_metrics: Optional[List[Metric]]
         Custom metrics that get evaluated. If specified it will evaluate these after `default_metric`
         See `library`.
+    rolling_args : Dict[str, Any], optional
+        Arguments to be passed onto `pd.DataFrame.rolling`.
+        Default:
+
+        - The window size of the rolling metric evaluation. If `None` evaluation over time will be on expanding window basis, by default `None`.
+        - The step size of the rolling metric evaluation, by default `1`.
 
     Examples
     --------
@@ -140,13 +146,17 @@ class ScoreCard:
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
-        rolling_args: Dict[str, Any] = dict(window=None, step=None),
+        rolling_args: Optional[Dict[str, Any]] = None,
     ) -> None:
         check_valid_pred_target(y, predictions)
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["sample_type"] = sample_type
-        self.__dict__["rolling_args"] = rolling_args
+        self.__dict__["rolling_args"] = (
+            rolling_args
+            if rolling_args is not None
+            else dict(window=len(y) // 100, step=len(y) // 100)
+        )
         self.__dict__["classification"] = (
             is_dataset_classification_like(y)
             if classification is None
