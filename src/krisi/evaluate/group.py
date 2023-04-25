@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, Dict, List
 
 from .metric import Metric
 from .type import MetricFunction, PredictionsDS, TargetsDS
@@ -24,7 +24,7 @@ class Group(Metric):
         self,
         y: TargetsDS,
         predictions: PredictionsDS,
-        rolling_args: Optional[dict[str, Any]],
+        rolling_args: Dict[str, Any],
     ) -> List[Metric]:
         results = self.group_func(y, predictions)
 

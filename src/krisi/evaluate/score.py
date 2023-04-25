@@ -53,7 +53,7 @@ def score(
             - `Calculation.single`
             - `Calculation.rolling`
             - `Calculation.both`
-    rolling_args : dict[str, Any], optional
+    rolling_args : Dict[str, Any], optional
         Arguments to be passed onto `pd.DataFrame.rolling`.
         Default:
 
