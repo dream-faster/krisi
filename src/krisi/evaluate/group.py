@@ -18,7 +18,7 @@ class Group(Metric):
     def evaluate(self, y: TargetsDS, predictions: PredictionsDS) -> List[Metric]:
         results = self.group_func(y, predictions)
 
-        return [metric.evaluation_(results) for metric in self.metrics]
+        return [metric._evaluation(results) for metric in self.metrics]
 
     def evaluate_over_time(
         self,
@@ -29,7 +29,7 @@ class Group(Metric):
         results = self.group_func(y, predictions)
 
         return [
-            metric.rolling_evaluation_(results, rolling_args=rolling_args)
+            metric._rolling_evaluation(results, rolling_args=rolling_args)
             for metric in self.metrics
         ]
 

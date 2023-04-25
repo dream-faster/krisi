@@ -87,7 +87,7 @@ class Metric(Generic[MetricResult]):
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
 
-    def evaluation_(self, *args) -> "Metric":
+    def _evaluation(self, *args) -> "Metric":
         try:
             result = self.func(*args, **self.parameters)
         except Exception as e:
@@ -100,11 +100,11 @@ class Metric(Generic[MetricResult]):
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
 
-        self.evaluation_(y, predictions)
+        self._evaluation(y, predictions)
 
-    def rolling_evaluation_(self, *args, rolling_args: dict) -> "Metric":
+    def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
         if self.disable_rolling:
-            self.evaluation_(*args)
+            self._evaluation(*args)
         else:
             _df = pd.concat(args, axis="columns")
             try:
@@ -127,7 +127,7 @@ class Metric(Generic[MetricResult]):
     def evaluate_over_time(
         self, y: TargetsDS, predictions: PredictionsDS, rolling_args: dict
     ) -> None:
-        self.rolling_evaluation_(y, predictions, rolling_args=rolling_args)
+        self._rolling_evaluation(y, predictions, rolling_args=rolling_args)
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:
