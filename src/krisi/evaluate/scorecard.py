@@ -4,11 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.evaluate.assertions import is_dataset_classification_like
+from krisi.evaluate.assertions import (
+    check_valid_pred_target,
+    is_dataset_classification_like,
+)
 from krisi.evaluate.group import Group
 from krisi.evaluate.library.default_metrics_classification import (
     all_classification_metrics,
@@ -41,6 +45,26 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
+
+
+def convert_to_series(
+    data: Union[List[float], List[int], pd.Series, np.ndarray], name: str
+) -> pd.Series:
+    """Converts a list[floats or ints] or a numpy array to a pandas Series.
+
+    Parameters
+    ----------
+    data : Union[List[float], List[int], pd.Series, np.ndarray]
+        The data to convert.
+
+    Returns
+    -------
+    pd.Series
+        The converted data.
+    """
+    if isinstance(data, pd.Series):
+        return data.rename(name)
+    return pd.Series(data, name=name)
 
 
 @dataclass
@@ -116,8 +140,9 @@ class ScoreCard:
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
     ) -> None:
-        self.__dict__["y"] = y
-        self.__dict__["predictions"] = predictions
+        check_valid_pred_target(y, predictions)
+        self.__dict__["y"] = convert_to_series(y, "y")
+        self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["sample_type"] = sample_type
         self.__dict__["classification"] = (
             is_dataset_classification_like(y)

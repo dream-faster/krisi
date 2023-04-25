@@ -2,15 +2,18 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Generic, List, Optional, Union
 
-from krisi.evaluate.assertions import check_valid_pred_target
+import pandas as pd
+
 from krisi.evaluate.type import (
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
     MetricResult,
     Predictions,
+    PredictionsDS,
     SampleTypes,
     Targets,
+    TargetsDS,
 )
 from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
@@ -80,15 +83,18 @@ class Metric(Generic[MetricResult]):
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
 
-    def evaluate(self, y: Targets, predictions: Predictions) -> None:
-        assert self.func is not None, "`func` has to be set to calculate Metric result."
-        check_valid_pred_target(y, predictions)
-
+    def __evaluation(self, *args) -> "Metric":
         try:
-            result = self.func(y, predictions, **self.parameters)
+            result = self.func(*args, **self.parameters)
         except Exception as e:
             result = e
         self.__safe_set(result, key="result")
+        return self
+
+    def evaluate(self, y: Targets, predictions: Predictions) -> None:
+        assert self.func is not None, "`func` has to be set to calculate Metric result."
+
+        self.__evaluation(y, predictions)
 
     def evaluate_in_group(self, *args) -> "Metric":
         assert (
@@ -102,56 +108,45 @@ class Metric(Generic[MetricResult]):
 
         return self
 
-    def evaluate_over_time_in_group(
-        self, *args, window: Optional[int] = None
+    def __rolling_evaluation(
+        self,
+        *args,
+        window: Optional[int] = None,
+        step: Optional[int] = None,
+        group: bool = False,
     ) -> "Metric":
-        assert (
-            self.func_group is not None
-        ), "Group Function has to be set to be able to `evaluate_in_group`."
+        func = self.func_group if group else self.func
+        _df = pd.concat(args, axis="columns")
         try:
-            if window is not None:
-                result_rolling = [
-                    self.func_group(
-                        *[el[i : i + window] for el in args],
-                        **self.parameters,
-                    )
-                    for i in range(0, len(args[0]) - 1, window)
-                ]
-            else:
-                # expanding
-                result_rolling = [
-                    self.func_group(*[el[: i + 1] for el in args], **self.parameters)
-                    for i in range(len(args[0]) - 1)
-                ]
+            df_rolled = (
+                _df.expanding()
+                if window is None
+                else _df.rolling(window=window, step=step)
+            )
+
+            result_rolling = [
+                func(*single_window.values.T, **self.parameters)
+                for single_window in df_rolled
+            ]
         except Exception as e:
             result_rolling = e
-
         self.__safe_set(result_rolling, key="result_rolling")
+
         return self
 
     def evaluate_over_time(
-        self, y: Targets, predictions: Predictions, window: Optional[int] = None
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        window: Optional[int] = None,
+        step: Optional[int] = None,
     ) -> None:
-        try:
-            if window is not None:
-                result_rolling = [
-                    self.func(
-                        y[i : i + window],
-                        predictions[i : i + window],
-                        **self.parameters,
-                    )
-                    for i in range(0, len(y) - 1, window)
-                ]
-            else:
-                # expanding
-                result_rolling = [
-                    self.func(y[: i + 1], predictions[: i + 1], **self.parameters)
-                    for i in range(len(y) - 1)
-                ]
-        except Exception as e:
-            result_rolling = e
-
-        self.__safe_set(result_rolling, key="result_rolling")
+        self.__rolling_evaluation(
+            y,
+            predictions,
+            window=window,
+            step=step,
+        )
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:

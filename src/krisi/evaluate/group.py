@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from krisi.evaluate.assertions import check_valid_pred_target
-
 from .metric import Metric
-from .type import MetricFunction, Predictions, Targets
+from .type import MetricFunction, PredictionsDS, TargetsDS
 
 
 @dataclass
@@ -17,22 +15,18 @@ class Group(Metric):
         self.key = key
         self.name = name
 
-    def evaluate(self, y: Targets, predictions: Predictions) -> List[Metric]:
-        check_valid_pred_target(y, predictions)
-
+    def evaluate(self, y: TargetsDS, predictions: PredictionsDS) -> List[Metric]:
         results = self.group_func(y, predictions)
 
-        return [metric.evaluate_in_group(results) for metric in self.metrics]
+        return [metric.__evaluation(results) for metric in self.metrics]
 
     def evaluate_over_time(
-        self, y: Targets, predictions: Predictions, window: Optional[int] = None
+        self, y: TargetsDS, predictions: PredictionsDS, window: Optional[int] = None
     ) -> List[Metric]:
-        check_valid_pred_target(y, predictions)
-
         results = self.group_func(y, predictions)
 
         return [
-            metric.evaluate_over_time_in_group(results, window=window)
+            metric.__rolling_evaluation(results, window=window, group=True)
             for metric in self.metrics
         ]
 
