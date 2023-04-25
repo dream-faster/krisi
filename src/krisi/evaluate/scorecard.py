@@ -9,6 +9,7 @@ from rich import print
 from rich.pretty import Pretty
 
 from krisi.evaluate.assertions import is_dataset_classification_like
+from krisi.evaluate.group import Group
 from krisi.evaluate.library.default_metrics_classification import (
     all_classification_metrics,
 )
@@ -267,8 +268,8 @@ class ScoreCard:
         ]
 
         return pd.Series(
-            [metric.result for metric in metrics],
-            index=[metric.name for metric in metrics],
+            [metric["result"] for metric in metrics],
+            index=[metric["name"] for metric in metrics],
         )
 
     def get_default_metrics(self) -> List[Metric]:
@@ -356,7 +357,11 @@ class ScoreCard:
 
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                metric.evaluate(self.y, self.predictions)
+                if isinstance(metric, Group):
+                    for metric in metric.evaluate(self.y, self.predictions):
+                        self[metric.key] = metric
+                else:
+                    metric.evaluate(self.y, self.predictions)
 
         return self
 
@@ -387,7 +392,13 @@ class ScoreCard:
         """
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                metric.evaluate_over_time(self.y, self.predictions, window=window)
+                if isinstance(metric, Group):
+                    for metric in metric.evaluate_over_time(
+                        self.y, self.predictions, window=window
+                    ):
+                        self[metric.key] = metric
+                else:
+                    metric.evaluate_over_time(self.y, self.predictions, window=window)
         return self
 
     def print(

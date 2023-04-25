@@ -29,14 +29,14 @@ def group_by_categories(
         category_groups[category] = list(
             filter(
                 lambda x: x.category.value == category
-                if hasattr(x, "category")
+                if (hasattr(x, "category") and x.category is not None)
                 else False,
                 flat_list,
             )
         )
     category_groups[None] = list(
         filter(
-            lambda x: x.category.value is None if hasattr(x, "category") else False,
+            lambda x: x.category is None if hasattr(x, "category") else False,
             flat_list,
         )
     )
