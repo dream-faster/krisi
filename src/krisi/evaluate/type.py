@@ -13,7 +13,9 @@ MetricResult = TypeVar(
 
 Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
 Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
-MetricFunction = Callable[[Predictions, Targets], MetricResult]
+PredictionsDS = pd.Series
+TargetsDS = pd.Series
+MetricFunction = Callable[[PredictionsDS, TargetsDS], MetricResult]
 
 
 class MetricCategories(Enum):

@@ -4,11 +4,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 from rich import print
 from rich.pretty import Pretty
 
-from krisi.evaluate.assertions import is_dataset_classification_like
+from krisi.evaluate.assertions import (
+    check_valid_pred_target,
+    is_dataset_classification_like,
+)
 from krisi.evaluate.group import Group
 from krisi.evaluate.library.default_metrics_classification import (
     all_classification_metrics,
@@ -41,6 +45,26 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
+
+
+def convert_to_series(
+    data: Union[List[float], List[int], pd.Series, np.ndarray], name: str
+) -> pd.Series:
+    """Converts a list[floats or ints] or a numpy array to a pandas Series.
+
+    Parameters
+    ----------
+    data : Union[List[float], List[int], pd.Series, np.ndarray]
+        The data to convert.
+
+    Returns
+    -------
+    pd.Series
+        The converted data.
+    """
+    if isinstance(data, pd.Series):
+        return data.rename(name)
+    return pd.Series(data, name=name)
 
 
 @dataclass
@@ -82,6 +106,12 @@ class ScoreCard:
     custom_metrics: Optional[List[Metric]]
         Custom metrics that get evaluated. If specified it will evaluate these after `default_metric`
         See `library`.
+    rolling_args : Dict[str, Any], optional
+        Arguments to be passed onto `pd.DataFrame.rolling`.
+        Default:
+
+        - The window size of the rolling metric evaluation. If `None` evaluation over time will be on expanding window basis, by default `None`.
+        - The step size of the rolling metric evaluation, by default `1`.
 
     Examples
     --------
@@ -100,6 +130,7 @@ class ScoreCard:
     custom_metrics_keys: List[str]
     classification: bool  # TODO: Support multilabel classification
     metadata: ScoreCardMetadata
+    rolling_args: Dict[str, Any]
 
     def __init__(
         self,
@@ -115,10 +146,17 @@ class ScoreCard:
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
+        rolling_args: Optional[Dict[str, Any]] = None,
     ) -> None:
-        self.__dict__["y"] = y
-        self.__dict__["predictions"] = predictions
+        check_valid_pred_target(y, predictions)
+        self.__dict__["y"] = convert_to_series(y, "y")
+        self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["sample_type"] = sample_type
+        self.__dict__["rolling_args"] = (
+            rolling_args
+            if rolling_args is not None
+            else dict(window=len(y) // 100, step=len(y) // 100)
+        )
         self.__dict__["classification"] = (
             is_dataset_classification_like(y)
             if classification is None
@@ -365,11 +403,7 @@ class ScoreCard:
 
         return self
 
-    def evaluate_over_time(
-        self,
-        defaults: bool = True,
-        window: Optional[int] = None,
-    ) -> "ScoreCard":
+    def evaluate_over_time(self, defaults: bool = True) -> "ScoreCard":
         """
         Evaluates `Metric`s present on the `ScoreCard` over time, either with expanding
         or fixed sized window. Assigns list of results to `results_over_time`.
@@ -394,11 +428,13 @@ class ScoreCard:
             if metric.restrict_to_sample is not self.sample_type:
                 if isinstance(metric, Group):
                     for metric in metric.evaluate_over_time(
-                        self.y, self.predictions, window=window
+                        self.y, self.predictions, rolling_args=self.rolling_args
                     ):
                         self[metric.key] = metric
                 else:
-                    metric.evaluate_over_time(self.y, self.predictions, window=window)
+                    metric.evaluate_over_time(
+                        self.y, self.predictions, rolling_args=self.rolling_args
+                    )
         return self
 
     def print(

@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -18,7 +18,7 @@ def score(
     classification: Optional[bool] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
-    window: int = 30,
+    rolling_args: Optional[Dict[str, Any]] = None,
 ) -> ScoreCard:
     """
     Creates a ScoreCard based on the passed in arguments, evaluates and then returns the ScoreCard.
@@ -53,8 +53,12 @@ def score(
             - `Calculation.single`
             - `Calculation.rolling`
             - `Calculation.both`
-    window : int, optional
-        The window size of the rolling metric evaluation, by default 30
+    rolling_args : Dict[str, Any], optional
+        Arguments to be passed onto `pd.DataFrame.rolling`.
+        Default:
+
+        - The window size of the rolling metric evaluation. If `None` evaluation over time will be on expanding window basis, by default `len(dataset)//100`.
+        - The step size of the rolling metric evaluation, by default `len(dataset)//100`.
 
     Returns
     -------
@@ -66,6 +70,8 @@ def score(
     ValueError
         If Calculation type is incorrectly specified.
     """
+    if rolling_args is None:
+        rolling_args = dict(window=len(y) // 100, step=len(y) // 100)
 
     sc = ScoreCard(
         y=y,
@@ -77,15 +83,16 @@ def score(
         classification=classification,
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
+        rolling_args=rolling_args,
     )
 
     if calculation == Calculation.single or calculation == Calculation.single.value:
         sc.evaluate()
     elif calculation == Calculation.rolling or calculation == Calculation.rolling.value:
-        sc.evaluate_over_time(window=window)
+        sc.evaluate_over_time()
     elif calculation == Calculation.both or calculation == Calculation.both.value:
         sc.evaluate()
-        sc.evaluate_over_time(window=window)
+        sc.evaluate_over_time()
     else:
         raise ValueError(f"Calculation type {calculation} not recognized.")
 
