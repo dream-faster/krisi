@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Callable, Generic, List, Optional, Union
+from typing import Any, Generic, List, Optional, Union
 
 import pandas as pd
 
@@ -65,7 +65,6 @@ class Metric(Generic[MetricResult]):
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
-    func_group: Optional[Callable] = None
 
     def __post_init__(self):
         if self.key == "":
@@ -83,7 +82,7 @@ class Metric(Generic[MetricResult]):
     def __repr__(self) -> str:
         return print_metric(self, repr=True)
 
-    def __evaluation(self, *args) -> "Metric":
+    def evaluation_(self, *args) -> "Metric":
         try:
             result = self.func(*args, **self.parameters)
         except Exception as e:
@@ -92,30 +91,18 @@ class Metric(Generic[MetricResult]):
         return self
 
     def evaluate(self, y: Targets, predictions: Predictions) -> None:
-        assert self.func is not None, "`func` has to be set to calculate Metric result."
-
-        self.__evaluation(y, predictions)
-
-    def evaluate_in_group(self, *args) -> "Metric":
         assert (
-            self.func_group is not None
-        ), "Group Function has to be set to be able to `evaluate_in_group`."
-        try:
-            result = self.func_group(*args, **self.parameters)
-        except Exception as e:
-            result = e
-        self.__safe_set(result, key="result")
+            self.func is not None
+        ), "`func` has to be set on Metric to calculate result."
 
-        return self
+        self.evaluation_(y, predictions)
 
-    def __rolling_evaluation(
+    def rolling_evaluation_(
         self,
         *args,
         window: Optional[int] = None,
         step: Optional[int] = None,
-        group: bool = False,
     ) -> "Metric":
-        func = self.func_group if group else self.func
         _df = pd.concat(args, axis="columns")
         try:
             df_rolled = (
@@ -125,7 +112,7 @@ class Metric(Generic[MetricResult]):
             )
 
             result_rolling = [
-                func(*single_window.values.T, **self.parameters)
+                self.func(*single_window.values.T, **self.parameters)
                 for single_window in df_rolled
             ]
         except Exception as e:
@@ -141,7 +128,7 @@ class Metric(Generic[MetricResult]):
         window: Optional[int] = None,
         step: Optional[int] = None,
     ) -> None:
-        self.__rolling_evaluation(
+        self.rolling_evaluation_(
             y,
             predictions,
             window=window,

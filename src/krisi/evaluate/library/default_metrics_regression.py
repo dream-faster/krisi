@@ -114,8 +114,7 @@ residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=lambda y, pred: (y - pred).mean(),
-    func_group=lambda res: res.mean(),
+    func=lambda res: res.mean(),
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
@@ -125,8 +124,7 @@ residuals_std = Metric[float](
     name="Standard Deviation of the Residuals",
     key="residuals_std",
     category=MetricCategories.residual,
-    func=lambda y, pred: (y - pred).std(),
-    func_group=lambda res: res.std(),
+    func=lambda res: res.std(),
     plot_funcs=[display_single_value],
     plot_func_rolling=display_time_series,
 )
