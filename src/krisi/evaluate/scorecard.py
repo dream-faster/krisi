@@ -1,6 +1,5 @@
 import datetime
 from copy import deepcopy
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -8,7 +7,6 @@ import numpy as np
 import pandas as pd
 from IPython.display import display
 from rich import print
-from rich.pretty import Pretty
 
 from krisi.evaluate.assertions import (
     check_valid_pred_target,
@@ -69,7 +67,6 @@ def convert_to_series(
     return pd.Series(data, name=name)
 
 
-@dataclass
 class ScoreCard:
     """
     ScoreCard Object.
@@ -217,8 +214,12 @@ class ScoreCard:
     def __delitem__(self, key: str) -> None:
         del self[key]
 
+    def __repr__(self) -> str:
+        self.print(mode=PrintMode.minimal)
+        return super().__repr__()
+
     def __str__(self) -> str:
-        print(Pretty(self.__dict__))
+        self.print(mode=PrintMode.minimal)
         return ""
 
     def __setattr__(self, key: str, item: Any) -> None:

@@ -85,7 +85,8 @@ class Metric(Generic[MetricResult]):
         return print_metric(self)
 
     def __repr__(self) -> str:
-        return print_metric(self, repr=True)
+        print(print_metric(self, repr=True))
+        return super().__repr__()
 
     def _evaluation(self, *args) -> "Metric":
         try:
