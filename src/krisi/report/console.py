@@ -22,6 +22,8 @@ from krisi.utils.printing import bold
 
 
 def print_metric(obj: "Metric", repr: bool = False) -> str:
+    if repr:
+        return f"{obj.result} | {obj.name}"
     hyperparams = ""
     if obj.parameters is not None:
         hyperparams += "".join(
