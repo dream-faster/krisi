@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -27,9 +27,12 @@ def get_mean_corr_matrix(df_rolled_corr: List[pd.DataFrame]) -> pd.DataFrame:
 
 
 def get_corr_rolled(
-    df: pd.DataFrame, window: int, step: int
+    df: pd.DataFrame, window: int, step: Optional[int] = None
 ) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
-    df_rolled = [df_ for df_ in df.rolling(window=window, step=step)][1:]
+    if step is None or step == 1 or step == 0:
+        df_rolled = [df_ for df_ in df.rolling(window=window)][1:]
+    else:
+        df_rolled = [df_ for df_ in df.rolling(window=window, step=step)][1:]
     df_rolled_corr = [corr_without_symmetry(df_) for df_ in df_rolled]
 
     return df_rolled_corr, df_rolled
