@@ -1,3 +1,10 @@
+"""
+Analysing rolling correlations
+===========================
+"""
+# mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
+
+
 import os
 
 import numpy as np
