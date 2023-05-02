@@ -172,6 +172,6 @@ def run_app(
             )(component.get_figure)
 
     if is_notebook():
-        app.run(mode="inline", debug=False, threaded=True)
+        app.run(mode="inline", debug=True, threaded=True)
     else:
-        app.run(debug=False, threaded=True)
+        app.run(debug=True, threaded=True)

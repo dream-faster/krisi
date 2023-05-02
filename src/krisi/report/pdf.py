@@ -43,7 +43,9 @@ def __convert_html_to_pdf(
     css_string = css_string.decode()
 
     css = CSS(string=css_string)
-    pdf = HTML(string=source_html).write_pdf(stylesheets=[css])
+    pdf = HTML(string=source_html).write_pdf(
+        stylesheets=[css, "https://cdn.tailwindcss.com"]
+    )
 
     open(f"{output_path}/{report_name}", "wb").write(pdf)
 
