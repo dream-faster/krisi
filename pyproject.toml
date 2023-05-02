@@ -83,7 +83,9 @@ plotting = [
   "jupyter_dash",
   "weasyprint",
   "kaleido",
-  "pangocffi"
+  "pangocffi",
+  "matplotlib",
+  "networkx"
 ]
 
 [tool.hatch.envs.quality]

@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 
 from krisi.evaluate.type import ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
+from krisi.utils.environment import is_notebook
 from krisi.utils.iterable_helpers import flatten
 
 if TYPE_CHECKING:
@@ -170,4 +171,7 @@ def run_app(
                 + [Input(input_id, "value") for input_id in component.global_input_ids],
             )(component.get_figure)
 
-    app.run(debug=True, threaded=True)
+    if is_notebook():
+        app.run(mode="inline", debug=False, threaded=True)
+    else:
+        app.run(debug=False, threaded=True)

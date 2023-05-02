@@ -1,5 +1,4 @@
 from .compare import compare
-from .dataset import check_consistency
 from .metric import Metric
 from .score import score, score_in_outsample
 from .scorecard import ScoreCard
