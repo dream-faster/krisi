@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
 from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.interactive import run_app
-from krisi.report.pdf import append_sizes, convert_figures_to_html, create_pdf_report
+from krisi.report.pdf import convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.utils.iterable_helpers import flatten, group_by_categories, remove_nans
 
@@ -107,7 +107,7 @@ def get_html_elements_for_injection_scorecard(
 ) -> Callable:
     def func() -> Dict[str, str]:
         diagrams = obj.get_diagram_dictionary()
-        diagrams = append_sizes(diagrams)
+        # diagrams = append_sizes(diagrams)
 
         diagrams_static = {
             interactive_figure.id: convert_figures_to_html(

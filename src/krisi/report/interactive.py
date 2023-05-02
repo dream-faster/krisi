@@ -26,7 +26,7 @@ def block(
 def figure_with_controller(figure: InteractiveFigure):
     if len(figure.inputs) > 0 or len(figure.global_input_ids) > 0:
         return block(
-            graph=dcc.Graph(id=figure.id, className="h-full flex align-center w-1/2"),
+            graph=dcc.Graph(id=figure.id, className="h-full flex align-center"),
             title=None,
             controllers=html.Div(
                 className="h-full flex align-center",
@@ -45,7 +45,7 @@ def figure_with_controller(figure: InteractiveFigure):
 
     else:
         return dcc.Graph(
-            className="h-full flex align-center w-1/2",
+            className="h-full flex align-center",
             id=figure.id,
             figure=figure.get_figure(),
             style={"display": "inline-block"},
@@ -129,15 +129,21 @@ def run_app(
     import sys
 
     from dash import Dash, Input, Output, dcc, html
+    from jupyter_dash import JupyterDash
+
+    isnotebook = is_notebook()
 
     sys.modules[__name__].html = html
     sys.modules[__name__].dcc = dcc
 
-    app = Dash(__name__, external_scripts=external_script)
+    if isnotebook:
+        app = JupyterDash(__name__, external_scripts=external_script)
+    else:
+        app = Dash(__name__, external_scripts=external_script)
     app.scripts.config.serve_locally = True
 
     app.layout = html.Div(
-        className="p-24",
+        className="p-24 w-full h-full flex flex-col",
         children=[
             html.H1(
                 title,
@@ -171,7 +177,7 @@ def run_app(
                 + [Input(input_id, "value") for input_id in component.global_input_ids],
             )(component.get_figure)
 
-    if is_notebook():
-        app.run(mode="inline", debug=True, threaded=True)
+    if isnotebook:
+        app.run_server(mode="inline", debug=True, threaded=True)
     else:
         app.run(debug=True, threaded=True)
