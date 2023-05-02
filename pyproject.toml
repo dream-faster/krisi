@@ -84,7 +84,8 @@ plotting = [
   "weasyprint",
   "kaleido",
   "pangocffi",
-  "matplotlib"
+  "matplotlib",
+  "networkx"
 ]
 
 [tool.hatch.envs.quality]
