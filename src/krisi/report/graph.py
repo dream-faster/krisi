@@ -1,9 +1,10 @@
-from typing import List, Literal
+from typing import List
 
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
+from typing_extensions import Literal
 
 
 def create_save_graphs(

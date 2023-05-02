@@ -1,8 +1,9 @@
 from functools import reduce
-from typing import List, Literal, Tuple
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from typing_extensions import Literal
 
 from .utils import corr_without_symmetry, unroll
 
