@@ -84,7 +84,7 @@ plotting = [
   "weasyprint",
   "kaleido",
   "pangocffi",
-  "matplotlib",
+  "matplotlib>=3.7.1",
   "networkx"
 ]
 
