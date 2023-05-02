@@ -152,9 +152,7 @@ class ScoreCard:
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["sample_type"] = sample_type
         self.__dict__["rolling_args"] = (
-            rolling_args
-            if rolling_args is not None
-            else dict(window=len(y) // 100, step=len(y) // 100)
+            rolling_args if rolling_args is not None else dict(window=len(y) // 100)
         )
         self.__dict__["classification"] = (
             is_dataset_classification_like(y)
