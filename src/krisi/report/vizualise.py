@@ -211,6 +211,7 @@ def create_subplots_from_mutiple_plots(
         cols=1,
         subplot_titles=[figure.title for figure in interactive_figures],
         row_heights=[500 for _ in range(len(figures))],
+        specs=[[{"type": fig_.data[0].type}] for fig_ in figures],
     )
 
     for i, figure in enumerate(figures):
