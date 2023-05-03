@@ -106,7 +106,7 @@ def __vizualise_with_plotly(
 
     if y_separate:
         y_trace.showlegend = False
-        fig.append_trace(
+        fig.add_trace(
             y_trace,
             row=1,
             col=1,
@@ -115,7 +115,7 @@ def __vizualise_with_plotly(
     for mode in modes:
         if mode == VizualisationMethod.seperate:
             for i, column in enumerate(df.columns):
-                fig.append_trace(
+                fig.add_trace(
                     traces[i],
                     row=i + (2 if y_separate else 1),
                     col=1,
@@ -125,7 +125,7 @@ def __vizualise_with_plotly(
                         y_trace.showlegend = True
                     else:
                         y_trace.showlegend = False
-                    fig.append_trace(
+                    fig.add_trace(
                         y_trace,
                         row=i + 1,
                         col=1,
@@ -135,13 +135,13 @@ def __vizualise_with_plotly(
             if not y_separate:
                 if num_plots == 1:
                     y_trace.showlegend = True
-                fig.append_trace(
+                fig.add_trace(
                     y_trace,
                     row=num_plots,
                     col=1,
                 )
             for i, column in enumerate(df.columns):
-                fig.append_trace(
+                fig.add_trace(
                     traces[i],
                     row=num_plots,
                     col=1,
