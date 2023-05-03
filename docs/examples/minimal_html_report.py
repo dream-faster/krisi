@@ -31,6 +31,6 @@ if "PYTEST_CURRENT_TEST" in os.environ:
     print("Not testing Dash server currently")
 else:
     sc.generate_report(
-        display_modes=[DisplayModes.pdf],
+        display_modes=[DisplayModes.interactive],
     )
     sc.save()

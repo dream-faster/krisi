@@ -39,7 +39,7 @@ class Report:
         ],
         figures: List[InteractiveFigure] = [],
         global_controllers: List[PlotlyInput] = [],
-        html_template_url: Path = Path("library/default/template.html"),
+        html_template_url: Path = PathConst.html_report_template_url,
         css_template_url: Path = Path("library/default/template.css"),
         get_html_elements: Optional[Callable] = None,
         scorecard_metadata: Optional[ScoreCardMetadata] = None,

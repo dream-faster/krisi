@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
-from krisi.report.type import InteractiveFigure, PathConst
+from krisi.report.type import InteractiveFigure
 
 
 def __figure_to_html(figure: "go.Figure") -> str:
@@ -76,8 +76,8 @@ def __convert_html_to_pdf(
 def create_pdf_report(
     path: Path,
     title: str,
-    html_template_url: Path = PathConst.html_template_url,
-    css_template_url: Path = PathConst.css_template_url,
+    html_template_url: Path,
+    css_template_url: Path,
     html_elements_to_inject: Dict[str, str] = dict(),
 ):
     html_elements_to_inject["title"] = title
