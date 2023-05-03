@@ -5,8 +5,6 @@ Analysing rolling correlations
 # mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
 
 
-import os
-
 import numpy as np
 import pandas as pd
 
@@ -16,6 +14,7 @@ from krisi.analyse.correlations import (
     get_corr_rolled,
 )
 from krisi.report.graph import create_save_graphs
+from krisi.utils.io import ensure_path
 
 measurement_per_hour = 4
 hours_per_day = 24
@@ -42,8 +41,7 @@ for name, df_ in [
     ("log_returns", df_log_returns),
 ]:
     save_location = f"output/analyse/correlations/{name}"
-    if not os.path.exists(save_location):
-        os.makedirs(save_location)
+    ensure_path(save_location)
 
     df_rolled_corr, df_rolled = get_corr_rolled(df_, window, step)
     (

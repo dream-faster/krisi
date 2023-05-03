@@ -1,4 +1,5 @@
 import datetime
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
@@ -6,7 +7,13 @@ from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
 from krisi.report.interactive import run_app
 from krisi.report.pdf import convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
-from krisi.utils.iterable_helpers import flatten, group_by_categories, remove_nans
+from krisi.utils.io import ensure_path
+from krisi.utils.iterable_helpers import (
+    flatten,
+    group_by_categories,
+    remove_nans,
+    wrap_in_list,
+)
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -30,26 +37,27 @@ class Report:
         css_template_url: Path = Path("library/default/template.css"),
         get_html_elements: Optional[Callable] = None,
         scorecard_metadata: Optional[ScoreCardMetadata] = None,
+        save_path: Path = Path("output/report/diagrams/"),
     ) -> None:
         self.title = title
         self.general_description = general_description
         self.scorecard_metadata = scorecard_metadata
-        if isinstance(modes, (str, DisplayModes)):
-            self.modes = [modes]
-        else:
-            self.modes = modes
+
+        self.modes = [DisplayModes.from_str(mode) for mode in wrap_in_list(modes)]
+
         self.figures = figures
         self.global_controllers = global_controllers
         self.html_template_url = html_template_url
         self.css_template_url = css_template_url
         self.get_html_elements = get_html_elements
+        self.save_path = os.path.join(save_path, Path(title))
 
     def generate_launch(self) -> None:
         figures_by_category = group_by_categories(
             self.figures, [el.value for el in MetricCategories]
         )
 
-        if DisplayModes.pdf in self.modes or DisplayModes.pdf.value in self.modes:
+        if DisplayModes.pdf in self.modes:
             create_pdf_report(
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
@@ -58,13 +66,20 @@ class Report:
                 else dict(),
             )
 
-        if DisplayModes.direct in self.modes or DisplayModes.direct.value in self.modes:
-            [figure.get_figure(width=900.0).show() for figure in self.figures]
+        if DisplayModes.direct in self.modes:
+            [figure.get_figure(**figure.plot_args).show() for figure in self.figures]
 
-        if (
-            DisplayModes.interactive in self.modes
-            or DisplayModes.interactive.value in self.modes
-        ):
+        if DisplayModes.direct_save in self.modes:
+            ensure_path(self.save_path)
+            for i, figure in enumerate(self.figures):
+                figure.get_figure(**figure.plot_args).write_image(
+                    os.path.join(self.save_path, f"{i}_{figure.title}.svg")
+                )
+
+        if DisplayModes.direct_one_plot in self.modes:
+            [figure.get_figure(**figure.plot_args) for figure in self.figures]
+
+        if DisplayModes.interactive in self.modes:
             run_app(
                 figures_by_category,
                 self.global_controllers,
@@ -113,9 +128,8 @@ def get_html_elements_for_injection_scorecard(
             interactive_figure.id: convert_figures_to_html(
                 [
                     interactive_figure.get_figure(
-                        width=interactive_figure.width,
-                        height=interactive_figure.height,
                         title=interactive_figure.title,
+                        **interactive_figure.plot_args,
                     )
                 ]
             )

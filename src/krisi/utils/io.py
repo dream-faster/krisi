@@ -84,3 +84,8 @@ def load_scorecards(
             loaded_scorecards.append(pickle.load(f))
 
     return loaded_scorecards
+
+
+def ensure_path(path: Union[str, Path]) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)

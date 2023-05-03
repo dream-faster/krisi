@@ -37,7 +37,7 @@ from krisi.report.console import (
 from krisi.report.report import create_report_from_scorecard
 from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.environment import is_notebook
-from krisi.utils.io import save_console, save_minimal_summary, save_object
+from krisi.utils.io import ensure_path, save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
     flatten,
     map_newdict_on_olddict,
@@ -508,8 +508,7 @@ class ScoreCard:
             )
         )
 
-        if not os.path.exists(path):
-            os.makedirs(path)
+        ensure_path(path)
 
         if SaveModes.minimal in save_modes or SaveModes.minimal.value in save_modes:
             save_minimal_summary(self, path)

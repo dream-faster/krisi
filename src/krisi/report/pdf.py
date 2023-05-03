@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Dict, List
 
+from krisi.utils.io import ensure_path
+
 if TYPE_CHECKING:
     import plotly.graph_objects as go
 
@@ -31,13 +33,12 @@ def __create_html_report(
 def __convert_html_to_pdf(
     source_html: Path, output_path: Path, report_name: str, css_template_url: Path
 ) -> None:
-    import os
+    pass
 
     # import pkgutil
     from weasyprint import CSS, HTML
 
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
+    ensure_path(output_path)
 
     # css_string = pkgutil.get_data(__name__, str(css_template_url))
     # css_string = css_string.decode()
