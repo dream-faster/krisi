@@ -1,4 +1,5 @@
 import datetime
+import os
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
@@ -42,6 +43,7 @@ from krisi.utils.iterable_helpers import (
     flatten,
     map_newdict_on_olddict,
     remove_nans,
+    replace_if_None,
     strip_builtin_functions,
     wrap_in_list,
 )
@@ -130,6 +132,7 @@ class ScoreCard:
     classification: bool  # TODO: Support multilabel classification
     metadata: ScoreCardMetadata
     rolling_args: Dict[str, Any]
+    save_path: Path
 
     def __init__(
         self,
@@ -192,6 +195,16 @@ class ScoreCard:
 
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
+
+        self.__dict__["save_path"] = Path(
+            os.path.join(
+                PathConst.default_eval_output_path,
+                replace_if_None(
+                    self.metadata.project_name,
+                    f"{datetime.datetime.now().strftime('%H-%M-%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}",
+                ),
+            )
+        )
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
@@ -487,27 +500,15 @@ class ScoreCard:
 
     def save(
         self,
-        path: Path = PathConst.default_eval_output_path,
         with_info: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
             SaveModes.obj,
             SaveModes.text,
         ],
+        override_path: Optional[Path] = None,
     ) -> "ScoreCard":
-        import os
-
-        if self.metadata.project_name:
-            path = Path(os.path.join(path, Path(f"{self.metadata.project_name}")))
-        path = Path(
-            os.path.join(
-                path,
-                Path(
-                    f"{datetime.datetime.now().strftime('%H-%M-%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}"
-                ),
-            )
-        )
-
+        path = replace_if_None(override_path, self.save_path)
         ensure_path(path)
 
         if SaveModes.minimal in save_modes or SaveModes.minimal.value in save_modes:
@@ -533,13 +534,25 @@ class ScoreCard:
         html_template_url: Path = PathConst.html_report_template_url,
         css_template_url: Path = PathConst.css_report_template_url,
         author: str = "",
+        report_title: Optional[str] = None,
+        override_path: Optional[Path] = None,
     ) -> None:
+        save_path = replace_if_None(override_path, self.save_path)
+        ensure_path(save_path)
+
+        display_modes = [
+            DisplayModes.from_str(mode) for mode in wrap_in_list(display_modes)
+        ]
         report = create_report_from_scorecard(
             self,
             display_modes,
             html_template_url,
             css_template_url,
             author=author,
+            report_title=replace_if_None(
+                report_title, f"Report on {self.metadata.project_name}"
+            ),
+            save_path=save_path,
         )
         report.generate_launch()
 

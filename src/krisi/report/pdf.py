@@ -58,8 +58,8 @@ def convert_figures_to_html(figures: List["go.Figure"]) -> str:
 
 
 def create_pdf_report(
-    path: Path = PathConst.default_save_path,
-    title: str = "Time Series Report",
+    path: Path,
+    title: str,
     html_template_url: Path = PathConst.html_template_url,
     css_template_url: Path = PathConst.css_template_url,
     html_elements_to_inject: Dict[str, str] = dict(),

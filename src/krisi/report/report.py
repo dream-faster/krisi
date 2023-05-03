@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
-from krisi.evaluate.type import MetricCategories, ScoreCardMetadata
+from krisi.evaluate.type import MetricCategories, PathConst, ScoreCardMetadata
 from krisi.report.interactive import run_app
 from krisi.report.pdf import convert_figures_to_html, create_pdf_report
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
@@ -12,6 +12,7 @@ from krisi.utils.iterable_helpers import (
     flatten,
     group_by_categories,
     remove_nans,
+    replace_if_None,
     wrap_in_list,
 )
 
@@ -37,7 +38,7 @@ class Report:
         css_template_url: Path = Path("library/default/template.css"),
         get_html_elements: Optional[Callable] = None,
         scorecard_metadata: Optional[ScoreCardMetadata] = None,
-        save_path: Path = Path("output/report/diagrams/"),
+        save_path: Optional[Path] = None,
     ) -> None:
         self.title = title
         self.general_description = general_description
@@ -50,7 +51,10 @@ class Report:
         self.html_template_url = html_template_url
         self.css_template_url = css_template_url
         self.get_html_elements = get_html_elements
-        self.save_path = os.path.join(save_path, Path(title))
+        self.save_path = replace_if_None(
+            save_path,
+            Path(os.path.join(PathConst.default_eval_output_path, Path(title))),
+        )
 
     def generate_launch(self) -> None:
         figures_by_category = group_by_categories(
@@ -59,6 +63,8 @@ class Report:
 
         if DisplayModes.pdf in self.modes:
             create_pdf_report(
+                path=self.save_path,
+                title=self.title,
                 html_template_url=self.html_template_url,
                 css_template_url=self.css_template_url,
                 html_elements_to_inject=self.get_html_elements()
@@ -70,10 +76,11 @@ class Report:
             [figure.get_figure(**figure.plot_args).show() for figure in self.figures]
 
         if DisplayModes.direct_save in self.modes:
-            ensure_path(self.save_path)
+            diagram_path = Path(os.path.join(self.save_path, Path("diagrams")))
+            ensure_path(diagram_path)
             for i, figure in enumerate(self.figures):
                 figure.get_figure(**figure.plot_args).write_image(
-                    os.path.join(self.save_path, f"{i}_{figure.title}.svg")
+                    os.path.join(diagram_path, f"{i}_{figure.title}.svg")
                 )
 
         if DisplayModes.direct_one_plot in self.modes:
@@ -149,22 +156,19 @@ def get_html_elements_for_injection_scorecard(
 
 def create_report_from_scorecard(
     obj: "ScoreCard",
-    display_modes: Union[str, List[str], DisplayModes, List[DisplayModes]],
+    display_modes: List[DisplayModes],
     html_template_url: Path,
     css_template_url: Path,
     author: str,
+    report_title: str,
+    save_path: Path,
 ) -> Report:
-    if isinstance(display_modes, (str, DisplayModes)):
-        display_modes_ = [display_modes]
-    else:
-        display_modes_ = display_modes
-
     custom_metric_html, interactive_figures = get_waterfall_metric_html(
         obj.get_all_metrics()
     )
 
     get_html_elements = None
-    if DisplayModes.pdf in display_modes_ or DisplayModes.pdf.value in display_modes_:
+    if DisplayModes.pdf in display_modes or DisplayModes.pdf.value in display_modes:
         get_html_elements = get_html_elements_for_injection_scorecard(
             obj=obj,
             author=author,
@@ -174,12 +178,13 @@ def create_report_from_scorecard(
         )
 
     return Report(
-        title=f"Report on {obj.metadata.model_name}",
+        title=report_title,
         general_description="General Description",
-        modes=display_modes_,
+        modes=display_modes,
         scorecard_metadata=obj.metadata,
         figures=interactive_figures,
         html_template_url=html_template_url,
         css_template_url=css_template_url,
         get_html_elements=get_html_elements,
+        save_path=save_path,
     )

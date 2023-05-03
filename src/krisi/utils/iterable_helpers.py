@@ -105,3 +105,7 @@ T = TypeVar("T")
 
 def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
     return input if isinstance(input, List) else [input]
+
+
+def replace_if_None(input: Any, replacement: Any) -> Any:
+    return replacement if input is None else input
