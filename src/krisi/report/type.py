@@ -45,7 +45,7 @@ class DisplayModes(Enum):
     pdf = "pdf"
     direct = "direct"
     direct_save = "direct_save"
-    direct_one_plot = "direct_one_plot"
+    direct_one_subplot = "direct_one_subplot"
 
     @staticmethod
     def from_str(value: Union[str, "DisplayModes"]) -> "DisplayModes":

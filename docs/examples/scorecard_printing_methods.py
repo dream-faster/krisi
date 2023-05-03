@@ -1,5 +1,5 @@
 """
-Printing to console, three modes
+ScoreCard printing to console, three modes
 ===========================
 """
 # mkdocs_gallery_thumbnail_path = 'images/example_thumnail.png'
@@ -12,7 +12,8 @@ scorecard = score(
     y=np.random.normal(0, 0.1, 1000), predictions=np.random.normal(0, 0.1, 1000)
 )
 
-scorecard.print()
+scorecard.print()  # Same as "extended"
+print(scorecard)  # Same as "minimal"
 scorecard.print("extended")
 scorecard.print("minimal")
 scorecard.print("minimal_table")

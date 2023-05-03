@@ -19,6 +19,7 @@ def score(
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
+    **kwargs,
 ) -> ScoreCard:
     """
     Creates a ScoreCard based on the passed in arguments, evaluates and then returns the ScoreCard.
@@ -84,6 +85,7 @@ def score(
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
         rolling_args=rolling_args,
+        **kwargs,
     )
 
     if calculation == Calculation.single or calculation == Calculation.single.value:

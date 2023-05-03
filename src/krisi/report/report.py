@@ -12,6 +12,7 @@ from krisi.report.pdf import (
     create_pdf_report,
 )
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
+from krisi.report.vizualise import create_subplots_from_mutiple_plots
 from krisi.utils.io import ensure_path
 from krisi.utils.iterable_helpers import (
     flatten,
@@ -88,8 +89,8 @@ class Report:
                     os.path.join(diagram_path, f"{i}_{figure.title}.svg")
                 )
 
-        if DisplayModes.direct_one_plot in self.modes:
-            [figure.get_figure(**figure.plot_args) for figure in self.figures]
+        if DisplayModes.direct_one_subplot in self.modes:
+            create_subplots_from_mutiple_plots(self.figures, title=self.title).show()
 
         if DisplayModes.interactive in self.modes:
             run_app(
@@ -98,7 +99,6 @@ class Report:
                 self.title,
                 self.general_description,
                 self.scorecard_metadata,
-                # stop_event=stop_event,
             )
 
 

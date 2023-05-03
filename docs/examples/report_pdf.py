@@ -6,20 +6,17 @@ Static, PDF report
 
 import numpy as np
 
-from krisi.evaluate import ScoreCard
+from krisi import score
 from krisi.report.type import DisplayModes
 
-target, predictions = np.random.rand(100), np.random.rand(100)
-sc = ScoreCard(
-    target,
-    predictions,
+sc = score(
+    y=np.random.normal(0, 0.1, 1000),
+    predictions=np.random.normal(0, 0.1, 1000),
     model_name="<your_model_name>",
     dataset_name="<your_dataset_name>",
     project_name="Example Project",
 )
 
-""" A predefined metrics """
-sc.evaluate(defaults=True)
 sc.generate_report(
     display_modes=[DisplayModes.pdf],
 )

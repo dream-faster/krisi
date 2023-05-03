@@ -26,7 +26,11 @@ def block(
 def figure_with_controller(figure: InteractiveFigure):
     if len(figure.inputs) > 0 or len(figure.global_input_ids) > 0:
         return block(
-            graph=dcc.Graph(id=figure.id, className="h-full flex align-center"),
+            graph=dcc.Graph(
+                id=figure.id,
+                figure=figure.get_figure(width=figure.plot_args["width"] - 216.0),
+                className="h-full flex align-center",
+            ),
             title=None,
             controllers=html.Div(
                 className="h-full flex align-center",
@@ -47,7 +51,7 @@ def figure_with_controller(figure: InteractiveFigure):
         return dcc.Graph(
             className="h-full flex align-center",
             id=figure.id,
-            figure=figure.get_figure(),
+            figure=figure.get_figure(width=figure.plot_args["width"] - 216.0),
             style={"display": "inline-block"},
         )
 

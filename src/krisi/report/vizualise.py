@@ -1,10 +1,14 @@
 import pkgutil
 from enum import Enum
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd
 
+from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import wrap_in_list
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 
 class VizualisationMethod(Enum):
@@ -193,3 +197,25 @@ def plot_y_predictions(
         raise AssertionError(
             "`Plotly` is not installed. Install Plotly by running `pip install plotly` or unlock all reporting capability by `pip install krisi[plotting]`."
         )
+
+
+def create_subplots_from_mutiple_plots(
+    interactive_figures: List[InteractiveFigure], title: str
+) -> "go.Figure":
+    from plotly.subplots import make_subplots
+
+    figures = [figure.get_figure(**figure.plot_args) for figure in interactive_figures]
+
+    fig = make_subplots(
+        rows=len(figures),
+        cols=1,
+        subplot_titles=[figure.title for figure in interactive_figures],
+        row_heights=[500 for _ in range(len(figures))],
+    )
+
+    for i, figure in enumerate(figures):
+        fig.add_trace(figure.data[0], row=1 + i, col=1)
+
+    fig.update_layout(height=500 * len(figures), title_text=title)
+
+    return fig
