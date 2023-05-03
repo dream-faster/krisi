@@ -78,9 +78,9 @@ def load_scorecards(
 
     loaded_scorecards = []
     for file in files:
-        with open(
-            Path(os.path.join(path, Path(f"{file}/scorecard.pickle"))), "rb"
-        ) as f:
+        if file.split(".")[-1] != "pickle":
+            continue
+        with open(Path(os.path.join(path, Path(file))), "rb") as f:
             loaded_scorecards.append(pickle.load(f))
 
     return loaded_scorecards
