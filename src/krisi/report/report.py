@@ -5,7 +5,12 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
 from krisi.evaluate.type import MetricCategories, PathConst, ScoreCardMetadata
 from krisi.report.interactive import run_app
-from krisi.report.pdf import convert_figures_to_html, create_pdf_report
+from krisi.report.pdf import (
+    convert_figure_to_html,
+    convert_figures_to_html,
+    convert_figures_to_side_by_side_html,
+    create_pdf_report,
+)
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.utils.io import ensure_path
 from krisi.utils.iterable_helpers import (
@@ -105,30 +110,54 @@ def get_all_interactive_diagrams(metrics: List["Metric"]) -> List[InteractiveFig
     return flatten(interactive_diagrams)
 
 
+def get_group_html(
+    group_name: str, metrics: List["Metric"]
+) -> Tuple[str, List[InteractiveFigure]]:
+    html_images = f'<section class="mb-6"><br><h3 class="mb-6 text-sm font-bold">{group_name}</h3><br>'
+    interactive_diagrams = get_all_interactive_diagrams(metrics)
+
+    interactive_diagrams.sort(key=lambda x: x.plot_args["width"], reverse=True)
+
+    for i in range(len(interactive_diagrams)):
+        if (
+            i != len(interactive_diagrams)
+            and interactive_diagrams[i].plot_args["width"] < 600.0
+            and interactive_diagrams[i + 1].plot_args["width"] < 600.0
+        ):
+            html_images += convert_figures_to_side_by_side_html(
+                [
+                    interactive_diagrams[i].get_figure(
+                        **interactive_diagrams[i].plot_args
+                    ),
+                    interactive_diagrams[i + 1].get_figure(
+                        **interactive_diagrams[i + 1].plot_args
+                    ),
+                ]
+            )
+        else:
+            html_images += convert_figure_to_html(
+                interactive_diagrams[i].get_figure(**interactive_diagrams[i].plot_args)
+            )
+
+    html_images += "</section>"
+
+    return html_images, interactive_diagrams
+
+
 def get_waterfall_metric_html(
     metrics: List["Metric"],
 ) -> Tuple[str, List[InteractiveFigure]]:
     category_groups = group_by_categories(
         metrics, categories=[el.value for el in MetricCategories]
     )
-
-    html_images = ""
-    all_interactive_diagrams = []
-    for group_name, metrics in category_groups.items():
-        if metrics is None or len(metrics) == 0:
-            continue
-        html_images += f'<section class="mb-6"><br><h3 class="mb-6 text-sm font-bold">{group_name}</h3><br>'
-        interactive_diagrams = get_all_interactive_diagrams(metrics)
-        html_images += convert_figures_to_html(
-            [
-                interactive_diagram.get_figure(**interactive_diagram.plot_args)
-                for interactive_diagram in interactive_diagrams
-            ]
-        )
-        all_interactive_diagrams.append(interactive_diagrams)
-        html_images += "</section>"
-
-    return html_images, all_interactive_diagrams
+    html_and_diagrams = [
+        get_group_html(group_name, metrics)
+        for group_name, metrics in category_groups.items()
+        if metrics is not None and len(metrics) > 0
+    ]
+    return "".join([html for html, _ in html_and_diagrams]), flatten(
+        [diagrams for _, diagrams in html_and_diagrams]
+    )
 
 
 def get_html_elements_for_injection_scorecard(
@@ -140,7 +169,6 @@ def get_html_elements_for_injection_scorecard(
 ) -> Callable:
     def func() -> Dict[str, str]:
         diagrams = obj.get_diagram_dictionary()
-        # diagrams = append_sizes(diagrams)
 
         diagrams_static = {
             interactive_figure.id: convert_figures_to_html(

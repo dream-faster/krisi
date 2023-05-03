@@ -13,8 +13,24 @@ from krisi.report.type import InteractiveFigure, PathConst
 def __figure_to_html(figure: "go.Figure") -> str:
     import base64
 
-    image = str(base64.b64encode(figure.to_image(format="png", scale=5)))[2:-1]
+    image = str(base64.b64encode(figure.to_image(format="svg")))[2:-1]
     return f'<img style="max-width:100%; max-height:100%;" src="data:image/png;base64,{image}"/>'
+
+
+def convert_figure_to_html(figure: "go.Figure") -> str:
+    return "<br>" + __figure_to_html(figure)
+
+
+def convert_figures_to_html(figures: List["go.Figure"]) -> str:
+    return "<br>".join([__figure_to_html(figure) for figure in figures])
+
+
+def convert_figures_to_side_by_side_html(figures: List["go.Figure"]) -> str:
+    return (
+        '<div class="flex flex-row">'
+        + "".join([f"<div>{__figure_to_html(figure)}</div>" for figure in figures])
+        + "</div>"
+    )
 
 
 def __create_html_report(
@@ -51,10 +67,6 @@ def __convert_html_to_pdf(
     )
 
     open(f"{output_path}/{report_name}", "wb").write(pdf)
-
-
-def convert_figures_to_html(figures: List["go.Figure"]) -> str:
-    return "<br>".join([__figure_to_html(figure) for figure in figures])
 
 
 def create_pdf_report(
