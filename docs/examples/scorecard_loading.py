@@ -20,7 +20,9 @@ for _ in range(5):
     ).save()
 
 
-compare(
-    load_scorecards(project_name, PathConst.default_eval_output_path),
-    metric_keys=["mse"],
+print(
+    compare(
+        load_scorecards(project_name, PathConst.default_eval_output_path),
+        metric_keys=["mse"],
+    )
 )

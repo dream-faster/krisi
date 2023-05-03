@@ -1,43 +1,25 @@
 <html>
-<!-- https://play.tailwindcss.com/SBLNwv2P7D -->
-<!-- <link href="main.css" rel="stylesheet" /> -->
+  <!-- https://play.tailwindcss.com/SBLNwv2P7D -->
 
-<body>
-  <page size="A4">
-    <section class="header">
-      <div class="title">
-        <h1 class="text-xl text-slate-800">{ title }</h1>
-        <h2 class="text-sm text-slate-500">{ project_name }</h2>
-      </div>
-      <div class="title">
-        <p>{ date }</p>
-        <p>{ author }</p>
-      </div>
-    </section>
-    <section class="flex-row">
-      <h3 class="mb-6 text-sm font-bold">Residual Diagnostics</h3>
-      <div class="wide">{ residuals_display_time_series }</div>
-      <div class="two">
-        <div class="half">{ residuals_display_acf_plot }</div>
-        <div class="half">{ residuals_display_density_plot }</div>
-      </div>
-    </section>
-    <!-- <section class="flex-row">
-            <h3 class="mb-6 text-sm font-bold">Regression Errors</h3>
-            <div class="two">
-                <div class="mr-1 h-60 w-full border">{ residuals_display_acf_plot_2 }</div>
-                <div class="ml-1 h-60 w-full border">{ residuals_display_density_plot_2 }</div>
-            </div>
-            <div class="two">
-                <div class="mr-1 h-60 w-full border">{ residuals_display_acf_plot_2 }</div>
-                <div class="ml-1 h-60 w-full border">{ residuals_display_density_plot_2 }</div>
-            </div>
-        </section>
-        <section class="mb-6">
-            <h3 class="mb-6 text-sm font-bold">Custom Metrics</h3>
-            <div class="mb-2 h-60 border p-1">{ custom_metric_html }</div>
-        </section> -->
-  </page>
-</body>
-
+  <body>
+    <page size="A4">
+      <section
+        class="text-slate-800 flex flex-row justify-between mb-12 border-b pb-3"
+      >
+        <div class="w-full">
+          <h1 class="text-xl text-slate-800 font-bold">{ title }</h1>
+          <h2 class="text-sm text-slate-500">{ project_name }</h2>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-xs text-slate-400 font-mono text-right w-full">
+            { date }
+          </p>
+          <p class="text-xs text-slate-400 font-mono text-right w-full">
+            { author }
+          </p>
+        </div>
+      </section>
+      { custom_metric_html }
+    </page>
+  </body>
 </html>

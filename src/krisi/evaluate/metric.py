@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Generic, List, Optional, Union
+from typing import Any, Dict, Generic, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -64,8 +64,8 @@ class Metric(Generic[MetricResult]):
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
     func: Optional[MetricFunction] = None
-    plot_funcs: Optional[List[PlotFunction]] = None
-    plot_func_rolling: Optional[PlotFunction] = None
+    plot_funcs: Optional[List[Tuple[PlotFunction, Optional[Dict[str, Any]]]]] = None
+    plot_func_rolling: Optional[Tuple[PlotFunction, Optional[Dict[str, Any]]]] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
@@ -171,15 +171,27 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
     elif isiterable(obj.result_rolling):
         return [
             InteractiveFigure(
-                f"{obj.key}_{obj.plot_func_rolling.__name__}",
+                f"{obj.key}_{obj.plot_func_rolling[0].__name__}",
                 get_figure=plotly_interactive(
-                    obj.plot_func_rolling, obj.result_rolling, title=obj.name
+                    obj.plot_func_rolling[0], obj.result_rolling, title=obj.name
                 ),
+                title=f"{obj.name} - {obj.plot_func_rolling[0].__name__}",
                 category=obj.category,
+                plot_args=merge_default_dict(obj.plot_func_rolling[1]),
             )
         ]
     else:
         return None
+
+
+def merge_default_dict(
+    new_dict: Optional[Dict[str, Any]] = None,
+    default_dict: Dict[str, Any] = dict(width=900.0, height=600.0),
+) -> Dict[str, Any]:
+    if new_dict is None:
+        return default_dict
+    else:
+        return {**default_dict, **new_dict}
 
 
 def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
@@ -195,6 +207,7 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
                 get_figure=plotly_interactive(plot_func, obj.result, title=obj.name),
                 title=f"{obj.name} - {plot_func.__name__}",
                 category=obj.category,
+                plot_args=merge_default_dict(plot_args),
             )
-            for plot_func in obj.plot_funcs
+            for plot_func, plot_args in obj.plot_funcs
         ]

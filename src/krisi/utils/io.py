@@ -73,14 +73,29 @@ def load_scorecards(
     if isinstance(path, str):
         path = Path(path)
 
-    path = Path(os.path.join(path, Path(f"{project_name}")))
-    files = os.listdir(path)
+    path = Path(os.path.join(path, Path(f"{project_name}/scorecards")))
+    project_files = os.listdir(path)
+
+    scorecard_dirs = [
+        directory
+        for directory in project_files
+        if os.path.isdir(os.path.join(path, directory))
+    ]
 
     loaded_scorecards = []
-    for file in files:
-        with open(
-            Path(os.path.join(path, Path(f"{file}/scorecard.pickle"))), "rb"
-        ) as f:
-            loaded_scorecards.append(pickle.load(f))
+    for scorecard_dir in scorecard_dirs:
+        files = os.listdir(os.path.join(path, scorecard_dir))
+        for file in files:
+            if file.split(".")[-1] != "pickle":
+                continue
+            with open(
+                Path(os.path.join(path, Path(f"{scorecard_dir}/{file}"))), "rb"
+            ) as f:
+                loaded_scorecards.append(pickle.load(f))
 
     return loaded_scorecards
+
+
+def ensure_path(path: Union[str, Path]) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)

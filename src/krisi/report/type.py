@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
-from typing import TYPE_CHECKING, Callable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from typing_extensions import Literal
@@ -38,25 +37,32 @@ class InteractiveFigure:
     width: Optional[float] = 900.0
     height: Optional[float] = 600.0
     category: Optional[MetricCategories] = None
+    plot_args: Dict[str, Any] = field(default_factory=dict)
 
 
 class DisplayModes(Enum):
     interactive = "interactive"
     pdf = "pdf"
     direct = "direct"
+    direct_save = "direct_save"
+    direct_one_subplot = "direct_one_subplot"
 
-
-class PathConst:
-    default_save_path: Path = Path("output/report/")
-    html_template_url: Path = Path("libary/default/template.html")
-    css_template_url: Path = Path("libary/default/template.css")
+    @staticmethod
+    def from_str(value: Union[str, "DisplayModes"]) -> "DisplayModes":
+        if isinstance(value, DisplayModes):
+            return value
+        for strategy in DisplayModes:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown DisplayModes: {value}")
 
 
 def plotly_interactive(
     plot_function: PlotFunction,
     data_source: Union[pd.DataFrame, pd.Series],
     *args,
-    **kwargs
+    **kwargs,
 ) -> Callable:
     # default_args = args
     default_kwargs = kwargs

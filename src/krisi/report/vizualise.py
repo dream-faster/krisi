@@ -1,10 +1,14 @@
 import pkgutil
 from enum import Enum
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd
 
+from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import wrap_in_list
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 
 class VizualisationMethod(Enum):
@@ -102,7 +106,7 @@ def __vizualise_with_plotly(
 
     if y_separate:
         y_trace.showlegend = False
-        fig.append_trace(
+        fig.add_trace(
             y_trace,
             row=1,
             col=1,
@@ -111,7 +115,7 @@ def __vizualise_with_plotly(
     for mode in modes:
         if mode == VizualisationMethod.seperate:
             for i, column in enumerate(df.columns):
-                fig.append_trace(
+                fig.add_trace(
                     traces[i],
                     row=i + (2 if y_separate else 1),
                     col=1,
@@ -121,7 +125,7 @@ def __vizualise_with_plotly(
                         y_trace.showlegend = True
                     else:
                         y_trace.showlegend = False
-                    fig.append_trace(
+                    fig.add_trace(
                         y_trace,
                         row=i + 1,
                         col=1,
@@ -131,13 +135,13 @@ def __vizualise_with_plotly(
             if not y_separate:
                 if num_plots == 1:
                     y_trace.showlegend = True
-                fig.append_trace(
+                fig.add_trace(
                     y_trace,
                     row=num_plots,
                     col=1,
                 )
             for i, column in enumerate(df.columns):
-                fig.append_trace(
+                fig.add_trace(
                     traces[i],
                     row=num_plots,
                     col=1,
@@ -193,3 +197,26 @@ def plot_y_predictions(
         raise AssertionError(
             "`Plotly` is not installed. Install Plotly by running `pip install plotly` or unlock all reporting capability by `pip install krisi[plotting]`."
         )
+
+
+def create_subplots_from_mutiple_plots(
+    interactive_figures: List[InteractiveFigure], title: str
+) -> "go.Figure":
+    from plotly.subplots import make_subplots
+
+    figures = [figure.get_figure(**figure.plot_args) for figure in interactive_figures]
+
+    fig = make_subplots(
+        rows=len(figures),
+        cols=1,
+        subplot_titles=[figure.title for figure in interactive_figures],
+        row_heights=[500 for _ in range(len(figures))],
+        specs=[[{"type": fig_.data[0].type}] for fig_ in figures],
+    )
+
+    for i, figure in enumerate(figures):
+        fig.add_trace(figure.data[0], row=1 + i, col=1)
+
+    fig.update_layout(height=500 * len(figures), title_text=title)
+
+    return fig
