@@ -94,7 +94,7 @@ def display_acf_plot(
         line_color="rgba(255,255,255,0)",
     )
     fig.update_traces(showlegend=False)
-    fig.update_xaxes(range=[-1, 42])
+    fig.update_xaxes(range=[-1, len(corr_array[0]) + 2])
     fig.update_yaxes(zerolinecolor="#000000")
 
     fig.update_layout(title=title)

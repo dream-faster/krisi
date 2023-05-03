@@ -120,9 +120,9 @@ def get_group_html(
 
     for i in range(len(interactive_diagrams)):
         if (
-            i != len(interactive_diagrams)
-            and interactive_diagrams[i].plot_args["width"] < 600.0
-            and interactive_diagrams[i + 1].plot_args["width"] < 600.0
+            i + 1 != len(interactive_diagrams)
+            and interactive_diagrams[i].plot_args["width"] < 1000.0
+            and interactive_diagrams[i + 1].plot_args["width"] < 1000.0
         ):
             html_images += convert_figures_to_side_by_side_html(
                 [
@@ -153,7 +153,7 @@ def get_waterfall_metric_html(
     html_and_diagrams = [
         get_group_html(group_name, metrics)
         for group_name, metrics in category_groups.items()
-        if metrics is not None and len(metrics) > 0
+        if metrics is not None and len(metrics) > 0 and group_name is not None
     ]
     return "".join([html for html, _ in html_and_diagrams]), flatten(
         [diagrams for _, diagrams in html_and_diagrams]

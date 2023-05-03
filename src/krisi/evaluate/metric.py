@@ -173,7 +173,7 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
             InteractiveFigure(
                 f"{obj.key}_{obj.plot_func_rolling[0].__name__}",
                 get_figure=plotly_interactive(
-                    obj.plot_func_rolling, obj.result_rolling, title=obj.name
+                    obj.plot_func_rolling[0], obj.result_rolling, title=obj.name
                 ),
                 category=obj.category,
                 plot_args=merge_default_dict(obj.plot_func_rolling[1]),

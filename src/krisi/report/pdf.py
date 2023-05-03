@@ -52,7 +52,11 @@ def __convert_html_to_pdf(
     pass
 
     # import pkgutil
+    import logging
+
     from weasyprint import CSS, HTML
+
+    logging.getLogger("weasyprint").setLevel(100)
 
     ensure_path(output_path)
 

@@ -25,7 +25,7 @@ sc = ScoreCard(
 )
 
 """ A predefined metrics """
-sc.evaluate(defaults=True)
+sc.evaluate_over_time(defaults=True)
 
 if "PYTEST_CURRENT_TEST" in os.environ:
     print("Not testing Dash server currently")
