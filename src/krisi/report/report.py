@@ -108,16 +108,27 @@ def get_all_interactive_diagrams(metrics: List["Metric"]) -> List[InteractiveFig
 def get_waterfall_metric_html(
     metrics: List["Metric"],
 ) -> Tuple[str, List[InteractiveFigure]]:
-    interactive_diagrams = get_all_interactive_diagrams(metrics)
-
-    html_images = convert_figures_to_html(
-        [
-            interactive_diagram.get_figure()
-            for interactive_diagram in interactive_diagrams
-        ]
+    category_groups = group_by_categories(
+        metrics, categories=[el.value for el in MetricCategories]
     )
 
-    return html_images, interactive_diagrams
+    html_images = ""
+    all_interactive_diagrams = []
+    for group_name, metrics in category_groups.items():
+        if metrics is None or len(metrics) == 0:
+            continue
+        html_images += f'<section class="mb-6"><br><h3 class="mb-6 text-sm font-bold">{group_name}</h3><br>'
+        interactive_diagrams = get_all_interactive_diagrams(metrics)
+        html_images += convert_figures_to_html(
+            [
+                interactive_diagram.get_figure(**interactive_diagram.plot_args)
+                for interactive_diagram in interactive_diagrams
+            ]
+        )
+        all_interactive_diagrams.append(interactive_diagrams)
+        html_images += "</section>"
+
+    return html_images, all_interactive_diagrams
 
 
 def get_html_elements_for_injection_scorecard(
