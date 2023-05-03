@@ -201,7 +201,7 @@ class ScoreCard:
                 PathConst.default_eval_output_path,
                 replace_if_None(
                     self.metadata.project_name,
-                    f"{datetime.datetime.now().strftime('%H-%M-%S')}_{self.metadata.model_name}_{self.metadata.dataset_name}",
+                    f"{datetime.datetime.now().strftime('%d-%m')}_{self.metadata.model_name}_{self.metadata.dataset_name}",
                 ),
             )
         )
@@ -506,9 +506,16 @@ class ScoreCard:
             SaveModes.obj,
             SaveModes.text,
         ],
-        override_path: Optional[Path] = None,
+        override_base_path: Optional[Path] = None,
+        timestamping: bool = True,
     ) -> "ScoreCard":
-        path = replace_if_None(override_path, self.save_path)
+        path = replace_if_None(
+            override_base_path,
+            os.path.join(
+                self.save_path,
+                f"scorecards/{datetime.datetime.now().strftime('%H-%M-%S-%f') if timestamping else 'scorecard'}",
+            ),
+        )
         ensure_path(path)
 
         if SaveModes.minimal in save_modes or SaveModes.minimal.value in save_modes:
@@ -535,9 +542,9 @@ class ScoreCard:
         css_template_url: Path = PathConst.css_report_template_url,
         author: str = "",
         report_title: Optional[str] = None,
-        override_path: Optional[Path] = None,
+        override_base_path: Optional[Path] = None,
     ) -> None:
-        save_path = replace_if_None(override_path, self.save_path)
+        save_path = replace_if_None(override_base_path, self.save_path)
         ensure_path(save_path)
 
         display_modes = [
