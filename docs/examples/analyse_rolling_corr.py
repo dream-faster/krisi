@@ -9,9 +9,9 @@ import numpy as np
 import pandas as pd
 
 from krisi.analyse.correlations import (
-    create_rolled_correlation_metrics,
-    create_summaries,
+    create_summary,
     get_corr_rolled,
+    get_rolled_corr_metrics,
 )
 from krisi.report.graph import create_save_graphs
 from krisi.utils.io import ensure_path
@@ -51,11 +51,9 @@ for name, df_ in [
         coor_unrolled_in_time,
         corr_std,
         corr_mean,
-    ) = create_rolled_correlation_metrics(
-        df_rolled_corr, [df_.index[0] for df_ in df_rolled]
-    )
+    ) = get_rolled_corr_metrics(df_rolled_corr, [df_.index[0] for df_ in df_rolled])
 
-    create_summaries(
+    create_summary(
         corr_std,
         corr_mean,
         coor_unrolled_in_time,

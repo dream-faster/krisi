@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -6,13 +7,15 @@ import numpy as np
 import pandas as pd
 from typing_extensions import Literal
 
+from krisi.evaluate.type import PathConst
+
 
 def create_save_graphs(
     df_rolled_corr: List[pd.DataFrame],
     save_or_display: List[Literal["save", "display"]] = ["save", "display"],
     corr_direction: Literal["positive", "negative"] = "positive",
     min_correlation: float = 0.01,
-    save_location: str = "output/analyse/correlations",
+    save_location: Path = PathConst.default_analyse_output_path,
 ) -> None:
     for i, corr_df in enumerate(df_rolled_corr):
         __display_corr_graph(
@@ -30,7 +33,7 @@ def __display_corr_graph(
     save_or_display: List[Literal["save", "display"]],
     corr_direction: Literal["positive", "negative"],
     min_correlation: float,
-    save_location: str,
+    save_location: Path,
     file_name: str = "0",
 ) -> None:
     feature_node_names = corr.index.values
@@ -55,7 +58,7 @@ def __create_corr_network(
     G: nx.Graph,
     corr_direction: Literal["positive", "negative"],
     min_correlation: float,
-    save_location: str,
+    save_location: Path,
     file_name: str,
     save_or_display: List[Literal["save", "display"]],
 ):
