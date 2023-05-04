@@ -411,7 +411,14 @@ class ScoreCard:
             if metric.restrict_to_sample is not self.sample_type:
                 if isinstance(metric, Group):
                     for metric in metric.evaluate(self.y, self.predictions):
-                        self[metric.key] = metric
+                        if metric.key not in self.__dict__:
+                            metric._from_group = True
+                            self[metric.key] = metric
+                        else:
+                            self[metric.key] = {
+                                "result": metric.result,
+                                "_from_group": True,
+                            }
                 else:
                     metric.evaluate(self.y, self.predictions)
 
@@ -444,7 +451,14 @@ class ScoreCard:
                     for metric in metric.evaluate_over_time(
                         self.y, self.predictions, rolling_args=self.rolling_args
                     ):
-                        self[metric.key] = metric
+                        if metric.key not in self.__dict__:
+                            metric._from_group = True
+                            self[metric.key] = metric
+                        else:
+                            self[metric.key] = {
+                                "result_rolling": metric.result_rolling,
+                                "_from_group": True,
+                            }
                 else:
                     metric.evaluate_over_time(
                         self.y, self.predictions, rolling_args=self.rolling_args
