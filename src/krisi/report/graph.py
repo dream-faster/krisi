@@ -8,6 +8,7 @@ import pandas as pd
 from typing_extensions import Literal
 
 from krisi.evaluate.type import PathConst
+from krisi.utils.io import ensure_path
 
 
 def create_save_graphs(
@@ -17,6 +18,7 @@ def create_save_graphs(
     min_correlation: float = 0.01,
     save_location: Path = PathConst.default_analyse_output_path,
 ) -> None:
+    ensure_path(save_location)
     for i, corr_df in enumerate(df_rolled_corr):
         __display_corr_graph(
             corr_df,
