@@ -1,10 +1,12 @@
 import datetime
+import os
 import uuid
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import pandas as pd
 
-from krisi.evaluate.type import Predictions, Targets
+from krisi.evaluate.type import PathConst, Predictions, Targets
 
 if TYPE_CHECKING:
     from krisi.evaluate.scorecard import ScoreCard
@@ -58,3 +60,7 @@ def handle_unnamed(
         project_name = f"Project_{display_time+str(uuid.uuid4()).split('-')[0]}"
 
     return model_name, dataset_name, project_name
+
+
+def get_save_path(project_name: str) -> Path:
+    return Path(os.path.join(PathConst.default_eval_output_path, project_name))
