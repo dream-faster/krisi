@@ -83,8 +83,29 @@ You can quickly evaluate your predictions by running:
 import numpy as np
 from krisi.evaluate import score
 
-score(y=np.random.rand(1000), predictions=np.random.rand(1000)).print()
+score(y=np.random.rand(1000), predictions=np.random.rand(1000)).print('minimal')
 ```
+
+<details>
+<summary>
+Outputs:
+</summary>
+
+```
+                                          Model_20230505-15094466243320 <- you can add your name here
+                     Mean Absolute Error                       0.115402
+          Mean Absolute Percentage Error                       3.272862
+Symmetric Mean Absolute Percentage Error                       0.718754
+                      Mean Squared Error                       0.020945
+                 Root Mean Squared Error                       0.144723
+                               R-squared                      -1.108832
+                   Mean of the Residuals                      -0.002094
+     Standard Deviation of the Residuals                       0.144781
+```
+
+</details>
+
+-----
 
 Krisi's main object is the ``ScoreCard`` that contains predefined ``Metric``s and which you can add further ``Metric``s to.
 
@@ -100,7 +121,7 @@ sc = score(
 ```
 <details>
 <summary>
-Outputs 👇
+Outputs:
 </summary>
 
 ```
@@ -194,6 +215,7 @@ Outputs 👇
 
 </details>
 
+-----
 
 Evaluating `Metric`s over time (on a rolling basis). 
 ```python
@@ -208,7 +230,7 @@ score(
 ```
 <details>
 <summary>
-Outputs 👇
+Outputs:
 </summary>
 
 ```
@@ -408,9 +430,18 @@ Contributors are continously adding new default metrics, press watch to keep tra
 <b> Regression Errors</b>
 - Mean Absolute Error
 - Mean Absolute Percentage Error
+- Symmetric Mean Absolute Percentage Error
 - Mean Squared Error
 - Root Mean Squared Error
 - Root Mean Squared Log Error
+- R-squared
+  
+<b> Classification Errors</b>
+- Matthew Correlation Coefficient
+- F1 Score
+- Precision
+- Recall
+- Accuracy
 
 
 ## Our Open-core Time Series Toolkit
@@ -461,7 +492,7 @@ sc.print(with_info=True)
 ```
 <details>
 <summary>
-Outputs 👇
+Outputs:
 </summary>
 
 ```
