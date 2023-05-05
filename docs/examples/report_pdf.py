@@ -15,6 +15,7 @@ sc = score(
     model_name="<your_model_name>",
     dataset_name="<your_dataset_name>",
     project_name="Example Project",
+    calculation="rolling",
 )
 
 sc.generate_report(
