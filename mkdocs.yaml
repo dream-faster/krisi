@@ -34,7 +34,7 @@ nav:
     - Concepts:
       - ScoreCard: 'concepts/scorecard.md'
     - Walkthroughs: 
-      - Start Here: 'walkthroughs/walkthrough.md'
+      - Start Here: 'walkthroughs/a_full_rundown_notebook.md'
     - Examples: generated/gallery
     - API: 
       - 'api/index.md'
