@@ -443,6 +443,61 @@ Contributors are continously adding new default metrics, press watch to keep tra
 - Recall
 - Accuracy
 
+## Examples, Walkthroughs and Blog Posts
+
+<table style="width:100%">
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Dataset Type</th>
+    <th>Docs Link</th>
+    <th>Colab</th>
+  </tr>
+  <tr>
+    <td> 
+     ⚡️ Core Walkthrough
+    </td>
+    <td>Walkthrough</td>
+    <td>Synthetic</td>
+    <td>  
+      <a href='https://dream-faster.github.io/krisi/walkthroughs/walkthrough/' target="_blank">Notebook</a>
+    </td>
+    <td>
+     <a href='https://colab.research.google.com/drive/1wVmSqGbtM94VsFP3dRFhVV_nD13x1V0X?usp=sharing' target="_blank">Colab</a>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+    🚄 Collapsed Metrics vs Metrics over Time
+    </td>
+    <td>Walkthrough</td>
+    <td>Energy</td>
+    <td> 
+        <a href='https://colab.research.google.com/drive/1XpHwU4NZ4HNa37kf5TWbIjNfSq1BnhVu#scrollTo=ldzEvomKGjEg' target="_blank"> 
+        Colab
+    </td>
+    <td>
+        <a href='https://colab.research.google.com/drive/1XpHwU4NZ4HNa37kf5TWbIjNfSq1BnhVu?usp=sharing' target="_blank"> 
+        Colab
+        </a>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+    📚 Example Collection
+    </td>
+    <td>Example</td>
+    <td>Synthetic</td>
+    <td> 
+        <a href='https://dream-faster.github.io/krisi/generated/gallery/' target="_blank">
+        Collection Link
+        </a>
+    </td>
+    <td> - </td>
+  </tr>
+</table>
+
+<br/>
 
 ## Our Open-core Time Series Toolkit
 
