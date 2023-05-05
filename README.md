@@ -368,6 +368,8 @@ Outputs 👇
 
 </details>
 
+-----
+
 You can also show the results in a Report easily:
 
 ```python
