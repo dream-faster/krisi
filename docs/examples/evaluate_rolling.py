@@ -22,4 +22,3 @@ score(
     predictions=np.random.rand(datasize),
     calculation=Calculation.both,
 )
-
