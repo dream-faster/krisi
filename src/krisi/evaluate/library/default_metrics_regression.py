@@ -114,11 +114,16 @@ residuals = Metric[List[float]](
 )
 """ ~ """
 
+
+def dummy_func(res):
+    return res.mean()
+
+
 residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=lambda res: res.mean(),
+    func=dummy_func,  # lambda res: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -142,6 +147,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
     restrict_to_sample=SampleTypes.insample,
     comp_complexity=ComputationalComplexity.high,
+    disable_rolling=True,
 )
 """ ~ """
 

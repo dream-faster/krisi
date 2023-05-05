@@ -70,6 +70,7 @@ class Metric(Generic[MetricResult]):
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
     disable_rolling: bool = False
+    _from_group: bool = False
 
     def __post_init__(self):
         if self.key == "":
@@ -89,6 +90,8 @@ class Metric(Generic[MetricResult]):
         return super().__repr__()
 
     def _evaluation(self, *args) -> "Metric":
+        if self._from_group:
+            return self
         try:
             result = self.func(*args, **self.parameters)
         except Exception as e:
@@ -100,12 +103,13 @@ class Metric(Generic[MetricResult]):
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
-
         self._evaluation(y, predictions)
 
     def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
+        if self._from_group:
+            return self
         if self.disable_rolling:
-            self._evaluation(*args)
+            return self
         else:
             _df = pd.concat(args, axis="columns")
             try:

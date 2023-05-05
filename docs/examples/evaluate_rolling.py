@@ -10,8 +10,16 @@ from krisi import score
 from krisi.evaluate.type import Calculation
 
 datasize = 250
+
 score(
     y=np.random.rand(datasize),
     predictions=np.random.rand(datasize),
     calculation=Calculation.rolling,
 ).print()
+
+score(
+    y=np.random.rand(datasize),
+    predictions=np.random.rand(datasize),
+    calculation=Calculation.both,
+)
+
