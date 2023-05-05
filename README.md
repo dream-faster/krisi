@@ -472,10 +472,7 @@ Contributors are continously adding new default metrics, press watch to keep tra
     </td>
     <td>Walkthrough</td>
     <td>Energy</td>
-    <td> 
-        <a href='https://colab.research.google.com/drive/1XpHwU4NZ4HNa37kf5TWbIjNfSq1BnhVu#scrollTo=ldzEvomKGjEg' target="_blank"> 
-        Colab
-    </td>
+    <td>-</td>
     <td>
         <a href='https://colab.research.google.com/drive/1XpHwU4NZ4HNa37kf5TWbIjNfSq1BnhVu?usp=sharing' target="_blank"> 
         Colab
