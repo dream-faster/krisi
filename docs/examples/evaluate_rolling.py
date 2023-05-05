@@ -9,7 +9,7 @@ import numpy as np
 from krisi import score
 from krisi.evaluate.type import Calculation
 
-datasize = 10000
+datasize = 250
 score(
     y=np.random.rand(datasize),
     predictions=np.random.rand(datasize),
