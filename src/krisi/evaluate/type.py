@@ -1,7 +1,8 @@
+import os
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Tuple, TypeVar, Union
+from typing import Any, Callable, List, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -59,12 +60,21 @@ class ComputationalComplexity(Enum):
 
 @dataclass
 class ScoreCardMetadata:
+    save_path: Path
     project_name: str = ""
     project_description: str = ""
     model_name: str = ""
     model_description: str = ""
     dataset_name: str = ""
     dataset_description: str = ""
+
+    def __setattr__(self, key: str, item: Any) -> None:
+        if key == "project_name":
+            self.save_path = Path(
+                os.path.join(PathConst.default_eval_output_path, item)
+            )
+
+        super().__setattr__(key, item)
 
 
 class PrintMode(Enum):

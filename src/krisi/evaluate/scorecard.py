@@ -29,7 +29,7 @@ from krisi.evaluate.type import (
     ScoreCardMetadata,
     Targets,
 )
-from krisi.evaluate.utils import handle_unnamed
+from krisi.evaluate.utils import get_save_path, handle_unnamed
 from krisi.report.console import (
     get_large_metric_summary,
     get_minimal_summary,
@@ -132,7 +132,6 @@ class ScoreCard:
     classification: bool  # TODO: Support multilabel classification
     metadata: ScoreCardMetadata
     rolling_args: Dict[str, Any]
-    save_path: Path
 
     def __init__(
         self,
@@ -167,6 +166,7 @@ class ScoreCard:
         )
 
         self.__dict__["metadata"] = ScoreCardMetadata(
+            get_save_path(project_name_),
             project_name_,
             project_description,
             model_name_,
@@ -195,16 +195,6 @@ class ScoreCard:
 
         for metric in custom_metrics:
             self.__dict__[metric.key] = deepcopy(metric)
-
-        self.__dict__["save_path"] = Path(
-            os.path.join(
-                PathConst.default_eval_output_path,
-                replace_if_None(
-                    self.metadata.project_name,
-                    f"{datetime.datetime.now().strftime('%d-%m')}_{self.metadata.model_name}_{self.metadata.dataset_name}",
-                ),
-            )
-        )
 
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
@@ -512,7 +502,7 @@ class ScoreCard:
         path = replace_if_None(
             override_base_path,
             os.path.join(
-                self.save_path,
+                self.metadata.save_path,
                 f"scorecards/{datetime.datetime.now().strftime('%H-%M-%S-%f') if timestamping else 'scorecard'}",
             ),
         )
@@ -544,7 +534,7 @@ class ScoreCard:
         report_title: Optional[str] = None,
         override_base_path: Optional[Path] = None,
     ) -> None:
-        save_path = replace_if_None(override_base_path, self.save_path)
+        save_path = replace_if_None(override_base_path, self.metadata.save_path)
         ensure_path(save_path)
 
         display_modes = [
