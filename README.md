@@ -409,7 +409,7 @@ score(
 Generates:
 
 <div>
-  <img src="https://raw.githubusercontent.com/dream-faster/krisi/main/docs/images/pdf_example.svg" alt="PDF report on Metrics over ime" width="100%" >
+  <img src="https://raw.githubusercontent.com/dream-faster/krisi/main/docs/images/pdf_report.png" alt="PDF report on Metrics over ime" width="100%" >
 </div>
 
 <br/>
@@ -417,7 +417,7 @@ Generates:
 
 ## Default Metrics
 
-See ``evaluate/library/default_metrics.py`` for source.
+See ``evaluate/library`` for source.
 Contributors are continously adding new default metrics, press watch to keep track of the project and see in issues planned default metrics.
 
 <b> Residual Diagnostics </b>
