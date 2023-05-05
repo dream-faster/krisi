@@ -83,7 +83,7 @@ You can quickly evaluate your predictions by running:
 import numpy as np
 from krisi.evaluate import score
 
-score(y=np.random.rand(1000), predictions=np.random.rand(1000)).print('minimal')
+print(score(y=np.random.rand(100), predictions=np.random.rand(100)))
 ```
 
 <details>
