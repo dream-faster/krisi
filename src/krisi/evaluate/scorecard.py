@@ -511,10 +511,10 @@ class ScoreCard:
             SaveModes.text,
         ],
         override_base_path: Optional[Path] = None,
-        timestamp_no_override: bool = False,
+        timestamp_no_overwrite: bool = False,
     ) -> "ScoreCard":
         if override_base_path is None:
-            if timestamp_no_override is False:
+            if timestamp_no_overwrite is False:
                 dir_model_name = self.metadata.model_name
             else:
                 dir_model_name = datetime.datetime.now().strftime("%H-%M-%S-%f")
