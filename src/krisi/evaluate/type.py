@@ -49,6 +49,7 @@ class SaveModes(Enum):
 class PathConst:
     default_eval_output_path: Path = Path("output/")
     default_analyse_output_path: Path = Path("analyse/")
+    default_save_output_path: Path = Path("scorecards/")
     html_report_template_url: Path = Path("library/pdf_layouts/scorecard/report.html")
     css_report_template_url: Path = Path("library/pdf_layouts/scorecard/report.css")
 
@@ -92,3 +93,9 @@ class PrintMode(Enum):
                 return strategy
         else:
             raise ValueError(f"Unknown PrintMode: {value}")
+
+
+class NamingPrefixes:
+    model = "Model_"
+    dataset = "Dataset_"
+    project = "Project_"
