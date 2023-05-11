@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import pandas as pd
 
-from krisi.evaluate.type import PathConst, Predictions, Targets
+from krisi.evaluate.type import NamingPrefixes, PathConst, Predictions, Targets
+from krisi.utils.iterable_helpers import is_int
 
 if TYPE_CHECKING:
-    from krisi.evaluate.scorecard import ScoreCard
+    from krisi.evaluate.scorecard import ScoreCard, ScoreCardMetadata
 
 
 def handle_empty_metrics_to_display(
@@ -48,19 +49,41 @@ def handle_unnamed(
         if isinstance(y, pd.Series) and y.name is not None:
             dataset_name = str(y.name)
         else:
-            dataset_name = f"Dataset_{display_time+str(uuid.uuid4()).split('-')[0]}"
+            dataset_name = f"{NamingPrefixes.dataset}{display_time+str(uuid.uuid4()).split('-')[0]}"
 
     if model_name is None:
         if isinstance(predictions, pd.Series) and predictions.name is not None:
             model_name = str(predictions.name)
         else:
-            model_name = f"Model_{display_time+str(uuid.uuid4()).split('-')[0]}"
+            model_name = (
+                f"{NamingPrefixes.model}{display_time+str(uuid.uuid4()).split('-')[0]}"
+            )
 
     if project_name is None:
-        project_name = f"Project_{display_time+str(uuid.uuid4()).split('-')[0]}"
+        project_name = (
+            f"{NamingPrefixes.dataset}{display_time+str(uuid.uuid4()).split('-')[0]}"
+        )
 
     return model_name, dataset_name, project_name
 
 
 def get_save_path(project_name: str) -> Path:
     return Path(os.path.join(PathConst.default_eval_output_path, project_name))
+
+
+def last_model_name(metadata: "ScoreCardMetadata") -> Path:
+    if metadata.model_name[:6] == NamingPrefixes.model and is_int(
+        metadata.model_name[7]
+    ):
+        path = os.path.join(metadata.save_path, PathConst.default_save_output_path)
+        if os.path.exists(path):
+            listdir = os.listdir(
+                os.path.join(metadata.save_path, PathConst.default_save_output_path)
+            )
+            dir_model_name = listdir[-1]
+        else:
+            dir_model_name = metadata.model_name
+    else:
+        dir_model_name = metadata.model_name
+
+    return Path(dir_model_name)

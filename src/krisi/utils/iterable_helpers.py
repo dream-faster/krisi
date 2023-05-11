@@ -109,3 +109,12 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
 
 def replace_if_None(input: Any, replacement: Any) -> Any:
     return replacement if input is None else input
+
+
+def is_int(s: Any):
+    try:
+        int(s)
+    except ValueError:
+        return False
+    else:
+        return True
