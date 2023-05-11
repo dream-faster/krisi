@@ -73,7 +73,11 @@ def load_scorecards(
     if isinstance(path, str):
         path = Path(path)
 
-    path = Path(os.path.join(path, Path(f"{project_name}/scorecards")))
+    path = Path(
+        os.path.join(
+            path, os.path.join(Path(project_name), PathConst.default_save_output_path)
+        )
+    )
     project_files = os.listdir(path)
 
     scorecard_dirs = [
