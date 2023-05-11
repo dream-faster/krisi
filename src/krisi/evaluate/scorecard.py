@@ -29,7 +29,7 @@ from krisi.evaluate.type import (
     ScoreCardMetadata,
     Targets,
 )
-from krisi.evaluate.utils import get_save_path, handle_unnamed, last_model_name
+from krisi.evaluate.utils import get_save_path, handle_unnamed
 from krisi.report.console import (
     get_large_metric_summary,
     get_minimal_summary,
@@ -515,7 +515,7 @@ class ScoreCard:
     ) -> "ScoreCard":
         if override_base_path is None:
             if timestamp_no_override is False:
-                dir_model_name = last_model_name(self.metadata)
+                dir_model_name = self.metadata.model_name
             else:
                 dir_model_name = datetime.datetime.now().strftime("%H-%M-%S-%f")
 
