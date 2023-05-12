@@ -15,7 +15,7 @@ def display_time_series(data: List[MetricResult], **kwargs) -> "go.Figure":
     import plotly.express as px
 
     title = kwargs.get("title", "")
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data, columns=[title])
     df["iteration"] = list(range(len(data)))
     fig = px.line(
         df,
