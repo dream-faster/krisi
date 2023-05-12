@@ -2,11 +2,12 @@ import datetime
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Literal, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pandas as pd
 from IPython.display import display
 from rich import print
+from typing_extensions import Literal
 
 from krisi.evaluate.assertions import (
     check_valid_pred_target,
