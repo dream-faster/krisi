@@ -68,18 +68,15 @@ def plotly_interactive(
     default_kwargs = kwargs
 
     def wrapper(*args, **kwargs) -> "go.Figure":
-        width = kwargs.pop("width", None)
-        height = kwargs.pop("height", None)
-        title = kwargs.pop("title", None)
-
         for key, value in default_kwargs.items():
             if key not in kwargs:
                 kwargs[key] = value
 
-        fig = plot_function(data_source, *args, **kwargs)
+        width = kwargs.pop("width", None)
+        height = kwargs.pop("height", None)
+        title = kwargs.get("title", None)
 
-        # fig.update_layout(width=width)
-        # fig.update_layout(autosize=False, width=width, height=height)
+        fig = plot_function(data_source, *args, **kwargs)
         fig.update_layout(autosize=False, width=width, height=height)
         if title is not None:
             fig.update_layout(title=title)

@@ -11,9 +11,10 @@ from statsmodels.tsa.stattools import acf, pacf
 from krisi.evaluate.type import MetricResult
 
 
-def display_time_series(data: List[MetricResult], title: str = "") -> "go.Figure":
+def display_time_series(data: List[MetricResult], **kwargs) -> "go.Figure":
     import plotly.express as px
 
+    title = kwargs.get("title", "")
     df = pd.DataFrame(data, columns=[title])
     df["iteration"] = list(range(len(data)))
     fig = px.line(
@@ -21,11 +22,10 @@ def display_time_series(data: List[MetricResult], title: str = "") -> "go.Figure
         x="iteration",
         y=title,
     )
-    fig.update_layout(title=title)
     return fig
 
 
-def display_single_value(data: MetricResult, title: str = "") -> "go.Figure":
+def display_single_value(data: MetricResult, **kwargs) -> "go.Figure":
     import plotly.graph_objects as go
 
     fig = go.Figure()
@@ -39,22 +39,15 @@ def display_single_value(data: MetricResult, title: str = "") -> "go.Figure":
         )
     )
 
-    fig.update_layout(title=title)
     return fig
 
 
 def display_acf_plot(
-    data: MetricResult,
-    title: str = "",
-    plot_pacf: bool = False,
+    data: MetricResult, plot_pacf: bool = False, **kwargs
 ) -> "go.Figure":
     import plotly.graph_objects as go
 
-    title = (
-        title + " - Partial Autocorrelation (PACF)"
-        if plot_pacf
-        else "Autocorrelation (ACF)"
-    )
+    title = "Partial Autocorrelation (PACF)" if plot_pacf else "Autocorrelation (ACF)"
 
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
@@ -101,16 +94,53 @@ def display_acf_plot(
     return fig
 
 
-def display_density_plot(
-    data: MetricResult,
-    title: str = "",
-    plot_pacf: bool = False,
-) -> "go.Figure":
+def display_density_plot(data: MetricResult, **kwargs) -> "go.Figure":
     import plotly.express as px
 
     if not isinstance(data, pd.Series):
         data = pd.Series(data)
     fig = px.histogram(data, marginal="box")  # or violin, rug
-    fig.update_layout(title=title)
 
+    return fig
+
+
+def callibration_plot(
+    data: MetricResult, bin_size: float = 0.1, **kwargs
+) -> "go.Figure":
+    import plotly.graph_objects as go
+
+    y_true = data["y"]
+    y_prob = data["probs"]
+
+    # sort probabilities and corresponding true labels in ascending order
+    order = np.argsort(y_prob)
+    y_true = y_true[order]
+    y_prob = y_prob[order]
+
+    # calculate fraction of positives at each probability bin
+    bins = np.arange(0, 1.1, bin_size)
+    bin_indices = np.digitize(y_prob, bins)
+    bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
+    fraction_positives = np.cumsum(bin_counts[:-1]) / np.sum(y_true)
+
+    scatter = go.Scatter(
+        x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
+    )
+
+    perfect_calibration = go.Scatter(
+        x=[0, 1],
+        y=[0, 1],
+        mode="lines",
+        name="Perfect Calibration",
+        line=dict(color="black", dash="dash"),
+    )
+
+    layout = go.Layout(
+        title="Calibration Curve",
+        xaxis=dict(title="Predicted Probability", tickvals=bins),
+        yaxis=dict(title="Fraction of Positives"),
+        showlegend=True,
+    )
+
+    fig = go.Figure(data=[scatter, perfect_calibration], layout=layout)
     return fig
