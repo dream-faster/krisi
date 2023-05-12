@@ -202,12 +202,10 @@ def create_report_from_scorecard(
     report_title: str,
     save_path: Path,
 ) -> Report:
-    custom_metric_html, interactive_figures = get_waterfall_metric_html(
-        obj.get_all_metrics()
-    )
-
-    get_html_elements = None
     if DisplayModes.pdf in display_modes or DisplayModes.pdf.value in display_modes:
+        custom_metric_html, interactive_diagrams = get_waterfall_metric_html(
+            obj.get_all_metrics()
+        )
         get_html_elements = get_html_elements_for_injection_scorecard(
             obj=obj,
             author=author,
@@ -215,13 +213,17 @@ def create_report_from_scorecard(
             date=datetime.datetime.now().strftime("%Y-%m-%d"),
             custom_metric_html=custom_metric_html,
         )
+    else:
+        get_html_elements = None
+        interactive_diagrams = get_all_interactive_diagrams(obj.get_all_metrics())
+        interactive_diagrams.sort(key=lambda x: x.plot_args["width"], reverse=True)
 
     return Report(
         title=report_title,
         general_description="General Description",
         modes=display_modes,
         scorecard_metadata=obj.metadata,
-        figures=interactive_figures,
+        figures=interactive_diagrams,
         html_template_url=html_template_url,
         css_template_url=css_template_url,
         get_html_elements=get_html_elements,

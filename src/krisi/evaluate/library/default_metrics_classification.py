@@ -94,7 +94,7 @@ callibration = Metric[float](
     func=lambda y, pred, prob: pd.concat(
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
-    plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.3))],
+    plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.1))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
