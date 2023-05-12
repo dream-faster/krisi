@@ -8,7 +8,7 @@ Analysing rolling correlations
 import numpy as np
 import pandas as pd
 
-from docs.examples.utils import handle_test
+from dev_utils.utils import handle_test
 from krisi.analyse import (
     get_rolled_corr_metrics,
     matrix_corr_over_time,

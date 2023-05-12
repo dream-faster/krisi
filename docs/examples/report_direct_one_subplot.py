@@ -6,7 +6,7 @@ A single figure with subplots of all other figures opened in browser or inline i
 
 import numpy as np
 
-from docs.examples.utils import handle_test
+from dev_utils.utils import handle_test
 from krisi import score
 from krisi.report.type import DisplayModes
 

@@ -50,7 +50,7 @@ def test_scorecard_basic():
 
 
 def test_utils():
-    from docs.examples import utils  # noqa
+    from dev_utils import utils  # noqa
 
 
 def test_report_direct():
