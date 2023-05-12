@@ -54,6 +54,7 @@ f_one_score = Metric[float](
     func=f1_score,
     plot_funcs=[(display_single_value, dict(width=500.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    supports_multiclass=True,
 )
 """~"""
 matthew_corr = Metric[float](

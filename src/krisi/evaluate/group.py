@@ -1,12 +1,18 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, Generic, List
 
 from .metric import Metric
-from .type import MetricFunction, PredictionsDS, ProbabilitiesDS, TargetsDS
+from .type import (
+    MetricFunction,
+    MetricResult,
+    PredictionsDS,
+    ProbabilitiesDS,
+    TargetsDS,
+)
 
 
 @dataclass
-class Group(Metric):
+class Group(Metric, Generic[MetricResult]):
     def __init__(
         self, name: str, key: str, metrics: List[Metric], func: MetricFunction
     ) -> None:
@@ -18,8 +24,10 @@ class Group(Metric):
     def evaluate(
         self, y: TargetsDS, predictions: PredictionsDS, probabilities: ProbabilitiesDS
     ) -> List[Metric]:
-        results = self.group_func(y, predictions, probabilities)
-
+        if self.accepts_probabilities:
+            results = self.group_func(y, predictions, probabilities)
+        else:
+            results = self.group_func(y, predictions)
         return [metric._evaluation(results) for metric in self.metrics]
 
     def evaluate_over_time(

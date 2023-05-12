@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 MetricResult = TypeVar(
-    "MetricResult", bound=Union[float, int, str, List, Tuple, pd.DataFrame]
+    "MetricResult", bound=Union[float, int, str, List, Tuple, pd.DataFrame, pd.Series]
 )
 
 
@@ -18,7 +18,11 @@ Probabilities = Union[np.ndarray, pd.Series, pd.DataFrame, List[Union[int, float
 PredictionsDS = pd.Series
 ProbabilitiesDS = pd.DataFrame
 TargetsDS = pd.Series
-MetricFunction = Callable[[PredictionsDS, TargetsDS, ProbabilitiesDS], MetricResult]
+MetricFunctionProb = Callable[[PredictionsDS, TargetsDS, ProbabilitiesDS], MetricResult]
+MetricFunctionNoProb = Callable[
+    [PredictionsDS, TargetsDS, ProbabilitiesDS], MetricResult
+]
+MetricFunction = Union[MetricFunctionNoProb, MetricFunctionProb]
 
 
 class MetricCategories(Enum):
