@@ -1,82 +1,85 @@
+# flake8: noqa
+
+
 def test_scorecard_saving():
-    pass
+    from docs.examples import scorecard_saving  # noqa
 
 
 def test_scorecard_extended():
-    pass
+    from docs.examples import scorecard_extended  # noqa
 
 
 def test_report_pdf():
-    pass
+    from docs.examples import report_pdf  # noqa
 
 
 def test_report_direct_one_subplot():
-    pass
+    from docs.examples import report_direct_one_subplot  # noqa
 
 
 def test_scorecard_loading():
-    pass
+    from docs.examples import scorecard_loading  # noqa
 
 
 def test_analyse_rolling_corr():
-    pass
+    from docs.examples import analyse_rolling_corr  # noqa
 
 
 def test_report_loading_generating():
-    pass
+    from docs.examples import report_loading_generating  # noqa
 
 
 def test_evaluate_default_metric_selection():
-    pass
+    from docs.examples import evaluate_default_metric_selection  # noqa
 
 
 def test_evaluate_rolling():
-    pass
+    from docs.examples import evaluate_rolling  # noqa
 
 
 def test_evaluate_classification():
-    pass
+    from docs.examples import evaluate_classification  # noqa
 
 
 def test_report_direct_save():
-    pass
+    from docs.examples import report_direct_save  # noqa
 
 
 def test_scorecard_basic():
-    pass
+    from docs.examples import scorecard_basic  # noqa
 
 
 def test_utils():
-    pass
+    from docs.examples import utils  # noqa
 
 
 def test_report_direct():
-    pass
+    from docs.examples import report_direct  # noqa
 
 
 def test_scorecard_printing_methods():
-    pass
+    from docs.examples import scorecard_printing_methods  # noqa
 
 
 def test_scorecard_to_series():
-    pass
+    from docs.examples import scorecard_to_series  # noqa
 
 
 def test_report_interactive():
-    pass
+    from docs.examples import report_interactive  # noqa
 
 
 def test_evaluate_regression():
-    pass
+    from docs.examples import evaluate_regression  # noqa
 
 
 def test_evaluate_compare_classification():
-    pass
+    from docs.examples import evaluate_compare_classification  # noqa
 
 
 def test_evaluate_compare_regression():
-    pass
+    from docs.examples import evaluate_compare_regression  # noqa
 
 
 def test_a_start_report_console():
-    pass
+    from docs.examples import a_start_report_console  # noqa
