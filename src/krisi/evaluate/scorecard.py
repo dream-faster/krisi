@@ -442,7 +442,7 @@ class ScoreCard:
             "evaluate_over_time",
             "result_rolling",
             defaults=defaults,
-            rolling_args=self.rolling_args,
+            rolling_args={"rolling_args": self.rolling_args},
         )
         return self
 
