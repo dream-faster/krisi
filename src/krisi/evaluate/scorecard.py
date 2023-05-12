@@ -386,7 +386,7 @@ class ScoreCard:
                 if isinstance(metric, Group):
                     group = metric
                     for metric_in_group in getattr(group, func_key_evaluate)(
-                        self.y, self.predictions, **rolling_args
+                        self.y, self.predictions, self.probabilities, **rolling_args
                     ):
                         if metric_in_group.key not in self.__dict__:
                             metric_in_group._from_group = True
@@ -398,7 +398,7 @@ class ScoreCard:
                             }
                 else:
                     getattr(metric, func_key_evaluate)(
-                        self.y, self.predictions, **rolling_args
+                        self.y, self.predictions, self.probabilities, **rolling_args
                     )
 
     def evaluate(self, defaults: bool = True) -> "ScoreCard":

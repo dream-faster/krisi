@@ -134,11 +134,11 @@ def ensure_df(data: Probabilities, name: str) -> pd.DataFrame:
     elif isinstance(data, pd.Series):
         return data.to_frame(name)
     elif isinstance(data, np.ndarray):
-        df = pd.DataFrame(data, columns=list(range(data.shape[1])))
+        df = pd.DataFrame(data)
         df.index.name = name
         return df
     elif isinstance(data, list):
-        df = pd.DataFrame(data, columns=list(range(len(data))))
+        df = pd.DataFrame(data)
         df.index.name = name
         return df
     else:
