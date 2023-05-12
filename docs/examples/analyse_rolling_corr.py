@@ -8,6 +8,7 @@ Analysing rolling correlations
 import numpy as np
 import pandas as pd
 
+from dev_utils.utils import handle_test
 from krisi.analyse import (
     get_rolled_corr_metrics,
     matrix_corr_over_time,
@@ -37,3 +38,6 @@ for name, df_ in [
     )
     plot_corr_over_time(df, window, step, name=name, save_or_display=["display"])
     create_save_graphs([matrix_corr_over_time(df, window, step, threshold=0.25)[1]])
+
+
+handle_test()

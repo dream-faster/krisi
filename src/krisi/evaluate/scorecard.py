@@ -4,10 +4,10 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
-import numpy as np
 import pandas as pd
 from IPython.display import display
 from rich import print
+from typing_extensions import Literal
 
 from krisi.evaluate.assertions import (
     check_valid_pred_target,
@@ -23,13 +23,21 @@ from krisi.evaluate.type import (
     MetricCategories,
     PathConst,
     Predictions,
+    PredictionsDS,
     PrintMode,
+    Probabilities,
     SampleTypes,
     SaveModes,
     ScoreCardMetadata,
     Targets,
+    TargetsDS,
 )
-from krisi.evaluate.utils import get_save_path, handle_unnamed
+from krisi.evaluate.utils import (
+    convert_to_series,
+    ensure_df,
+    get_save_path,
+    handle_unnamed,
+)
 from krisi.report.console import (
     get_large_metric_summary,
     get_minimal_summary,
@@ -47,26 +55,6 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
-
-
-def convert_to_series(
-    data: Union[List[float], List[int], pd.Series, np.ndarray], name: str
-) -> pd.Series:
-    """Converts a list[floats or ints] or a numpy array to a pandas Series.
-
-    Parameters
-    ----------
-    data : Union[List[float], List[int], pd.Series, np.ndarray]
-        The data to convert.
-
-    Returns
-    -------
-    pd.Series
-        The converted data.
-    """
-    if isinstance(data, pd.Series):
-        return data.rename(name)
-    return pd.Series(data, name=name)
 
 
 class ScoreCard:
@@ -124,8 +112,9 @@ class ScoreCard:
     ... sc.print()
     """
 
-    y: Targets
-    predictions: Predictions
+    y: TargetsDS
+    predictions: PredictionsDS
+    probabilities: Optional[Probabilities]
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
@@ -137,6 +126,7 @@ class ScoreCard:
         self,
         y: Targets,
         predictions: Predictions,
+        probabilities: Optional[Probabilities] = None,
         model_name: Optional[str] = None,
         model_description: str = "",
         dataset_name: Optional[str] = None,
@@ -152,6 +142,11 @@ class ScoreCard:
         check_valid_pred_target(y, predictions)
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
+        self.__dict__["probabilities"] = (
+            ensure_df(probabilities, "probabilities")
+            if probabilities is not None
+            else None
+        )
         self.__dict__["sample_type"] = sample_type
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
@@ -379,16 +374,39 @@ class ScoreCard:
         else:
             return metrics
 
+    def __evaluate(
+        self,
+        func_key_evaluate: Literal["evaluate", "evaluate_over_time"],
+        result_key: Literal["result", "result_rolling"],
+        defaults: bool = True,
+        rolling_args: Optional[Dict[str, Any]] = dict(),
+    ):
+        for metric in self.get_all_metrics(defaults=defaults):
+            if metric.restrict_to_sample is not self.sample_type:
+                if isinstance(metric, Group):
+                    group = metric
+                    for metric_in_group in getattr(group, func_key_evaluate)(
+                        self.y, self.predictions, self.probabilities, **rolling_args
+                    ):
+                        if metric_in_group.key not in self.__dict__:
+                            metric_in_group._from_group = True
+                            self[metric_in_group.key] = metric_in_group
+                        else:
+                            self[metric_in_group.key] = {
+                                result_key: metric_in_group.result,
+                                "_from_group": True,
+                            }
+                else:
+                    getattr(metric, func_key_evaluate)(
+                        self.y, self.predictions, self.probabilities, **rolling_args
+                    )
+
     def evaluate(self, defaults: bool = True) -> "ScoreCard":
         """
         Evaluates `Metric`s present on the `ScoreCard`
 
         Parameters
         ----------
-        y: Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
-            The true labels to compare `Predictions` to.
-        predictions: Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
-            The predicted values. Integers or whole floats if classification, else floats.
         defaults: boolean
             Wether the default `Metric`s should be evaluated or not.
 
@@ -396,21 +414,7 @@ class ScoreCard:
         -------
         ScoreCard
         """
-
-        for metric in self.get_all_metrics(defaults=defaults):
-            if metric.restrict_to_sample is not self.sample_type:
-                if isinstance(metric, Group):
-                    for metric in metric.evaluate(self.y, self.predictions):
-                        if metric.key not in self.__dict__:
-                            metric._from_group = True
-                            self[metric.key] = metric
-                        else:
-                            self[metric.key] = {
-                                "result": metric.result,
-                                "_from_group": True,
-                            }
-                else:
-                    metric.evaluate(self.y, self.predictions)
+        self.__evaluate("evaluate", "result", defaults=defaults)
 
         return self
 
@@ -435,24 +439,12 @@ class ScoreCard:
         -------
         ScoreCard
         """
-        for metric in self.get_all_metrics(defaults=defaults):
-            if metric.restrict_to_sample is not self.sample_type:
-                if isinstance(metric, Group):
-                    for metric in metric.evaluate_over_time(
-                        self.y, self.predictions, rolling_args=self.rolling_args
-                    ):
-                        if metric.key not in self.__dict__:
-                            metric._from_group = True
-                            self[metric.key] = metric
-                        else:
-                            self[metric.key] = {
-                                "result_rolling": metric.result_rolling,
-                                "_from_group": True,
-                            }
-                else:
-                    metric.evaluate_over_time(
-                        self.y, self.predictions, rolling_args=self.rolling_args
-                    )
+        self.__evaluate(
+            "evaluate_over_time",
+            "result_rolling",
+            defaults=defaults,
+            rolling_args={"rolling_args": self.rolling_args},
+        )
         return self
 
     def print(

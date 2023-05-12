@@ -1,5 +1,6 @@
 from sklearn.metrics import (
     accuracy_score,
+    brier_score_loss,
     f1_score,
     matthews_corrcoef,
     precision_score,
@@ -7,6 +8,7 @@ from sklearn.metrics import (
 )
 
 from krisi.evaluate.library.diagrams import display_single_value, display_time_series
+from krisi.evaluate.library.metric_wrappers import brier_multi
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories
 
@@ -52,6 +54,7 @@ f_one_score = Metric[float](
     func=f1_score,
     plot_funcs=[(display_single_value, dict(width=500.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    supports_multiclass=True,
 )
 """~"""
 matthew_corr = Metric[float](
@@ -64,7 +67,47 @@ matthew_corr = Metric[float](
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
 )
 """~"""
-all_classification_metrics = [accuracy, recall, precision, f_one_score, matthew_corr]
+brier_score = Metric[float](
+    name="Brier Score",
+    key="brier_score",
+    category=MetricCategories.class_err,
+    info="The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
+    func=lambda y, pred, prob, **kwargs: brier_score_loss(
+        y_true=y, y_prob=prob, **kwargs
+    ),
+    parameters=dict(pos_label=1),
+    plot_funcs=[(display_single_value, dict(width=500.0))],
+    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=True,
+)
+"""~"""
+
+brier_score_multi = Metric[float](
+    name="Brier Score Multilabel",
+    key="brier_score_multi",
+    category=MetricCategories.class_err,
+    info="Multilabel calculation of the Brier score loss. The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
+    func=lambda y, pred, prob, **kwargs: brier_multi(y, prob, **kwargs),
+    parameters=dict(pos_label=1),
+    plot_funcs=[(display_single_value, dict(width=500.0))],
+    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=True,
+    supports_multiclass=True,
+)
+"""~"""
+all_classification_metrics = [
+    accuracy,
+    recall,
+    precision,
+    f_one_score,
+    matthew_corr,
+    brier_score,
+    brier_score_multi,
+]
 """~"""
 minimal_classification_metrics = [accuracy, f_one_score]
+"""~"""
+multilabel_classification = [
+    metric for metric in all_classification_metrics if metric.supports_multiclass
+]
 """~"""

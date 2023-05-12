@@ -6,6 +6,7 @@ Figures individually saved
 
 import numpy as np
 
+from dev_utils.utils import handle_test
 from krisi import score
 from krisi.report.type import DisplayModes
 
@@ -20,3 +21,5 @@ sc = score(
 sc.generate_report(
     display_modes=[DisplayModes.direct_save],
 )
+
+handle_test()

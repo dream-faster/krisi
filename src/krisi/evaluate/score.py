@@ -4,12 +4,19 @@ import pandas as pd
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
-from krisi.evaluate.type import Calculation, Predictions, SampleTypes, Targets
+from krisi.evaluate.type import (
+    Calculation,
+    Predictions,
+    Probabilities,
+    SampleTypes,
+    Targets,
+)
 
 
 def score(
     y: Targets,
     predictions: Predictions,
+    probabilities: Optional[Probabilities] = None,
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
@@ -77,6 +84,7 @@ def score(
     sc = ScoreCard(
         y=y,
         predictions=predictions,
+        probabilities=probabilities,
         model_name=model_name,
         dataset_name=dataset_name,
         project_name=project_name,
@@ -101,7 +109,7 @@ def score(
     return sc
 
 
-def score_in_outsample(
+def score_in_out_of_sample(
     y_insample: pd.Series,
     insample_predictions: pd.Series,
     y_outsample: pd.Series,

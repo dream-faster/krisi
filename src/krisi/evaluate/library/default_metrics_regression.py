@@ -19,7 +19,13 @@ from krisi.evaluate.library.diagrams import (
 )
 from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import ComputationalComplexity, MetricCategories, SampleTypes
+from krisi.evaluate.type import (
+    ComputationalComplexity,
+    MetricCategories,
+    PredictionsDS,
+    SampleTypes,
+    TargetsDS,
+)
 
 mae = Metric[float](
     name="Mean Absolute Error",
@@ -151,11 +157,16 @@ ljung_box_statistics = Metric[pd.DataFrame](
 )
 """ ~ """
 
-residual_group = Group(
+
+def subtract(y: TargetsDS, preds: PredictionsDS) -> pd.Series:
+    return y - preds
+
+
+residual_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
     metrics=[residuals_mean, residuals_std],
-    func=lambda y, preds: y - preds,
+    func=subtract,
 )
 """ ~ """
 

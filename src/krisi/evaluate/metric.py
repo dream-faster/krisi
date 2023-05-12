@@ -9,10 +9,9 @@ from krisi.evaluate.type import (
     MetricCategories,
     MetricFunction,
     MetricResult,
-    Predictions,
     PredictionsDS,
+    ProbabilitiesDS,
     SampleTypes,
-    Targets,
     TargetsDS,
 )
 from krisi.report.console import print_metric
@@ -55,6 +54,10 @@ class Metric(Generic[MetricResult]):
         Whether the metric should not be evaluated on a rolling basis, by default False
         If this is switched on, the metric will still be evaluated when `evaluate_over_time` is called
         but not on a rolling basis.
+    accepts_probabilities: bool
+        Whether the metric accepts probabilities as input, by default False
+    supports_multiclass: bool
+        Whether the metric supports multiclass classification, by default False
     """
 
     name: str
@@ -70,6 +73,8 @@ class Metric(Generic[MetricResult]):
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
     disable_rolling: bool = False
+    accepts_probabilities: bool = False
+    supports_multiclass: bool = False
     _from_group: bool = False
 
     def __post_init__(self):
@@ -99,11 +104,19 @@ class Metric(Generic[MetricResult]):
         self.__safe_set(result, key="result")
         return self
 
-    def evaluate(self, y: Targets, predictions: Predictions) -> None:
+    def evaluate(
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: Optional[ProbabilitiesDS] = None,
+    ) -> None:
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
-        self._evaluation(y, predictions)
+        if self.accepts_probabilities and probabilities is not None:
+            self._evaluation(y, predictions, probabilities)
+        else:
+            self._evaluation(y, predictions)
 
     def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
         if self._from_group:
@@ -130,9 +143,18 @@ class Metric(Generic[MetricResult]):
         return self
 
     def evaluate_over_time(
-        self, y: TargetsDS, predictions: PredictionsDS, rolling_args: dict
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: Optional[ProbabilitiesDS] = None,
+        rolling_args: dict = dict(),
     ) -> None:
-        self._rolling_evaluation(y, predictions, rolling_args=rolling_args)
+        if self.accepts_probabilities and probabilities is not None:
+            self._rolling_evaluation(
+                y, predictions, probabilities, rolling_args=rolling_args
+            )
+        else:
+            self._rolling_evaluation(y, predictions, rolling_args=rolling_args)
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:
