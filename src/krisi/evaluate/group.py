@@ -24,7 +24,7 @@ class Group(Metric, Generic[MetricResult]):
     def evaluate(
         self, y: TargetsDS, predictions: PredictionsDS, probabilities: ProbabilitiesDS
     ) -> List[Metric]:
-        if self.accepts_probabilities:
+        if self.accepts_probabilities and probabilities is not None:
             results = self.group_func(y, predictions, probabilities)
         else:
             results = self.group_func(y, predictions)
@@ -37,8 +37,10 @@ class Group(Metric, Generic[MetricResult]):
         probabilities: ProbabilitiesDS,
         rolling_args: Dict[str, Any],
     ) -> List[Metric]:
-        results = self.group_func(y, predictions, probabilities)
-
+        if self.accepts_probabilities and probabilities is not None:
+            results = self.group_func(y, predictions, probabilities)
+        else:
+            results = self.group_func(y, predictions)
         return [
             metric._rolling_evaluation(results, rolling_args=rolling_args)
             for metric in self.metrics
