@@ -114,3 +114,48 @@ def display_density_plot(
     fig.update_layout(title=title)
 
     return fig
+
+
+def callibration_plot(
+    data: MetricResult, title: str = "", bin_size: float = 0.1
+) -> "go.Figure":
+    import plotly.graph_objects as go
+
+    # example data
+    y_true = data["y"]
+    y_prob = data["probs"]
+    # y_true = np.array([0, 1, 1, 0, 1])
+    # y_prob = np.array([0.2, 0.3, 0.6, 0.4, 0.8])
+
+    # sort probabilities and corresponding true labels in ascending order
+    order = np.argsort(y_prob)
+    y_true = y_true[order]
+    y_prob = y_prob[order]
+
+    # calculate fraction of positives at each probability bin
+    bins = np.arange(0, 1.1, bin_size)
+    bin_indices = np.digitize(y_prob, bins)
+    bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
+    fraction_positives = np.cumsum(bin_counts[:-1]) / np.sum(y_true)
+
+    scatter = go.Scatter(
+        x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
+    )
+
+    perfect_calibration = go.Scatter(
+        x=[0, 1],
+        y=[0, 1],
+        mode="lines",
+        name="Perfect Calibration",
+        line=dict(color="black", dash="dash"),
+    )
+
+    layout = go.Layout(
+        title="Calibration Curve",
+        xaxis=dict(title="Predicted Probability", tickvals=bins),
+        yaxis=dict(title="Fraction of Positives"),
+        showlegend=True,
+    )
+
+    fig = go.Figure(data=[scatter, perfect_calibration], layout=layout)
+    return fig

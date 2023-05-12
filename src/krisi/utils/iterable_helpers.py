@@ -118,3 +118,8 @@ def is_int(s: Any):
         return False
     else:
         return True
+
+
+def del_dict_keys(d: dict, keys: Union[str, List[str]]) -> dict:
+    keys = wrap_in_list(keys)
+    return {k: v for k, v in d.items() if k not in keys}

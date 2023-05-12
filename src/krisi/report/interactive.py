@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from krisi.evaluate.type import ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
 from krisi.utils.environment import is_notebook
-from krisi.utils.iterable_helpers import flatten
+from krisi.utils.iterable_helpers import del_dict_keys, flatten
 
 if TYPE_CHECKING:
     from dash import dcc, html
@@ -28,7 +28,10 @@ def figure_with_controller(figure: InteractiveFigure):
         return block(
             graph=dcc.Graph(
                 id=figure.id,
-                figure=figure.get_figure(width=figure.plot_args["width"] - 216.0),
+                figure=figure.get_figure(
+                    width=figure.plot_args["width"] - 216.0,
+                    **del_dict_keys(figure.plot_args, "width"),
+                ),
                 className="h-full flex align-center",
             ),
             title=None,
@@ -51,7 +54,10 @@ def figure_with_controller(figure: InteractiveFigure):
         return dcc.Graph(
             className="h-full flex align-center",
             id=figure.id,
-            figure=figure.get_figure(width=figure.plot_args["width"] - 216.0),
+            figure=figure.get_figure(
+                width=figure.plot_args["width"] - 216.0,
+                **del_dict_keys(figure.plot_args, "width"),
+            ),
             style={"display": "inline-block"},
         )
 
