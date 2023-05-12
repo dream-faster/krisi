@@ -86,11 +86,11 @@ brier_score = Metric[float](
     accepts_probabilities=True,
 )
 """~"""
-callibration = Metric[float](
-    name="Callibration Plot",
-    key="callibration",
+calibration = Metric[float](
+    name="Calibration Plot",
+    key="calibration",
     category=MetricCategories.class_err,
-    info="Used to plot the callibration of a model with it probabilities.",
+    info="Used to plot the calibration of a model with it probabilities.",
     func=lambda y, pred, prob: pd.concat(
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
@@ -121,7 +121,7 @@ all_classification_metrics = [
     matthew_corr,
     brier_score,
     brier_score_multi,
-    callibration,
+    calibration,
 ]
 """~"""
 minimal_classification_metrics = [accuracy, f_one_score]
