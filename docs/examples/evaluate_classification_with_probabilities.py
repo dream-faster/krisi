@@ -15,10 +15,7 @@ sc = score(
     probabilities=np.random.uniform(0, 1, 1000),
     # classification=True, # Optional, tries to decide based on if target contains integers
     calculation="single",
-)
-
-sc.print()
-sc.generate_report()
+).print()
 
 score(
     y=np.random.randint(0, 2, 1000),
