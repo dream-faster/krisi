@@ -78,7 +78,6 @@ brier_score = Metric[float](
     plot_funcs=[(display_single_value, dict(width=500.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
-    supports_multiclass=True,
 )
 """~"""
 
