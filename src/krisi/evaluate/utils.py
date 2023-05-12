@@ -2,11 +2,18 @@ import datetime
 import os
 import uuid
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
-from krisi.evaluate.type import NamingPrefixes, PathConst, Predictions, Targets
+from krisi.evaluate.type import (
+    NamingPrefixes,
+    PathConst,
+    Predictions,
+    Probabilities,
+    Targets,
+)
 from krisi.utils.iterable_helpers import is_int
 
 if TYPE_CHECKING:
@@ -87,3 +94,52 @@ def last_model_name(metadata: "ScoreCardMetadata") -> Path:
         dir_model_name = metadata.model_name
 
     return Path(dir_model_name)
+
+
+def convert_to_series(
+    data: Union[List[float], List[int], pd.Series, np.ndarray], name: str
+) -> pd.Series:
+    """Converts a list[floats or ints] or a numpy array to a pandas Series.
+
+    Parameters
+    ----------
+    data : Union[List[float], List[int], pd.Series, np.ndarray]
+        The data to convert.
+
+    Returns
+    -------
+    pd.Series
+        The converted data.
+    """
+    if isinstance(data, pd.Series):
+        return data.rename(name)
+    return pd.Series(data, name=name)
+
+
+def ensure_df(data: Probabilities, name: str) -> pd.DataFrame:
+    """Converts a Probabilities to a pandas DataFrame.
+
+    Parameters
+    ----------
+    data : Probabilities
+        The data to convert.
+
+    Returns
+    -------
+    pd.DataFrame
+        The converted data.
+    """
+    if isinstance(data, pd.DataFrame):
+        return data
+    elif isinstance(data, pd.Series):
+        return data.to_frame(name)
+    elif isinstance(data, np.ndarray):
+        df = pd.DataFrame(data, columns=list(range(data.shape[1])))
+        df.index.name = name
+        return df
+    elif isinstance(data, list):
+        df = pd.DataFrame(data, columns=list(range(len(data))))
+        df.index.name = name
+        return df
+    else:
+        raise ValueError(f"Data type {type(data)} not supported.")

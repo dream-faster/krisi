@@ -14,6 +14,7 @@ MetricResult = TypeVar(
 
 Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
 Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
+Probabilities = Union[np.ndarray, pd.Series, pd.DataFrame, List[Union[int, float]]]
 PredictionsDS = pd.Series
 TargetsDS = pd.Series
 MetricFunction = Callable[[PredictionsDS, TargetsDS], MetricResult]
