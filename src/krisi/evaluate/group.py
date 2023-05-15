@@ -6,7 +6,7 @@ from .type import (
     MetricFunction,
     MetricResult,
     PredictionsDS,
-    ProbabilitiesDS,
+    ProbabilitiesDF,
     TargetsDS,
 )
 
@@ -22,7 +22,7 @@ class Group(Metric, Generic[MetricResult]):
         self.name = name
 
     def evaluate(
-        self, y: TargetsDS, predictions: PredictionsDS, probabilities: ProbabilitiesDS
+        self, y: TargetsDS, predictions: PredictionsDS, probabilities: ProbabilitiesDF
     ) -> List[Metric]:
         if self.accepts_probabilities and probabilities is not None:
             results = self.group_func(y, predictions, probabilities)
@@ -34,7 +34,7 @@ class Group(Metric, Generic[MetricResult]):
         self,
         y: TargetsDS,
         predictions: PredictionsDS,
-        probabilities: ProbabilitiesDS,
+        probabilities: ProbabilitiesDF,
         rolling_args: Dict[str, Any],
     ) -> List[Metric]:
         if self.accepts_probabilities and probabilities is not None:
