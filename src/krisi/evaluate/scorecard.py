@@ -36,6 +36,7 @@ from krisi.evaluate.utils import (
     ensure_df,
     get_save_path,
     handle_unnamed,
+    rename_probs_columns,
 )
 from krisi.report.console import (
     get_large_metric_summary,
@@ -148,7 +149,7 @@ class ScoreCard:
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["probabilities"] = (
-            ensure_df(probabilities, "probabilities")
+            rename_probs_columns(ensure_df(probabilities, "probabilities"))
             if probabilities is not None
             else None
         )
