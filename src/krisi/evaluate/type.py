@@ -43,6 +43,16 @@ class Calculation(Enum):
     rolling = "rolling"
     both = "both"
 
+    @staticmethod
+    def from_str(value: Union[str, "Calculation"]) -> "Calculation":
+        if isinstance(value, Calculation):
+            return value
+        for calc in Calculation:
+            if calc.value == value:
+                return calc
+        else:
+            raise ValueError(f"Unknown Calculation: {value}")
+
 
 class SaveModes(Enum):
     svg = "svg"
