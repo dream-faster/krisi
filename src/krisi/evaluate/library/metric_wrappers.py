@@ -7,6 +7,7 @@ from sklearn.metrics import brier_score_loss
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 from krisi.evaluate.type import Predictions, PredictionsDS, ProbabilitiesDF, TargetsDS
+from krisi.utils.iterable_helpers import is_int
 
 logger = logging.getLogger("krisi")
 
@@ -21,9 +22,21 @@ def create_one_hot(ds: Union[TargetsDS, ProbabilitiesDF]) -> pd.DataFrame:
     return pd.get_dummies(ds)
 
 
+def rename_columns(df: pd.DataFrame) -> pd.DataFrame:
+    if all([is_int(col.split("_")[-1]) for col in df.columns]):
+        return df.rename(columns={col: int(col.split("_")[-1]) for col in df.columns})
+    else:
+        return df.rename(columns={col: i for i, col in enumerate(df.columns)})
+
+
 def brier_multi(targets: TargetsDS, probs: ProbabilitiesDF, **kwargs):
     # See https://stats.stackexchange.com/questions/403544/how-to-compute-the-brier-score-for-more-than-two-classes
-    return np.mean(np.sum((probs - create_one_hot(targets)) ** 2, axis=1))
+    return np.mean(
+        np.sum(
+            (rename_columns(probs) - create_one_hot(targets)) ** 2,
+            axis=1,
+        )
+    )
 
 
 def decide_class_label(
