@@ -1,7 +1,6 @@
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
-    brier_score_loss,
     f1_score,
     matthews_corrcoef,
     precision_score,
@@ -13,7 +12,7 @@ from krisi.evaluate.library.diagrams import (
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.library.metric_wrappers import brier_multi
+from krisi.evaluate.library.metric_wrappers import brier_multi, brier_score_wrap
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories
 
@@ -72,14 +71,14 @@ matthew_corr = Metric[float](
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
 )
 """~"""
+
+
 brier_score = Metric[float](
     name="Brier Score",
     key="brier_score",
     category=MetricCategories.class_err,
     info="The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
-    func=lambda y, pred, prob, **kwargs: brier_score_loss(
-        y_true=y, y_prob=prob, **kwargs
-    ),
+    func=brier_score_wrap,
     parameters=dict(pos_label=1),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),

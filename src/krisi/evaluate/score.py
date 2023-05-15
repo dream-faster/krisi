@@ -1,6 +1,5 @@
+import logging
 from typing import Any, Dict, List, Optional, Tuple, Union
-
-import pandas as pd
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
@@ -11,6 +10,8 @@ from krisi.evaluate.type import (
     SampleTypes,
     Targets,
 )
+
+logger = logging.getLogger("krisi")
 
 
 def score(
@@ -78,8 +79,15 @@ def score(
     ValueError
         If Calculation type is incorrectly specified.
     """
-    if rolling_args is None:
+
+    calculation = Calculation.from_str(calculation)
+    if (
+        rolling_args is None
+        and calculation == Calculation.rolling
+        or calculation == Calculation.both
+    ):
         rolling_args = dict(window=len(y) // 100, step=len(y) // 100)
+        logger.info(f"rolling_args not specified, using default: {rolling_args}")
 
     sc = ScoreCard(
         y=y,
@@ -96,11 +104,11 @@ def score(
         **kwargs,
     )
 
-    if calculation == Calculation.single or calculation == Calculation.single.value:
+    if calculation == Calculation.single:
         sc.evaluate()
-    elif calculation == Calculation.rolling or calculation == Calculation.rolling.value:
+    elif calculation == Calculation.rolling:
         sc.evaluate_over_time()
-    elif calculation == Calculation.both or calculation == Calculation.both.value:
+    elif calculation == Calculation.both:
         sc.evaluate()
         sc.evaluate_over_time()
     else:
@@ -110,10 +118,12 @@ def score(
 
 
 def score_in_out_of_sample(
-    y_insample: pd.Series,
-    insample_predictions: pd.Series,
-    y_outsample: pd.Series,
-    outsample_predictions: pd.Series,
+    y_insample: Targets,
+    insample_predictions: Predictions,
+    y_outsample: Targets,
+    outsample_predictions: Predictions,
+    insample_probabilities: Optional[Probabilities] = None,
+    outsample_probabilities: Optional[Probabilities] = None,
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
@@ -123,28 +133,30 @@ def score_in_out_of_sample(
     calculation: Union[Calculation, str] = Calculation.single,
 ) -> Tuple[ScoreCard, ScoreCard]:
     insample_summary = score(
-        y_insample,
-        insample_predictions,
-        model_name,
-        dataset_name,
-        project_name,
-        default_metrics,
-        custom_metrics,
-        classification,
-        SampleTypes.insample,
-        calculation,
+        y=y_insample,
+        predictions=insample_predictions,
+        probabilities=insample_probabilities,
+        model_name=model_name,
+        dataset_name=dataset_name,
+        project_name=project_name,
+        default_metrics=default_metrics,
+        custom_metrics=custom_metrics,
+        classification=classification,
+        sample_type=SampleTypes.insample,
+        calculation=calculation,
     )
     outsample_summary = score(
-        y_outsample,
-        outsample_predictions,
-        model_name,
-        dataset_name,
-        project_name,
-        default_metrics,
-        custom_metrics,
-        classification,
-        SampleTypes.outofsample,
-        calculation,
+        y=y_outsample,
+        predictions=outsample_predictions,
+        probabilities=outsample_probabilities,
+        model_name=model_name,
+        dataset_name=dataset_name,
+        project_name=project_name,
+        default_metrics=default_metrics,
+        custom_metrics=custom_metrics,
+        classification=classification,
+        sample_type=SampleTypes.outofsample,
+        calculation=calculation,
     )
 
     return insample_summary, outsample_summary

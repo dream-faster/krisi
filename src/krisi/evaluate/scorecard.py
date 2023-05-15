@@ -36,6 +36,7 @@ from krisi.evaluate.utils import (
     ensure_df,
     get_save_path,
     handle_unnamed,
+    rename_probs_columns,
 )
 from krisi.report.console import (
     get_large_metric_summary,
@@ -139,10 +140,16 @@ class ScoreCard:
         rolling_args: Optional[Dict[str, Any]] = None,
     ) -> None:
         check_valid_pred_target(y, predictions)
+        default_metrics = (
+            wrap_in_list(default_metrics) if default_metrics is not None else None
+        )
+        custom_metrics = (
+            wrap_in_list(custom_metrics) if custom_metrics is not None else None
+        )
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
         self.__dict__["probabilities"] = (
-            ensure_df(probabilities, "probabilities")
+            rename_probs_columns(ensure_df(probabilities, "probabilities"))
             if probabilities is not None
             else None
         )

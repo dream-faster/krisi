@@ -10,7 +10,7 @@ from krisi.evaluate.type import (
     MetricFunction,
     MetricResult,
     PredictionsDS,
-    ProbabilitiesDS,
+    ProbabilitiesDF,
     SampleTypes,
     TargetsDS,
 )
@@ -108,7 +108,7 @@ class Metric(Generic[MetricResult]):
         self,
         y: TargetsDS,
         predictions: PredictionsDS,
-        probabilities: Optional[ProbabilitiesDS] = None,
+        probabilities: Optional[ProbabilitiesDF] = None,
     ) -> None:
         assert (
             self.func is not None
@@ -146,7 +146,7 @@ class Metric(Generic[MetricResult]):
         self,
         y: TargetsDS,
         predictions: PredictionsDS,
-        probabilities: Optional[ProbabilitiesDS] = None,
+        probabilities: Optional[ProbabilitiesDF] = None,
         rolling_args: dict = dict(),
     ) -> None:
         if self.accepts_probabilities and probabilities is not None:
