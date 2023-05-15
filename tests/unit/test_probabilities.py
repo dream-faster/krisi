@@ -19,6 +19,6 @@ def test_probabilities():
         df["predictions_XGBClassifier"],
         df[["probabilities_XGBClassifier_0", "probabilities_XGBClassifier_1"]],
         default_metrics=default_metrics,
-    ).print("minimal")
+    )
 
-    assert sc["brier_score"].result == 0.0
+    assert sc["brier_score"].result == 0.37293859755314235
