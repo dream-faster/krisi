@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pandas as pd
-from IPython.display import display
 from rich import print
 from typing_extensions import Literal
 
@@ -490,6 +489,8 @@ class ScoreCard:
             elif mode is PrintMode.minimal_table:
                 to_display = get_large_metric_summary(self, title)
             if isinstance(to_display, (pd.DataFrame, pd.Series)) and is_notebook():
+                from IPython.display import display
+
                 display(to_display)
             else:
                 print(to_display)
