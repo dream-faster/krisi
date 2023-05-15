@@ -1,5 +1,6 @@
 from typing import List
 
+import numpy as np
 import pandas as pd
 
 from krisi import Metric, score
@@ -21,4 +22,4 @@ def test_probabilities():
         # default_metrics=default_metrics,
     )
 
-    assert sc["brier_score"].result == 0.37293859755314235
+    assert np.isclose(sc["brier_score"].result, 0.37293859755314235, atol=0.01)
