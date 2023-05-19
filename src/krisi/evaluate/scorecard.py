@@ -8,13 +8,12 @@ import pandas as pd
 from rich import print
 from typing_extensions import Literal
 
-from krisi.evaluate.assertions import (
-    check_valid_pred_target,
-    is_dataset_classification_like,
-)
+from krisi.evaluate.assertions import check_valid_pred_target, infer_dataset_type
 from krisi.evaluate.group import Group
+from krisi.evaluate.library import get_default_metrics_for_dataset_type
 from krisi.evaluate.library.default_metrics_classification import (
-    all_classification_metrics,
+    binary_classification_metrics,
+    multiclass_classification_metrics,
 )
 from krisi.evaluate.library.default_metrics_regression import all_regression_metrics
 from krisi.evaluate.metric import Metric
@@ -157,11 +156,7 @@ class ScoreCard:
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
         )
-        self.__dict__["classification"] = (
-            is_dataset_classification_like(y)
-            if classification is None
-            else classification
-        )
+        self.__dict__["dataset_type"] = infer_dataset_type(y)
         model_name_, dataset_name_, project_name_ = handle_unnamed(
             y, predictions, model_name, dataset_name, project_name
         )
@@ -177,11 +172,8 @@ class ScoreCard:
         )
 
         if default_metrics is None:
-            default_metrics = (
-                all_classification_metrics
-                if self.classification
-                else all_regression_metrics
-            )
+            self.dataset_type = infer_dataset_type(y)
+            default_metrics = get_default_metrics_for_dataset_type(self.dataset_type)
 
         self.__dict__["default_metrics_keys"] = [
             metric.key for metric in default_metrics

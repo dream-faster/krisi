@@ -115,3 +115,9 @@ class NamingPrefixes:
     model = "Model_"
     dataset = "Dataset_"
     project = "Project_"
+
+
+class DatasetType(Enum):
+    regression = "regression"
+    classification_binary = "classification_binary"
+    classification_multiclass = "classification_multiclass"
