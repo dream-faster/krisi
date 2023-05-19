@@ -3,7 +3,7 @@ from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import brier_score_loss
+from sklearn.metrics import brier_score_loss, roc_auc_score
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 from krisi.evaluate.type import Predictions, PredictionsDS, ProbabilitiesDF, TargetsDS
@@ -53,7 +53,7 @@ def decide_class_label(
         return 0, False
 
 
-def brier_score_wrap(
+def wrap_brier_score(
     y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
 ) -> float:
     if len(probs.columns) > 2:
@@ -77,5 +77,25 @@ def brier_score_wrap(
     return brier_score_loss(
         y_true=y,
         y_prob=probs,
+        **kwargs,
+    )
+
+
+def wrap_roc_auc(
+    y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
+) -> float:
+    if len(probs.columns) == 2:
+        label_index = kwargs.get("pos_label", None)
+
+        label_index, found_in_df = decide_class_label(probs, label_index)
+
+        if found_in_df:
+            probs = probs[[label_index]]
+        else:
+            probs = probs.iloc[:, label_index]
+
+    return roc_auc_score(
+        y_true=y,
+        y_score=probs,
         **kwargs,
     )
