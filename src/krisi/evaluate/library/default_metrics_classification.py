@@ -14,7 +14,11 @@ from krisi.evaluate.library.diagrams import (
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.library.metric_wrappers import brier_multi, brier_score_wrap
+from krisi.evaluate.library.metric_wrappers import (
+    brier_multi,
+    wrap_brier_score,
+    wrap_roc_auc,
+)
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import MetricCategories
 
@@ -87,7 +91,7 @@ brier_score = Metric[float](
     key="brier_score",
     category=MetricCategories.class_err,
     info="The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
-    func=brier_score_wrap,
+    func=wrap_brier_score,
     parameters=dict(pos_label=1),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
@@ -139,7 +143,7 @@ roc_auc_binary_micro, roc_auc_binary_macro = [
         key=f"roc_auc_binary_{mode}",
         category=MetricCategories.class_err,
         info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
-        func=lambda y, pred, prob, **kwargs: roc_auc_score(y, prob, **kwargs),
+        func=wrap_roc_auc,
         parameters={"average": mode},
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_func_rolling=(display_time_series, dict(width=1500.0)),
@@ -156,7 +160,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         key=f"roc_auc_{mode}",
         category=MetricCategories.class_err,
         info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
-        func=lambda y, pred, prob, **kwargs: roc_auc_score(y, prob, **kwargs),
+        func=wrap_roc_auc,
         parameters={"average": mode, "multi_class": "ovo"},
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_func_rolling=(display_time_series, dict(width=1500.0)),
