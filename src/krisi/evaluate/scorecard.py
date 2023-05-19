@@ -159,7 +159,7 @@ class ScoreCard:
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
         )
         self.__dict__["dataset_type"] = (
-            infer_dataset_type(y).value if dataset_type is None else dataset_type
+            infer_dataset_type(y) if dataset_type is None else dataset_type
         )
         model_name_, dataset_name_, project_name_ = handle_unnamed(
             y, predictions, model_name, dataset_name, project_name
