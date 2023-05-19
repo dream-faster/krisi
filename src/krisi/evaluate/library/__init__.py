@@ -11,7 +11,7 @@ from .default_metrics_classification import (
 )
 from .default_metrics_regression import (
     all_regression_metrics,
-    low_computation_regression_mterics,
+    low_computation_regression_metrics,
     minimal_regression_metrics,
 )
 

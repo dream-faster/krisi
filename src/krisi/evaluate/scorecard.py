@@ -18,6 +18,7 @@ from krisi.evaluate.library.default_metrics_classification import (
 from krisi.evaluate.library.default_metrics_regression import all_regression_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
+    DatasetType,
     MetricCategories,
     PathConst,
     Predictions,
@@ -82,8 +83,8 @@ class ScoreCard:
         The name of the project. Used for reporting and saving to a directory (eg.: multiple scorecards)
     project_description: str = ""
         A description of the project. Used for reporting.
-    classification: Optional[bool]
-        Whether the task was classifiction of regression. If set to `None` it will guess from the targets.
+    dataset_type: Optional[Union[DatasetType, str]]
+        Whether the task was a binar/multi-label classifiction of regression. If set to `None` it will infer from the target.
     sample_type: SampleTypes = SampleTypes.outofsample
         Whether we should evaluate it on insample or out of sample.
 
@@ -132,12 +133,13 @@ class ScoreCard:
         dataset_description: str = "",
         project_name: Optional[str] = None,
         project_description: str = "",
-        classification: Optional[bool] = None,
+        dataset_type: Optional[Union[DatasetType, str]] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
     ) -> None:
+        dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
         check_valid_pred_target(y, predictions)
         default_metrics = (
             wrap_in_list(default_metrics) if default_metrics is not None else None
@@ -156,7 +158,9 @@ class ScoreCard:
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
         )
-        self.__dict__["dataset_type"] = infer_dataset_type(y)
+        self.__dict__["dataset_type"] = (
+            infer_dataset_type(y).value if dataset_type is None else dataset_type
+        )
         model_name_, dataset_name_, project_name_ = handle_unnamed(
             y, predictions, model_name, dataset_name, project_name
         )

@@ -17,5 +17,5 @@ score(
     probabilities=np.random.uniform(0, 1, size=(data_size, num_labels)),
     # classification=True, # Optional, tries to decide based on if target contains integers
     calculation="single",
-    default_metrics=library.multilabel_classification,
+    default_metrics=library.multiclass_classification_metrics,
 ).print()

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from dataclasses import dataclass
 from enum import Enum
@@ -44,7 +46,7 @@ class Calculation(Enum):
     both = "both"
 
     @staticmethod
-    def from_str(value: Union[str, "Calculation"]) -> "Calculation":
+    def from_str(value: Union[str, Calculation]) -> Calculation:
         if isinstance(value, Calculation):
             return value
         for calc in Calculation:
@@ -101,7 +103,7 @@ class PrintMode(Enum):
     minimal_table = "minimal_table"
 
     @staticmethod
-    def from_str(value: Union[str, "PrintMode"]) -> "PrintMode":
+    def from_str(value: Union[str, PrintMode]) -> PrintMode:
         if isinstance(value, PrintMode):
             return value
         for strategy in PrintMode:
@@ -121,3 +123,19 @@ class DatasetType(Enum):
     regression = "regression"
     classification_binary = "classification_binary"
     classification_multiclass = "classification_multiclass"
+
+    @staticmethod
+    def from_str(value: Union[str, DatasetType]) -> DatasetType:
+        if isinstance(value, DatasetType):
+            return value
+        for strategy in DatasetType:
+            if strategy.value == value:
+                return strategy
+        else:
+            raise ValueError(f"Unknown DatasetType: {value}")
+
+    def is_classification(self):
+        return self in [
+            DatasetType.classification_binary,
+            DatasetType.classification_multiclass,
+        ]
