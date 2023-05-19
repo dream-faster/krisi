@@ -118,7 +118,7 @@ class ScoreCard:
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
-    classification: bool  # TODO: Support multilabel classification
+    dataset_type: DatasetType
     metadata: ScoreCardMetadata
     rolling_args: Dict[str, Any]
 
@@ -176,7 +176,7 @@ class ScoreCard:
         )
 
         if default_metrics is None:
-            self.dataset_type = infer_dataset_type(y)
+            self.__dict__["dataset_type"] = infer_dataset_type(y)
             default_metrics = get_default_metrics_for_dataset_type(self.dataset_type)
 
         self.__dict__["default_metrics_keys"] = [

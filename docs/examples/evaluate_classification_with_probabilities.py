@@ -13,7 +13,7 @@ sc = score(
     y=np.random.randint(0, 1, 1000),
     predictions=np.random.randint(0, 1, 1000),
     probabilities=np.random.uniform(0, 1, (1000, 1)),
-    # classification=True, # Optional, tries to decide based on if target contains integers
+    # dataset_type="classification_binary", # if automatic inference of dataset type fails
     calculation="single",
 )
 sc.print()
@@ -23,6 +23,6 @@ score(
     y=np.random.randint(0, 1, 1000),
     predictions=np.random.randint(0, 1, 1000),
     probabilities=np.random.uniform(0, 1, (1000, 1)),
-    # classification=True, # Optional, tries to decide based on if target contains integers
+    # dataset_type="classification_binary", # if automatic inference of dataset type fails
     calculation="rolling",
 ).print()
