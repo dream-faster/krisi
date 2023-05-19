@@ -5,6 +5,7 @@ from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import (
     Calculation,
+    DatasetType,
     Predictions,
     Probabilities,
     SampleTypes,
@@ -23,7 +24,7 @@ def score(
     project_name: Optional[str] = None,
     default_metrics: Optional[List[Metric]] = None,
     custom_metrics: Optional[List[Metric]] = None,
-    classification: Optional[bool] = None,
+    dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
@@ -49,8 +50,8 @@ def score(
     custom_metrics: Optional[List[Metric]]
         Custom metrics that get evaluated. If specified it will evaluate these after `default_metric`
         See `library`.
-    classification: Optional[bool]
-        Whether the task was classifiction of regression. If set to `None` it will guess from the targets.
+    dataset_type: Optional[Union[DatasetType, str]]
+        Whether the task was a binar/multi-label classifiction of regression. If set to `None` it will infer from the target.
     sample_type: SampleTypes = SampleTypes.outofsample
         Whether we should evaluate it on insample or out of sample.
 
@@ -97,7 +98,7 @@ def score(
         dataset_name=dataset_name,
         project_name=project_name,
         sample_type=sample_type,
-        classification=classification,
+        dataset_type=dataset_type,
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
         rolling_args=rolling_args,
@@ -129,7 +130,7 @@ def score_in_out_of_sample(
     project_name: Optional[str] = None,
     default_metrics: Optional[List[Metric]] = None,
     custom_metrics: Optional[List[Metric]] = None,
-    classification: Optional[bool] = None,
+    dataset_type: Optional[Union[DatasetType, str]] = None,
     calculation: Union[Calculation, str] = Calculation.single,
 ) -> Tuple[ScoreCard, ScoreCard]:
     insample_summary = score(
@@ -141,7 +142,7 @@ def score_in_out_of_sample(
         project_name=project_name,
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
-        classification=classification,
+        dataset_type=dataset_type,
         sample_type=SampleTypes.insample,
         calculation=calculation,
     )
@@ -154,7 +155,7 @@ def score_in_out_of_sample(
         project_name=project_name,
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
-        classification=classification,
+        dataset_type=dataset_type,
         sample_type=SampleTypes.outofsample,
         calculation=calculation,
     )

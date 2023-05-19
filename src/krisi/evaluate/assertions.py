@@ -1,10 +1,11 @@
+from enum import Enum
 from typing import Any, Iterable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from typing_extensions import get_args, get_origin
 
-from krisi.evaluate.type import Predictions, Targets
+from krisi.evaluate.type import DatasetType, Predictions, Targets
 from krisi.utils.iterable_helpers import flatten, isiterable
 
 valid_types = ["int64", "float64", "float32", "float", "int"]
@@ -58,16 +59,27 @@ def check_valid_pred_target(y: Targets, predictions: Predictions):
         ), f"{iterable} contains at least one invalid type. {get_bad_types(iterable)}"
 
 
-def is_dataset_classification_like(y: Targets):
+def infer_dataset_type(y: Targets) -> DatasetType:
     # TODO: Should work with booleans
-    # TODO: Create multilabel heuristic to be passed on to ScoreCard
+    def infer_exact_type(is_classification: bool, y: Targets) -> DatasetType:
+        if is_classification is False:
+            return DatasetType.regression
+        if len(set(y)) == 2:
+            return DatasetType.classification_binary
+        else:
+            return DatasetType.classification_multiclass
+
     if isinstance(y, pd.Series):
-        return pd.api.types.is_integer_dtype(y)
+        return infer_exact_type(pd.api.types.is_integer_dtype(y), y)
     elif isinstance(y, np.ndarray):
         if hasattr(y[0], "is_integer"):
             # Using this is faster, if available use this.
-            return all([i.is_integer() for i in y if i is not None])
+            return infer_exact_type(
+                all([i.is_integer() for i in y if i is not None]), y
+            )
         else:
-            return np.all(np.mod(y, 1) == 0)
+            return infer_exact_type(np.all(np.mod(y, 1) == 0), y)
     else:
-        return all([isinstance(i, int) for i in y if i is not None])
+        return infer_exact_type(
+            all([isinstance(i, int) for i in y if i is not None]), y
+        )

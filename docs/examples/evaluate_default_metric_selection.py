@@ -9,7 +9,7 @@ import numpy as np
 from krisi import score
 from krisi.evaluate.library.default_metrics_regression import (
     all_regression_metrics,
-    low_computation_regression_mterics,
+    low_computation_regression_metrics,
     minimal_regression_metrics,
 )
 
@@ -28,5 +28,5 @@ score(
 score(
     y=np.random.normal(0, 0.1, 1000),
     predictions=np.random.normal(0, 0.1, 1000),
-    default_metrics=low_computation_regression_mterics,
+    default_metrics=low_computation_regression_metrics,
 ).print(input_analysis=False)

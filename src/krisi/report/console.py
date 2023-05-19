@@ -87,7 +87,11 @@ def get_summary(
 ) -> Union[Panel, Layout]:
     category_groups = group_by_categories(list(vars(obj).values()), categories)
     input_analysis_table = (
-        [create_y_pred_table(obj.classification, obj.y, obj.predictions)]
+        [
+            create_y_pred_table(
+                obj.dataset_type.is_classification(), obj.y, obj.predictions
+            )
+        ]
         if input_analysis
         else []
     )

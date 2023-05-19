@@ -194,7 +194,7 @@ minimal_regression_metrics = [
 ]
 """ ~ """
 
-low_computation_regression_mterics = [
+low_computation_regression_metrics = [
     metric
     for metric in all_regression_metrics
     if metric.comp_complexity is not ComputationalComplexity.high
