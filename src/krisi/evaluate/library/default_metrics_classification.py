@@ -154,7 +154,7 @@ roc_auc_binary_micro, roc_auc_binary_macro = [
 ]
 """~"""
 
-roc_auc_multi_micro, roc_auc_multi_macro = [
+roc_auc_multi_weighted, roc_auc_multi_macro = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
         key=f"roc_auc_{mode}",
@@ -167,7 +167,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
     )
-    for mode in ["micro", "macro"]
+    for mode in ["weighted", "macro"]
 ]
 """~"""
 
@@ -197,11 +197,11 @@ multiclass_classification_metrics = [
     f_one_score_micro,
     brier_score_multi,
     roc_auc_multi_macro,
-    roc_auc_multi_micro,
+    roc_auc_multi_weighted,
     matthew_corr,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [
     f_one_score_macro,
-    roc_auc_multi_micro,
+    roc_auc_multi_macro,
 ]
