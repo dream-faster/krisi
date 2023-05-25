@@ -70,8 +70,8 @@ def infer_dataset_type(y: Targets) -> DatasetType:
             return DatasetType.classification_multiclass
 
     if isinstance(y, pd.Series):
-        return infer_exact_type(pd.api.types.is_integer_dtype(y), y)
-    elif isinstance(y, np.ndarray):
+        y = y.to_numpy()
+    if isinstance(y, np.ndarray):
         if hasattr(y[0], "is_integer"):
             # Using this is faster, if available use this.
             return infer_exact_type(

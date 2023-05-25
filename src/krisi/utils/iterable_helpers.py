@@ -112,6 +112,8 @@ def replace_if_None(input: Any, replacement: Any) -> Any:
 
 
 def is_int(s: Any):
+    if isinstance(s, str) and "." in s:
+        return False
     try:
         int(s)
     except ValueError:
