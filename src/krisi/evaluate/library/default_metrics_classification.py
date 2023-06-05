@@ -199,8 +199,8 @@ median = Metric[float](
 )
 
 consistency_group = Group[pd.Series](
-    name="residual_group",
-    key="residual_group",
+    name="consistency_group",
+    key="consistency_group",
     metrics=[brier_score_multi, cross_entropy],
     postprocess_funcs=[standard_deviation, median],
 )
