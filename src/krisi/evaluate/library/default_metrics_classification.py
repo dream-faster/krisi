@@ -124,12 +124,19 @@ brier_score_multi = Metric[float](
     supports_multiclass=True,
 )
 """~"""
+
+
+def cross_wrap(y, pred, prob, **kwargs):
+    logloss = log_loss(y, prob, labels=list(prob.columns), **kwargs)
+    return logloss
+
+
 cross_entropy = Metric[float](
     name="Cross Entropy",
     key="cross_entropy",
     category=MetricCategories.class_err,
     info="Log loss, aka logistic loss or cross-entropy loss. This is the loss function used in (multinomial) logistic regression and extensions of it such as neural networks, defined as the negative log-likelihood of a logistic model that returns y_pred probabilities for its training data y_true.",
-    func=lambda y, pred, prob, **kwargs: log_loss(y, prob, **kwargs),
+    func=cross_wrap,  # lambda y, pred, prob, **kwargs: log_loss(y, prob, **kwargs),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
@@ -172,29 +179,30 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
 """~"""
 
 
-def dummy_func(rolling_res):
-    std_ = pd.Series(rolling_res).std()
-    return std_
-
-
 standard_deviation = Metric[float](
     name="Standard Deviation",
     key="std",
     category=MetricCategories.class_err,
-    info="Rolling std",
-    func=dummy_func,
-    parameters={},
+    info="Standard Deviation",
+    func=lambda rolling_res: pd.Series(rolling_res).std(),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
-    accepts_probabilities=True,
-    supports_multiclass=True,
+)
+median = Metric[float](
+    name="Median",
+    key="median",
+    category=MetricCategories.class_err,
+    info="Median",
+    func=lambda rolling_res: pd.Series(rolling_res).median(),
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_func_rolling=(display_time_series, dict(width=1500.0)),
 )
 
 consistency_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
-    metrics=[brier_score_multi],
-    postprocess_func=standard_deviation,
+    metrics=[brier_score_multi, cross_entropy],
+    postprocess_funcs=[standard_deviation, median],
 )
 
 binary_classification_metrics = [
