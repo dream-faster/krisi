@@ -171,12 +171,18 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
 ]
 """~"""
 
+
+def dummy_func(rolling_res):
+    std_ = pd.Series(rolling_res).std()
+    return std_
+
+
 standard_deviation = Metric[float](
     name="Standard Deviation",
     key="std",
     category=MetricCategories.class_err,
     info="Rolling std",
-    func=lambda rolling_res: pd.Series(rolling_res).std(),
+    func=dummy_func,
     parameters={},
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
@@ -187,7 +193,7 @@ standard_deviation = Metric[float](
 consistency_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
-    metrics=[f_one_score_macro],
+    metrics=[brier_score_multi],
     postprocess_func=standard_deviation,
 )
 
@@ -209,15 +215,16 @@ binary_classification_metrics = [
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
 """~"""
 multiclass_classification_metrics = [
-    cross_entropy,
-    recall_macro,
-    precision_macro,
-    f_one_score_macro,
-    f_one_score_micro,
-    brier_score_multi,
-    roc_auc_multi_macro,
-    roc_auc_multi_weighted,
-    matthew_corr,
+    # cross_entropy,
+    # recall_macro,
+    # precision_macro,
+    # f_one_score_macro,
+    # f_one_score_micro,
+    # brier_score_multi,
+    # roc_auc_multi_macro,
+    # roc_auc_multi_weighted,
+    # matthew_corr,
+    consistency_group,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [

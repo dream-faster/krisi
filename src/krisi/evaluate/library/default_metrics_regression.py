@@ -120,16 +120,11 @@ residuals = Metric[List[float]](
 )
 """ ~ """
 
-
-def dummy_func(res):
-    return res.mean()
-
-
 residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=dummy_func,  # lambda res: res.mean(),
+    func=lambda res: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_func_rolling=(display_time_series, dict(width=1500.0)),
 )
