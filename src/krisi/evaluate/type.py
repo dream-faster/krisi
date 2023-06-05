@@ -32,6 +32,7 @@ class MetricCategories(Enum):
     entropy = "Information Entropy"
     class_err = "Forecast Errors - Classification"
     reg_err = "Forecast Errors - Regression"
+    stats = "General Statistics"
     unknown = "Unknown"
 
 

@@ -34,7 +34,7 @@ mae = Metric[float](
     info="(Mean absolute error) represents the difference between the original and predicted values extracted by averaged the absolute difference over the data set.",
     func=mean_absolute_error,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -44,7 +44,7 @@ mape = Metric[float](
     category=MetricCategories.reg_err,
     func=mean_absolute_percentage_error,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -56,7 +56,7 @@ smape = Metric[float](
         np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0
     ),
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -68,7 +68,7 @@ mse = Metric[float](
     parameters={"squared": True},
     func=mean_squared_error,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -80,7 +80,7 @@ rmse = Metric[float](
     parameters={"squared": False},
     func=mean_squared_error,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -91,7 +91,7 @@ rmsle = Metric[float](
     parameters={"squared": False},
     func=mean_squared_log_error,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -102,7 +102,7 @@ r_two = Metric[float](
     info="(Coefficient of determination) represents the coefficient of how well the values fit compared to the original values. The value from 0 to 1 interpreted as percentages. The higher the value is, the better the model is.",
     func=r2_score,
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -126,7 +126,7 @@ residuals_mean = Metric[float](
     category=MetricCategories.residual,
     func=lambda res: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -136,7 +136,7 @@ residuals_std = Metric[float](
     category=MetricCategories.residual,
     func=lambda res: res.std(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 

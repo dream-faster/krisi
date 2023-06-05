@@ -97,5 +97,6 @@ def wrap_roc_auc(
     return roc_auc_score(
         y_true=y,
         y_score=probs,
+        labels=list(probs.columns),
         **kwargs,
     )
