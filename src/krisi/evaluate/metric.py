@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Generic, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -128,7 +128,7 @@ class Metric(Generic[MetricResult]):
             try:
                 df_rolled = (
                     _df.expanding()
-                    if rolling_args["window"] is None
+                    if "window" in rolling_args and rolling_args["window"] is None
                     else _df.rolling(**rolling_args)
                 )
 
@@ -237,3 +237,6 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
             )
             for plot_func, plot_args in obj.plot_funcs
         ]
+
+
+PostProcessFunction = Callable[[Metric], Metric]

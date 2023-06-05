@@ -166,7 +166,7 @@ residual_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
     metrics=[residuals_mean, residuals_std],
-    func=subtract,
+    preprocess_func=subtract,
 )
 """ ~ """
 

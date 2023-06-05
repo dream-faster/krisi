@@ -8,14 +8,13 @@ import pandas as pd
 from rich import print
 from typing_extensions import Literal
 
-from krisi.evaluate.assertions import check_valid_pred_target, infer_dataset_type
+from krisi.evaluate.assertions import (
+    check_no_duplicate_metrics,
+    check_valid_pred_target,
+    infer_dataset_type,
+)
 from krisi.evaluate.group import Group
 from krisi.evaluate.library import get_default_metrics_for_dataset_type
-from krisi.evaluate.library.default_metrics_classification import (
-    binary_classification_metrics,
-    multiclass_classification_metrics,
-)
-from krisi.evaluate.library.default_metrics_regression import all_regression_metrics
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     DatasetType,
@@ -48,6 +47,7 @@ from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.environment import is_notebook
 from krisi.utils.io import ensure_path, save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
+    empty_if_None,
     flatten,
     map_newdict_on_olddict,
     remove_nans,
@@ -146,6 +146,10 @@ class ScoreCard:
         )
         custom_metrics = (
             wrap_in_list(custom_metrics) if custom_metrics is not None else None
+        )
+
+        check_no_duplicate_metrics(
+            empty_if_None(default_metrics) + empty_if_None(custom_metrics)
         )
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")

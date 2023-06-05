@@ -1,10 +1,10 @@
-from enum import Enum
 from typing import Any, Iterable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from typing_extensions import get_args, get_origin
 
+from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import DatasetType, Predictions, Targets
 from krisi.utils.iterable_helpers import flatten, isiterable
 
@@ -28,6 +28,12 @@ def flatten_type(complex_type: Any) -> Union[List, Any]:
 
 def unpack_type(complex_type: Any) -> Tuple[Any]:
     return tuple(flatten(flatten_type(complex_type)))
+
+
+def check_no_duplicate_metrics(metrics: List[Metric]):
+    assert len(metrics) == len(
+        set([metric.key for metric in metrics])
+    ), f"Duplicate metric key found in {metrics}. Please remove the duplicates."
 
 
 def check_valid_pred_target(y: Targets, predictions: Predictions):

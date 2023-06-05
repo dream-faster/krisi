@@ -6,9 +6,9 @@ from sklearn.metrics import (
     matthews_corrcoef,
     precision_score,
     recall_score,
-    roc_auc_score,
 )
 
+from krisi.evaluate.group import Group
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_single_value,
@@ -171,6 +171,25 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
 ]
 """~"""
 
+standard_deviation = Metric[float](
+    name="Standard Deviation",
+    key="std",
+    category=MetricCategories.class_err,
+    info="Rolling std",
+    func=lambda rolling_res: pd.Series(rolling_res).std(),
+    parameters={},
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=True,
+    supports_multiclass=True,
+)
+
+consistency_group = Group[pd.Series](
+    name="residual_group",
+    key="residual_group",
+    metrics=[f_one_score_macro],
+    postprocess_func=standard_deviation,
+)
 
 binary_classification_metrics = [
     accuracy_binary,
