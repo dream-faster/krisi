@@ -24,11 +24,14 @@ from krisi.evaluate.type import (
     PredictionsDS,
     PrintMode,
     Probabilities,
+    ProbabilitiesDF,
     SampleTypes,
     SaveModes,
     ScoreCardMetadata,
     Targets,
     TargetsDS,
+    Weights,
+    WeightsDS,
 )
 from krisi.evaluate.utils import (
     convert_to_series,
@@ -114,7 +117,8 @@ class ScoreCard:
 
     y: TargetsDS
     predictions: PredictionsDS
-    probabilities: Optional[Probabilities]
+    probabilities: Optional[ProbabilitiesDF]
+    sample_weight: Optional[WeightsDS]
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
@@ -127,6 +131,7 @@ class ScoreCard:
         y: Targets,
         predictions: Predictions,
         probabilities: Optional[Probabilities] = None,
+        sample_weight: Optional[Weights] = None,
         model_name: Optional[str] = None,
         model_description: str = "",
         dataset_name: Optional[str] = None,
@@ -158,6 +163,11 @@ class ScoreCard:
             if probabilities is not None
             else None
         )
+        self.__dict__["sample_weight"] = convert_to_series(
+            replace_if_None(sample_weight, pd.Series([1.0 * len(y)])),
+            "sample_weight",
+        )
+
         self.__dict__["sample_type"] = sample_type
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
@@ -392,7 +402,11 @@ class ScoreCard:
                 if isinstance(metric, Group):
                     group = metric
                     for metric_in_group in getattr(group, func_key_evaluate)(
-                        self.y, self.predictions, self.probabilities, **rolling_args
+                        self.y,
+                        self.predictions,
+                        self.probabilities,
+                        self.sample_weight,
+                        **rolling_args,
                     ):
                         if metric_in_group.key not in self.__dict__:
                             metric_in_group._from_group = True
@@ -404,7 +418,11 @@ class ScoreCard:
                             }
                 else:
                     getattr(metric, func_key_evaluate)(
-                        self.y, self.predictions, self.probabilities, **rolling_args
+                        self.y,
+                        self.predictions,
+                        self.probabilities,
+                        self.sample_weight,
+                        **rolling_args,
                     )
 
     def evaluate(self, defaults: bool = True) -> "ScoreCard":

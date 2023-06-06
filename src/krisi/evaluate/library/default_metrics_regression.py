@@ -20,6 +20,7 @@ from krisi.evaluate.library.diagrams import (
 from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
+    Calculation,
     ComputationalComplexity,
     MetricCategories,
     PredictionsDS,
@@ -116,7 +117,7 @@ residuals = Metric[List[float]](
         (display_density_plot, dict(width=1500.0)),
         (display_time_series, dict(width=1500.0)),
     ],
-    disable_rolling=True,
+    calculation=Calculation.single,
 )
 """ ~ """
 
@@ -148,7 +149,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
     restrict_to_sample=SampleTypes.insample,
     comp_complexity=ComputationalComplexity.high,
-    disable_rolling=True,
+    calculation=Calculation.single,
 )
 """ ~ """
 

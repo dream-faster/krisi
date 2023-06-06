@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -32,3 +32,22 @@ def generating_arima_synthetic_data(
         name=target_col,
         index=pd.date_range(end="2022", periods=nsample, freq="D"),
     )
+
+
+def create_probabilities(num_labels: int = 3, num_samples: int = 1000):
+    probabilities = np.random.rand(num_samples, num_labels)
+    probabilities = probabilities / np.sum(probabilities, axis=1, keepdims=True)
+    probabilities = list(zip(*probabilities))
+    probabilities = pd.DataFrame({i: probabilities[i] for i in range(num_labels)})
+    return probabilities
+
+
+def generate_random_classification(
+    num_labels: int = 3, num_samples: int = 1000
+) -> Tuple[pd.Series, pd.Series, pd.Series, pd.DataFrame]:
+    y = pd.Series(np.random.randint(0, num_labels, num_samples))
+    predictions = pd.Series(np.random.randint(0, num_labels, num_samples))
+    sample_weight = pd.Series(np.random.random(num_samples))
+
+    probabilities = create_probabilities(num_labels=num_labels, num_samples=num_samples)
+    return y, predictions, probabilities, sample_weight

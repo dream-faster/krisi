@@ -21,7 +21,7 @@ from krisi.evaluate.library.metric_wrappers import (
     wrap_roc_auc,
 )
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import MetricCategories
+from krisi.evaluate.type import Calculation, MetricCategories
 
 accuracy_binary = Metric[float](
     name="Accuracy",
@@ -104,7 +104,7 @@ calibration = Metric[float](
     key="calibration",
     category=MetricCategories.class_err,
     info="Used to plot the calibration of a model with it probabilities.",
-    func=lambda y, pred, prob: pd.concat(
+    func=lambda y, pred, prob, **kwargs: pd.concat(
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
     plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.1))],
@@ -188,7 +188,7 @@ standard_deviation = Metric[float](
     key="std",
     category=MetricCategories.stats,
     info="Standard Deviation",
-    func=lambda rolling_res: pd.Series(rolling_res).std(),
+    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).std(),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -197,7 +197,7 @@ median = Metric[float](
     key="median",
     category=MetricCategories.stats,
     info="Median",
-    func=lambda rolling_res: pd.Series(rolling_res).median(),
+    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).median(),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -207,6 +207,7 @@ consistency_group = Group[pd.Series](
     key="consistency",
     metrics=[brier_score_multi, cross_entropy],
     postprocess_funcs=[standard_deviation, median],
+    calculation=Calculation.rolling,
 )
 
 binary_classification_metrics = [
