@@ -163,9 +163,13 @@ class ScoreCard:
             if probabilities is not None
             else None
         )
-        self.__dict__["sample_weight"] = convert_to_series(
-            replace_if_None(sample_weight, pd.Series([1.0 * len(y)])),
-            "sample_weight",
+        self.__dict__["sample_weight"] = (
+            convert_to_series(
+                sample_weight,  # pd.Series([1.0] * len(y))
+                "sample_weight",
+            )
+            if sample_weight is not None
+            else None
         )
 
         self.__dict__["sample_type"] = sample_type

@@ -154,7 +154,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
 """ ~ """
 
 
-def subtract(y: TargetsDS, preds: PredictionsDS) -> pd.Series:
+def subtract(y: TargetsDS, preds: PredictionsDS, **kwargs) -> pd.Series:
     return y - preds
 
 
