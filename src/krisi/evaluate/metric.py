@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Generic, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Generic, List, Optional, Union
 
 import pandas as pd
 
@@ -15,8 +15,8 @@ from krisi.evaluate.type import (
     TargetsDS,
 )
 from krisi.report.console import print_metric
-from krisi.report.type import InteractiveFigure, PlotFunction, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id
+from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
+from krisi.utils.iterable_helpers import isiterable, string_to_id, wrap_in_list
 
 
 @dataclass
@@ -42,7 +42,7 @@ class Metric(Generic[MetricResult]):
         The function used to compute the metric.
     plot_funcs: List[Callable]
         List of functions used to plot the metric.
-    plot_func_rolling: Callable
+    plot_funcs_rolling: Callable
         Function used to plot the rolling metric value.
     info: str
         Additional information about the metric.
@@ -67,8 +67,8 @@ class Metric(Generic[MetricResult]):
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     parameters: dict = field(default_factory=dict)
     func: Optional[MetricFunction] = None
-    plot_funcs: Optional[List[Tuple[PlotFunction, Optional[Dict[str, Any]]]]] = None
-    plot_func_rolling: Optional[Tuple[PlotFunction, Optional[Dict[str, Any]]]] = None
+    plot_funcs: Optional[Union[List[PlotDefinition], PlotDefinition]] = None
+    plot_funcs_rolling: Optional[Union[List[PlotDefinition], PlotDefinition]] = None
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
@@ -80,6 +80,13 @@ class Metric(Generic[MetricResult]):
     def __post_init__(self):
         if self.key == "":
             self.key = string_to_id(self.name)
+        if not isinstance(self.plot_funcs, list) and self.plot_funcs is not None:
+            self.plot_funcs = wrap_in_list(self.plot_funcs)
+        if (
+            not isinstance(self.plot_funcs_rolling, list)
+            and self.plot_funcs_rolling is not None
+        ):
+            self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
 
     def __setitem__(self, key: str, item: Any) -> None:
         setattr(self, key, item)
@@ -128,12 +135,27 @@ class Metric(Generic[MetricResult]):
             try:
                 df_rolled = (
                     _df.expanding()
-                    if rolling_args["window"] is None
+                    if "window" in rolling_args and rolling_args["window"] is None
                     else _df.rolling(**rolling_args)
                 )
 
+                def probs_seperately(single_window):
+                    if len(single_window.columns) > 2:
+                        return dict(
+                            y=single_window.iloc[:, 0],
+                            predictions=single_window.iloc[:, 1],
+                            probs=single_window.iloc[:, 2:],
+                        )
+                    else:
+                        return dict(
+                            y=single_window.iloc[:, 0],
+                            predictions=single_window.iloc[:, 1],
+                        )
+
                 result_rolling = [
-                    self.func(*single_window.values.T, **self.parameters)
+                    self.func(
+                        *probs_seperately(single_window).values(), **self.parameters
+                    )
                     for single_window in df_rolled
                 ]
             except Exception as e:
@@ -189,22 +211,23 @@ class Metric(Generic[MetricResult]):
 
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
-    if obj.plot_func_rolling is None:
-        logging.info("No plot_func_rolling (Plotting Function Rolling) specified")
+    if obj.plot_funcs_rolling is None:
+        logging.info("No plot_funcs_rolling (Plotting Function Rolling) specified")
         return None
     elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
         return None
     elif isiterable(obj.result_rolling):
         return [
             InteractiveFigure(
-                f"{obj.key}_{obj.plot_func_rolling[0].__name__}",
+                f"{obj.key}_{plot_funcs_rolling.__name__}",
                 get_figure=plotly_interactive(
-                    obj.plot_func_rolling[0], obj.result_rolling, title=obj.name
+                    plot_funcs_rolling, obj.result_rolling, title=obj.name
                 ),
-                title=f"{obj.name} - {obj.plot_func_rolling[0].__name__}",
+                title=f"{obj.name} - {plot_funcs_rolling.__name__}",
                 category=obj.category,
-                plot_args=merge_default_dict(obj.plot_func_rolling[1]),
+                plot_args=merge_default_dict(plot_args),
             )
+            for plot_funcs_rolling, plot_args in obj.plot_funcs_rolling
         ]
     else:
         return None
@@ -237,3 +260,6 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
             )
             for plot_func, plot_args in obj.plot_funcs
         ]
+
+
+PostProcessFunction = Callable[[Metric], Metric]

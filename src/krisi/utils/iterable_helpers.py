@@ -1,4 +1,14 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
@@ -125,3 +135,7 @@ def is_int(s: Any):
 def del_dict_keys(d: dict, keys: Union[str, List[str]]) -> dict:
     keys = wrap_in_list(keys)
     return {k: v for k, v in d.items() if k not in keys}
+
+
+def empty_if_None(metrics: Optional[List]) -> List:
+    return metrics if metrics is not None else []

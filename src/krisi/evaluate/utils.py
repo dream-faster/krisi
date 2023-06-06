@@ -146,7 +146,12 @@ def ensure_df(data: Probabilities, name: str) -> pd.DataFrame:
 
 
 def rename_probs_columns(df: pd.DataFrame) -> pd.DataFrame:
-    if all([is_int(col.split("_")[-1]) for col in df.columns]):
+    if all(
+        [
+            col if isinstance(col, int) else is_int(col.split("_")[-1])
+            for col in df.columns
+        ]
+    ):
         return df.rename(columns={col: int(col.split("_")[-1]) for col in df.columns})
     else:
         return df.rename(columns={col: i for i, col in enumerate(df.columns)})

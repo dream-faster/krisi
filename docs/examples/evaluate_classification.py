@@ -9,6 +9,7 @@ import numpy as np
 
 from krisi import score
 
+probs = np.random.random(1000)
 score(
     y=np.random.randint(0, 2, 1000),
     predictions=np.random.randint(0, 2, 1000),

@@ -6,11 +6,12 @@ from sklearn.metrics import (
     matthews_corrcoef,
     precision_score,
     recall_score,
-    roc_auc_score,
 )
 
+from krisi.evaluate.group import Group
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
+    display_density_plot,
     display_single_value,
     display_time_series,
 )
@@ -29,7 +30,7 @@ accuracy_binary = Metric[float](
     info="In multilabel classification, this function computes subset accuracy: the set of labels predicted for a sample must exactly match the corresponding set of labels in y_true. https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html",
     func=accuracy_score,
     plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """ ~ """
 
@@ -42,7 +43,7 @@ recall_binary, recall_macro = [
         parameters={"average": mode},
         func=recall_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_func_rolling=(display_time_series, dict(width=1500.0)),
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     )
     for mode in ["binary", "macro"]
 ]
@@ -56,7 +57,7 @@ precision_binary, precision_macro = [
         parameters={"average": mode},
         func=precision_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_func_rolling=(display_time_series, dict(width=1500.0)),
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     )
     for mode in ["binary", "macro"]
 ]
@@ -70,7 +71,7 @@ f_one_score_binary, f_one_score_macro, f_one_score_micro = [
         parameters={"average": mode},
         func=f1_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_func_rolling=(display_time_series, dict(width=1500.0)),
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         supports_multiclass=True,
     )
     for mode in ["binary", "macro", "micro"]
@@ -83,7 +84,7 @@ matthew_corr = Metric[float](
     info="The Matthews correlation coefficient is used in machine learning as a measure of the quality of binary and multiclass classifications. It takes into account true and false positives and negatives and is generally regarded as a balanced measure which can be used even if the classes are of very different sizes. The MCC is in essence a correlation coefficient value between -1 and +1. A coefficient of +1 represents a perfect prediction, 0 an average random prediction and -1 an inverse prediction. The statistic is also known as the phi coefficient.",
     func=matthews_corrcoef,
     plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
 """~"""
 brier_score = Metric[float](
@@ -94,7 +95,7 @@ brier_score = Metric[float](
     func=wrap_brier_score,
     parameters=dict(pos_label=1),
     plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
 )
 """~"""
@@ -107,7 +108,7 @@ calibration = Metric[float](
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
     plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.1))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
 )
@@ -119,19 +120,29 @@ brier_score_multi = Metric[float](
     info="Multilabel calculation of the Brier score loss. The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
     func=lambda y, pred, prob, **kwargs: brier_multi(y, prob, **kwargs),
     plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
 )
 """~"""
+
+
 cross_entropy = Metric[float](
     name="Cross Entropy",
     key="cross_entropy",
     category=MetricCategories.class_err,
     info="Log loss, aka logistic loss or cross-entropy loss. This is the loss function used in (multinomial) logistic regression and extensions of it such as neural networks, defined as the negative log-likelihood of a logistic model that returns y_pred probabilities for its training data y_true.",
-    func=lambda y, pred, prob, **kwargs: log_loss(y, prob, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_func_rolling=(display_time_series, dict(width=1500.0)),
+    func=lambda y, pred, prob, **kwargs: log_loss(
+        y, prob, labels=list(prob.columns), **kwargs
+    ),
+    plot_funcs=[
+        (display_single_value, dict(width=750.0)),
+        (display_density_plot, dict(width=1500.0)),
+    ],
+    plot_funcs_rolling=[
+        (display_density_plot, dict(width=1500.0)),
+        (display_time_series, dict(width=1500.0)),
+    ],
     accepts_probabilities=True,
     supports_multiclass=True,
 )
@@ -146,7 +157,7 @@ roc_auc_binary_micro, roc_auc_binary_macro = [
         func=wrap_roc_auc,
         parameters={"average": mode},
         plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_func_rolling=(display_time_series, dict(width=1500.0)),
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
     )
@@ -163,7 +174,7 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
         func=wrap_roc_auc,
         parameters={"average": mode, "multi_class": "ovo"},
         plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_func_rolling=(display_time_series, dict(width=1500.0)),
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
     )
@@ -171,6 +182,32 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
 ]
 """~"""
 
+
+standard_deviation = Metric[float](
+    name="Standard Deviation",
+    key="std",
+    category=MetricCategories.stats,
+    info="Standard Deviation",
+    func=lambda rolling_res: pd.Series(rolling_res).std(),
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+)
+median = Metric[float](
+    name="Median",
+    key="median",
+    category=MetricCategories.stats,
+    info="Median",
+    func=lambda rolling_res: pd.Series(rolling_res).median(),
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+)
+
+consistency_group = Group[pd.Series](
+    name="Consistency",
+    key="consistency",
+    metrics=[brier_score_multi, cross_entropy],
+    postprocess_funcs=[standard_deviation, median],
+)
 
 binary_classification_metrics = [
     accuracy_binary,
@@ -199,6 +236,7 @@ multiclass_classification_metrics = [
     roc_auc_multi_macro,
     roc_auc_multi_weighted,
     matthew_corr,
+    consistency_group,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [

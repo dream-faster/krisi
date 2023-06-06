@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 from typing_extensions import Literal
@@ -14,6 +14,7 @@ PlotFunction = Callable[
     [List[MetricResult], str, Optional[float]],
     "go.Figure",
 ]
+PlotDefinition = Tuple[PlotFunction, Optional[Dict[str, Any]]]
 
 
 @dataclass
