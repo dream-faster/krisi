@@ -13,7 +13,7 @@ def test_group_preprocess():
         name="residual_group",
         key="residual_group",
         metrics=[f_one_score_macro],
-        preprocess_func=lambda y, pred: y - pred,
+        preprocess_func=lambda y, pred, **kwargs: y - pred,
         postprocess_funcs=standard_deviation,
     )
 
