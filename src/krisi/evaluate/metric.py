@@ -80,9 +80,12 @@ class Metric(Generic[MetricResult]):
     def __post_init__(self):
         if self.key == "":
             self.key = string_to_id(self.name)
-        if not isinstance(self.plot_funcs, list):
+        if not isinstance(self.plot_funcs, list) and self.plot_funcs is not None:
             self.plot_funcs = wrap_in_list(self.plot_funcs)
-        if not isinstance(self.plot_funcs_rolling, list):
+        if (
+            not isinstance(self.plot_funcs_rolling, list)
+            and self.plot_funcs_rolling is not None
+        ):
             self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
 
     def __setitem__(self, key: str, item: Any) -> None:
