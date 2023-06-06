@@ -479,6 +479,8 @@ class ScoreCard:
         self,
         mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended,
         with_info: bool = False,
+        with_parameters: bool = True,
+        with_diagnostics: bool = False,
         input_analysis: bool = True,
         title: Optional[str] = None,
         frame_or_series: bool = True,
@@ -510,13 +512,21 @@ class ScoreCard:
                     repr=True,
                     categories=[el.value for el in MetricCategories],
                     with_info=with_info,
+                    with_parameters=with_parameters,
+                    with_diagnostics=with_diagnostics,
                     input_analysis=input_analysis,
                 )
 
             elif mode is PrintMode.minimal:
                 to_display = get_minimal_summary(self, dataframe=frame_or_series)
             elif mode is PrintMode.minimal_table:
-                to_display = get_large_metric_summary(self, title)
+                to_display = get_large_metric_summary(
+                    self,
+                    title,
+                    with_info=with_info,
+                    with_parameters=with_parameters,
+                    with_diagnostics=with_diagnostics,
+                )
             if isinstance(to_display, (pd.DataFrame, pd.Series)) and is_notebook():
                 from IPython.display import display
 
@@ -527,6 +537,8 @@ class ScoreCard:
     def save(
         self,
         with_info: bool = False,
+        with_parameters: bool = True,
+        with_diagnostics: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
             SaveModes.obj,
@@ -557,7 +569,14 @@ class ScoreCard:
             save_minimal_summary(self, path)
         if SaveModes.obj in save_modes or SaveModes.obj.value in save_modes:
             save_object(self, path)
-        save_console(self, path, with_info, save_modes)
+        save_console(
+            self,
+            path,
+            with_info,
+            with_parameters=with_parameters,
+            with_diagnostics=with_diagnostics,
+            save_modes=save_modes,
+        )
 
         return self
 

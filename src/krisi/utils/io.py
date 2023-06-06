@@ -25,6 +25,8 @@ def save_console(
     obj: "ScoreCard",
     path: Path,
     with_info: bool,
+    with_parameters: bool,
+    with_diagnostics: bool,
     save_modes: List[Union[SaveModes, str]],
 ) -> None:
     summary = get_summary(
@@ -32,6 +34,8 @@ def save_console(
         repr=True,
         categories=[el.value for el in MetricCategories],
         with_info=with_info,
+        with_parameters=with_parameters,
+        with_diagnostics=with_diagnostics,
     )
 
     console = Console(record=True, width=120)

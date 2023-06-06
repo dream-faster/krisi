@@ -53,9 +53,7 @@ class Metric(Generic[MetricResult]):
     comp_complexity: Optional[ComputationalComplexity]
         How resource intensive the calculation is, by default None
     calculation: Calculation
-        Whether the metric should not be evaluated on a rolling basis, by default False
-        If this is switched on, the metric will still be evaluated when `evaluate_over_time` is called
-        but not on a rolling basis.
+        Whether the metric should be evaluated only when calculating rolling, single or both, by default both
     accepts_probabilities: bool
         Whether the metric accepts probabilities as input, by default False
     supports_multiclass: bool
@@ -77,6 +75,7 @@ class Metric(Generic[MetricResult]):
     calculation: Union[str, Calculation] = Calculation.both
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
+    diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
     _from_group: bool = False
 
     def __post_init__(self):
@@ -140,6 +139,8 @@ class Metric(Generic[MetricResult]):
                 )
         else:
             self._evaluation(y, predictions, sample_weight=sample_weight)
+        if sample_weight is not None:
+            self.__dict__["diagnostics"] = dict(used_sample_weight=True)
 
     def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
         if self._from_group:
@@ -148,6 +149,8 @@ class Metric(Generic[MetricResult]):
             return self
         else:
             _df = pd.concat(args, axis="columns")
+            if "sample_weight" in _df:
+                self.__dict__["diagnostics"] = dict(used_sample_weight=True)
             try:
                 df_rolled = (
                     _df.expanding()
