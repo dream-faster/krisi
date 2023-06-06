@@ -4,9 +4,9 @@ from sklearn.metrics import (
     f1_score,
     log_loss,
     matthews_corrcoef,
+    ndcg_score,
     precision_score,
     recall_score,
-    ndcg_score
 )
 
 from krisi.evaluate.group import Group
