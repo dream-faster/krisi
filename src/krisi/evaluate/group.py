@@ -47,11 +47,6 @@ class Group(Metric, Generic[MetricResult]):
         for metric in self.metrics:
             metric.key = f"{metric.key}_{self.key}"
 
-        if self.postprocess_funcs is not None:
-            for postprocess_func in self.postprocess_funcs:
-                if isinstance(postprocess_func, Metric):
-                    postprocess_func.key = f"{self.key}_{postprocess_func.key}"
-
     def _preprocess(
         self,
         y: TargetsDS,
