@@ -3,10 +3,16 @@ from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import brier_score_loss, roc_auc_score
+from sklearn.metrics import brier_score_loss, confusion_matrix, roc_auc_score
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
-from krisi.evaluate.type import Predictions, PredictionsDS, ProbabilitiesDF, TargetsDS
+from krisi.evaluate.type import (
+    Predictions,
+    PredictionsDS,
+    ProbabilitiesDF,
+    TargetsDS,
+    WeightsDS,
+)
 
 logger = logging.getLogger("krisi")
 
@@ -100,3 +106,28 @@ def wrap_roc_auc(
         labels=list(probs.columns),
         **kwargs,
     )
+
+
+def bennet_s(
+    y: TargetsDS,
+    preds: PredictionsDS,
+    probs: ProbabilitiesDF,
+    sample_weight: WeightsDS,
+    **kwargs,
+) -> float:
+    """Bennett, Alpert, & Goldstein S score.
+    Notes
+    -------
+    See https://stats.stackexchange.com/a/217404/315248
+
+    Returns
+    -------
+    float
+        float
+    """
+    tn, fp, fn, tp = confusion_matrix(y, preds, sample_weight=sample_weight)
+
+    p_0 = (tn + tp) / (tn + fp + fn + tp)
+
+    S_Score = (2 * p_0) - 1
+    return S_Score
