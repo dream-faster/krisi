@@ -49,7 +49,10 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
             else:
                 return Pretty(result)
         if isinstance(result, pd.Series):
-            return Pretty(result)
+            if len(result) > 10:
+                return plotextMixin(result.tolist(), line_plot, title=metric.name)
+            else:
+                return Pretty(result)
         elif isiterable(result[0]):
             return Pretty("Result is a complex Iterable")
         else:
