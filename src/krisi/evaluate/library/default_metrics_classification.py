@@ -62,7 +62,7 @@ precision_binary, precision_macro = [
     for mode in ["binary", "macro"]
 ]
 """~"""
-f_one_score_binary, f_one_score_macro, f_one_score_micro = [
+f_one_score_binary, f_one_score_macro, f_one_score_micro, f_one_score_weighted = [
     Metric[float](
         name=f"F1 Score ({mode})",
         key=f"f_one_score_{mode}",
@@ -74,7 +74,7 @@ f_one_score_binary, f_one_score_macro, f_one_score_micro = [
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         supports_multiclass=True,
     )
-    for mode in ["binary", "macro", "micro"]
+    for mode in ["binary", "macro", "micro", "weighted"]
 ]
 """~"""
 matthew_corr = Metric[float](
@@ -165,7 +165,7 @@ roc_auc_binary_micro, roc_auc_binary_macro = [
 ]
 """~"""
 
-roc_auc_multi_weighted, roc_auc_multi_macro = [
+roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
         key=f"roc_auc_{mode}",
@@ -178,10 +178,38 @@ roc_auc_multi_weighted, roc_auc_multi_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
     )
-    for mode in ["weighted", "macro"]
+    for mode in ["weighted", "micro", "macro"]
 ]
 """~"""
 
+roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
+    Metric[float](
+        name=f"ROC AUC ({mode}))",
+        key=f"roc_auc_{mode}",
+        category=MetricCategories.class_err,
+        info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
+        func=wrap_roc_auc,
+        parameters={"average": mode, "multi_class": "ovo"},
+        plot_funcs=[(display_single_value, dict(width=750.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        accepts_probabilities=True,
+        supports_multiclass=True,
+    )
+    for mode in ["weighted", "micro", "macro"]
+]
+# """~"""
+# ndcg = Metric[float](
+#     name="NDCG Score",
+#     key="ndcg",
+#     category=MetricCategories.class_err,
+#     info="Compute Normalized Discounted Cumulative Gain. Sum the true scores ranked in the order induced by the predicted scores, after applying a logarithmic discount. Then divide by the best possible score (Ideal DCG, obtained for a perfect ranking) to obtain a score between 0 and 1. This ranking metric returns a high value if true labels are ranked high by y_score.",
+#     func=ndcg_score,
+#     parameters={},
+#     plot_funcs=[(display_single_value, dict(width=750.0))],
+#     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+#     accepts_probabilities=False,
+#     supports_multiclass=True,
+# )
 
 standard_deviation = Metric[float](
     name="Standard Deviation",
@@ -205,7 +233,7 @@ median = Metric[float](
 consistency_group = Group[pd.Series](
     name="Consistency",
     key="consistency",
-    metrics=[brier_score_multi, cross_entropy],
+    metrics=[f_one_score_weighted, matthew_corr],
     postprocess_funcs=[standard_deviation, median],
     calculation=Calculation.rolling,
 )
@@ -231,16 +259,17 @@ multiclass_classification_metrics = [
     cross_entropy,
     recall_macro,
     precision_macro,
-    f_one_score_macro,
+    f_one_score_weighted,
     f_one_score_micro,
     brier_score_multi,
     roc_auc_multi_macro,
     roc_auc_multi_weighted,
     matthew_corr,
+    # ndcg,
     consistency_group,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [
-    f_one_score_macro,
-    roc_auc_multi_macro,
+    f_one_score_weighted,
+    roc_auc_multi_weighted,
 ]
