@@ -429,7 +429,7 @@ class ScoreCard:
                         **rolling_args,
                     )
 
-    def evaluate(self, defaults: bool = True) -> "ScoreCard":
+    def evaluate(self, defaults: bool = True) -> None:
         """
         Evaluates `Metric`s present on the `ScoreCard`
 
@@ -440,13 +440,11 @@ class ScoreCard:
 
         Returns
         -------
-        ScoreCard
+        None
         """
         self.__evaluate("evaluate", "result", defaults=defaults)
 
-        return self
-
-    def evaluate_over_time(self, defaults: bool = True) -> "ScoreCard":
+    def evaluate_over_time(self, defaults: bool = True) -> None:
         """
         Evaluates `Metric`s present on the `ScoreCard` over time, either with expanding
         or fixed sized window. Assigns list of results to `results_over_time`.
@@ -465,7 +463,7 @@ class ScoreCard:
 
         Returns
         -------
-        ScoreCard
+        None
         """
         self.__evaluate(
             "evaluate_over_time",
@@ -473,7 +471,6 @@ class ScoreCard:
             defaults=defaults,
             rolling_args={"rolling_args": self.rolling_args},
         )
-        return self
 
     def print(
         self,
