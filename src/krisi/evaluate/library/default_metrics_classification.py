@@ -281,7 +281,7 @@ multiclass_classification_metrics = [
     matthew_corr,
     # ndcg,
     consistency_group,
-    s_score,
+    # s_score,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [
