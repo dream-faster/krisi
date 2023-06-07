@@ -16,6 +16,7 @@ from krisi.evaluate.library.diagrams import (
     display_time_series,
 )
 from krisi.evaluate.library.metric_wrappers import (
+    bennet_s,
     brier_multi,
     wrap_brier_score,
     wrap_roc_auc,
@@ -123,6 +124,18 @@ brier_score_multi = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
+)
+"""~"""
+s_score = Metric[float](
+    name="S Score",
+    key="s_score",
+    category=MetricCategories.class_err,
+    info="the 𝑆 score first proposed by Bennett, Alpert, & Goldstein (1954). It assumes a 50% probability of classifying any given item into its correct class 'by chance' alone and discounts this from the final score. It also uses all cells of the confusion matrix (unlike 𝐹1 which ignores 𝑑 or the number of 'true negatives')",
+    func=bennet_s,
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=False,
+    supports_multiclass=False,
 )
 """~"""
 
@@ -251,6 +264,7 @@ binary_classification_metrics = [
     roc_auc_binary_macro,
     roc_auc_binary_micro,
     cross_entropy,
+    s_score,
 ]
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
@@ -267,6 +281,7 @@ multiclass_classification_metrics = [
     matthew_corr,
     # ndcg,
     consistency_group,
+    # s_score,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [

@@ -23,9 +23,7 @@ from krisi.evaluate.type import (
     Calculation,
     ComputationalComplexity,
     MetricCategories,
-    PredictionsDS,
     SampleTypes,
-    TargetsDS,
 )
 
 mae = Metric[float](
@@ -33,7 +31,7 @@ mae = Metric[float](
     key="mae",
     category=MetricCategories.reg_err,
     info="(Mean absolute error) represents the difference between the original and predicted values extracted by averaged the absolute difference over the data set.",
-    func=mean_absolute_error,
+    func=lambda y, pred, **kwargs: mean_absolute_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -43,7 +41,7 @@ mape = Metric[float](
     name="Mean Absolute Percentage Error",
     key="mape",
     category=MetricCategories.reg_err,
-    func=mean_absolute_percentage_error,
+    func=lambda y, pred, **kwargs: mean_absolute_percentage_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -53,7 +51,7 @@ smape = Metric[float](
     name="Symmetric Mean Absolute Percentage Error",
     key="smape",
     category=MetricCategories.reg_err,
-    func=lambda y_true, y_pred: np.mean(
+    func=lambda y_true, y_pred, **kwargs: np.mean(
         np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0
     ),
     plot_funcs=[(display_single_value, dict(width=900.0))],
@@ -67,7 +65,7 @@ mse = Metric[float](
     category=MetricCategories.reg_err,
     info="(Mean Squared Error) represents the difference between the original and predicted values extracted by squared the average difference over the data set.",
     parameters={"squared": True},
-    func=mean_squared_error,
+    func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -79,7 +77,7 @@ rmse = Metric[float](
     category=MetricCategories.reg_err,
     info="(Root Mean Squared Error) is the error rate by the square root of Mean Squared Error.",
     parameters={"squared": False},
-    func=mean_squared_error,
+    func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -90,7 +88,7 @@ rmsle = Metric[float](
     key="rmsle",
     category=MetricCategories.reg_err,
     parameters={"squared": False},
-    func=mean_squared_log_error,
+    func=lambda y, pred, **kwargs: mean_squared_log_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -101,7 +99,7 @@ r_two = Metric[float](
     key="r_two",
     category=MetricCategories.reg_err,
     info="(Coefficient of determination) represents the coefficient of how well the values fit compared to the original values. The value from 0 to 1 interpreted as percentages. The higher the value is, the better the model is.",
-    func=r2_score,
+    func=lambda y, pred, **kwargs: r2_score(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -111,7 +109,7 @@ residuals = Metric[List[float]](
     name="Residuals",
     key="residuals",
     category=MetricCategories.residual,
-    func=lambda y, pred: y - pred,
+    func=lambda y, pred, **kwargs: y - pred,
     plot_funcs=[
         (display_acf_plot, dict(width=1500.0)),
         (display_density_plot, dict(width=1500.0)),
@@ -125,7 +123,7 @@ residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=lambda res: res.mean(),
+    func=lambda res, **kwargs: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -135,7 +133,7 @@ residuals_std = Metric[float](
     name="Standard Deviation of the Residuals",
     key="residuals_std",
     category=MetricCategories.residual,
-    func=lambda res: res.std(),
+    func=lambda res, **kwargs: res.std(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -145,7 +143,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
     name="Ljung Box Statistics",
     key="ljung_box_statistics",
     category=MetricCategories.residual,
-    func=ljung_box,
+    func=lambda y, pred, **kwargs: ljung_box(y, pred, **kwargs),
     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
     restrict_to_sample=SampleTypes.insample,
     comp_complexity=ComputationalComplexity.high,
@@ -153,16 +151,11 @@ ljung_box_statistics = Metric[pd.DataFrame](
 )
 """ ~ """
 
-
-def subtract(y: TargetsDS, preds: PredictionsDS, **kwargs) -> pd.Series:
-    return y - preds
-
-
 residual_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
     metrics=[residuals_mean, residuals_std],
-    preprocess_func=subtract,
+    preprocess_func=lambda y, pred, **kwargs: y - pred,
 )
 """ ~ """
 
