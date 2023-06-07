@@ -139,3 +139,7 @@ def del_dict_keys(d: dict, keys: Union[str, List[str]]) -> dict:
 
 def empty_if_None(metrics: Optional[List]) -> List:
     return metrics if metrics is not None else []
+
+
+def filter_nan(list: List) -> List:
+    return [el for el in list if el is not None]

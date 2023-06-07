@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Generic, List, Optional, Union
+from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -18,7 +18,12 @@ from krisi.evaluate.type import (
 )
 from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
-from krisi.utils.iterable_helpers import isiterable, string_to_id, wrap_in_list
+from krisi.utils.iterable_helpers import (
+    filter_nan,
+    isiterable,
+    string_to_id,
+    wrap_in_list,
+)
 
 
 @dataclass
@@ -145,31 +150,35 @@ class Metric(Generic[MetricResult]):
             self.__dict__["diagnostics"] = dict(used_sample_weight=True)
 
     @staticmethod
-    def __handle_window(single_window) -> dict:
-        if len(single_window.columns) > 2:
+    def __handle_window(
+        window,
+    ) -> Tuple[
+        TargetsDS,
+        PredictionsDS,
+        Optional[ProbabilitiesDF],
+        dict[str, Optional[WeightsDS]],
+    ]:
+        y = window["y"]
+        pred = window["predictions"]
+        if len(window.columns) > 2:
             sample_weight = (
-                single_window.pop("sample_weight")
-                if "sample_weight" in single_window
-                else None
+                window.pop("sample_weight") if "sample_weight" in window else None
             )
-            if sample_weight is not None:
-                return dict(
-                    y=single_window["y"],
-                    pred=single_window["predictions"],
-                    prob=single_window.iloc[:, 2:],
-                    sample_weight=sample_weight,
-                )
-            else:
-                return dict(
-                    y=single_window["y"],
-                    pred=single_window["predictions"],
-                    prob=single_window.iloc[:, 2:],
-                )
+            prob = window.iloc[:, 2:]
+
+            return y, pred, prob, dict(sample_weight=sample_weight)
         else:
-            return dict(
-                y=single_window.iloc[:, 0],
-                pred=single_window.iloc[:, 1],
-            )
+            return y, pred, None, dict()
+
+    @staticmethod
+    def __calc_window(window: pd.DataFrame, func: MetricFunction, parameters: dict):
+        y, pred, prob, sample_weight = Metric.__handle_window(window)
+
+        return func(
+            *filter_nan([y, pred, prob]),
+            **sample_weight,
+            **parameters,
+        )
 
     def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
         if self._from_group:
@@ -190,11 +199,10 @@ class Metric(Generic[MetricResult]):
                 )
 
                 result_rolling = [
-                    self.func(
-                        **Metric.__handle_window(single_window), **self.parameters
-                    )
+                    Metric.__calc_window(single_window, self.func, self.parameters)
                     for single_window in df_rolled
                 ]
+
             except Exception as e:
                 result_rolling = e
             self.__safe_set(result_rolling, key="result_rolling")
