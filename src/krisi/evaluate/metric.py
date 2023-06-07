@@ -152,12 +152,7 @@ class Metric(Generic[MetricResult]):
     @staticmethod
     def __handle_window(
         window,
-    ) -> Tuple[
-        TargetsDS,
-        PredictionsDS,
-        Optional[ProbabilitiesDF],
-        dict[str, Optional[WeightsDS]],
-    ]:
+    ) -> Tuple[TargetsDS, PredictionsDS, Optional[ProbabilitiesDF], dict]:
         y = window["y"]
         pred = window["predictions"]
         if len(window.columns) > 2:
