@@ -23,9 +23,7 @@ from krisi.evaluate.type import (
     Calculation,
     ComputationalComplexity,
     MetricCategories,
-    PredictionsDS,
     SampleTypes,
-    TargetsDS,
 )
 
 mae = Metric[float](
@@ -125,7 +123,7 @@ residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=lambda res: res.mean(),
+    func=lambda res, **kwargs: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -135,7 +133,7 @@ residuals_std = Metric[float](
     name="Standard Deviation of the Residuals",
     key="residuals_std",
     category=MetricCategories.residual,
-    func=lambda res: res.std(),
+    func=lambda res, **kwargs: res.std(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
 )
@@ -152,11 +150,6 @@ ljung_box_statistics = Metric[pd.DataFrame](
     calculation=Calculation.single,
 )
 """ ~ """
-
-
-def subtract(y: TargetsDS, preds: PredictionsDS, **kwargs) -> pd.Series:
-    return y - preds
-
 
 residual_group = Group[pd.Series](
     name="residual_group",
