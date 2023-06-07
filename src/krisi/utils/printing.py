@@ -44,7 +44,10 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
 
     if isiterable(result):
         if isinstance(result, pd.DataFrame):
-            return plotextMixin(result, callibration_plot, title=metric.name)
+            if "probs" in result:
+                return plotextMixin(result, callibration_plot, title=metric.name)
+            else:
+                return Pretty(result)
         if isinstance(result, pd.Series):
             return Pretty(result)
         elif isiterable(result[0]):
