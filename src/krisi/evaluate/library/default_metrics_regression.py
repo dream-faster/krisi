@@ -165,7 +165,7 @@ all_regression_metrics = [
     smape,
     mse,
     # rmse,
-    rmsle,
+    # rmsle,
     r_two,
     residuals,
     residual_group,
