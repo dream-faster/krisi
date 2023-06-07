@@ -135,7 +135,7 @@ s_score = Metric[float](
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=False,
-    supports_multiclass=True,
+    supports_multiclass=False,
 )
 """~"""
 
