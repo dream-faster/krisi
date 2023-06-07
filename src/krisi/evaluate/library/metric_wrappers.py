@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -37,49 +37,9 @@ def brier_multi(targets: TargetsDS, probs: ProbabilitiesDF, **kwargs):
     )
 
 
-def decide_class_label(
-    probs: ProbabilitiesDF, label_index: Optional[int] = None
-) -> Tuple[Union[str, int], bool]:
-    if label_index in probs.columns:
-        return label_index, True
-    elif str(label_index) in probs.columns:
-        return str(label_index), True
-    elif label_index is None and any([(i or str(i)) in probs.columns for i in [0, 1]]):
-        for i in [0, 1]:
-            if i in probs.columns:
-                logger.info(f"Found an integer {i} column, setting it as pos_label")
-                return i, True
-            elif str(i) in probs.columns:
-                logger.info(f"Found an string {i} column, setting it as pos_label")
-                return str(i), True
-    else:
-        logger.info(
-            "pos_label undefined and no integer class found in columns -> setting pos_label to iloc.[:,0]"
-        )
-        return 0, False
-
-
 def wrap_brier_score(
     y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
 ) -> float:
-    if len(probs.columns) > 2:
-        raise ValueError(
-            "Brier score only supports binary classification. Use brier_score_multi instead."
-        )
-    if len(probs.columns) == 2:
-        label_index = kwargs.get("pos_label", None)
-
-        label_index, found_in_df = decide_class_label(probs, label_index)
-
-        logger.info(
-            f"Brier score only supports binary classification. Using column named {label_index} of probabilities."
-        )
-
-        if found_in_df:
-            probs = probs[[label_index]]
-        else:
-            probs = probs.iloc[:, label_index]
-
     return brier_score_loss(
         y_true=y,
         y_prob=probs,
@@ -90,16 +50,6 @@ def wrap_brier_score(
 def wrap_roc_auc(
     y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
 ) -> float:
-    if len(probs.columns) == 2:
-        label_index = kwargs.get("pos_label", None)
-
-        label_index, found_in_df = decide_class_label(probs, label_index)
-
-        if found_in_df:
-            probs = probs[[label_index]]
-        else:
-            probs = probs.iloc[:, label_index]
-
     return roc_auc_score(
         y_true=y,
         y_score=probs,
