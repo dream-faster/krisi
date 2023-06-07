@@ -18,7 +18,7 @@ logger = logging.getLogger("krisi")
 
 
 def ljung_box(
-    y: TargetsDS, predictions: Predictions
+    y: TargetsDS, predictions: Predictions, probs: ProbabilitiesDF, **kwargs
 ) -> Union[pd.DataFrame, Tuple[Any, Any], Tuple[Any, Any, Any, Any]]:
     return acorr_ljungbox(predictions)
 
