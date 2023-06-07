@@ -26,11 +26,9 @@ MetricFunctionProb = Callable[[PredictionsDS, TargetsDS, ProbabilitiesDF], Metri
 MetricFunctionProbWeights = Callable[
     [PredictionsDS, TargetsDS, ProbabilitiesDF, WeightsDS], MetricResult
 ]
-MetricFunctionNoProb = Callable[
-    [PredictionsDS, TargetsDS, ProbabilitiesDF], MetricResult
-]
+MetricFunctionNoProb = Callable[[PredictionsDS, TargetsDS], MetricResult]
 MetricFunctionNoProbWeights = Callable[
-    [PredictionsDS, TargetsDS, ProbabilitiesDF, WeightsDS], MetricResult
+    [PredictionsDS, TargetsDS, WeightsDS], MetricResult
 ]
 MetricFunction = Union[
     MetricFunctionNoProb,

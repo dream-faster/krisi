@@ -18,7 +18,7 @@ logger = logging.getLogger("krisi")
 
 
 def ljung_box(
-    y: TargetsDS, predictions: Predictions, probs: ProbabilitiesDF, **kwargs
+    y: TargetsDS, predictions: Predictions, **kwargs
 ) -> Union[pd.DataFrame, Tuple[Any, Any], Tuple[Any, Any, Any, Any]]:
     return acorr_ljungbox(predictions)
 
@@ -111,7 +111,6 @@ def wrap_roc_auc(
 def bennet_s(
     y: TargetsDS,
     preds: PredictionsDS,
-    probs: ProbabilitiesDF,
     sample_weight: WeightsDS,
     **kwargs,
 ) -> float:
