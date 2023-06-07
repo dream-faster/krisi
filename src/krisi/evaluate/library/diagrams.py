@@ -121,7 +121,9 @@ def callibration_plot(
     bins = np.arange(0, 1.1, bin_size)
     bin_indices = np.digitize(y_prob, bins)
     bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
-    fraction_positives = np.cumsum(bin_counts[:-1]) / np.sum(y_true)
+
+    num_positives = np.cumsum(bin_counts[:-1])
+    fraction_positives = num_positives / (num_positives + np.sum(y_true))
 
     scatter = go.Scatter(
         x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
