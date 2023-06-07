@@ -162,7 +162,7 @@ cross_entropy = Metric[float](
 )
 """~"""
 
-roc_auc_binary_micro, roc_auc_binary_macro = [
+roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
         key=f"roc_auc_binary_{mode}",
@@ -175,7 +175,7 @@ roc_auc_binary_micro, roc_auc_binary_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
     )
-    for mode in ["micro", "macro"]
+    for mode in ["micro", "macro", "weighted"]
 ]
 """~"""
 
@@ -259,11 +259,13 @@ binary_classification_metrics = [
     f_one_score_binary,
     f_one_score_macro,
     f_one_score_micro,
+    f_one_score_weighted,
     matthew_corr,
     brier_score,
     calibration,
     roc_auc_binary_macro,
     roc_auc_binary_micro,
+    roc_auc_binary_weighted,
     cross_entropy,
     s_score,
 ]
