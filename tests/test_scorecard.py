@@ -19,10 +19,10 @@ def test_slicing():
     """ Adding a new metric """
     sc["own_metric"] = (target - predictions).mean()
 
-    sc = sc[["mse", "rmse"]]
+    sc = sc[["mse"]]
 
     sc.print("minimal_table", title="Results of Naive")
 
     assert list(
         [key_ for key_ in sc.__dict__.keys() if isinstance(sc[key_], Metric)]
-    ) == ["mse", "rmse"]
+    ) == ["mse"]
