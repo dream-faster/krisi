@@ -44,7 +44,7 @@ def create_probabilities(num_labels: int = 3, num_samples: int = 1000):
 
 def generate_random_classification(
     num_labels: int = 3, num_samples: int = 1000
-) -> Tuple[pd.Series, pd.Series, pd.Series, pd.DataFrame]:
+) -> Tuple[pd.Series, pd.Series, pd.DataFrame, pd.Series]:
     y = pd.Series(np.random.randint(0, num_labels, num_samples))
     predictions = pd.Series(np.random.randint(0, num_labels, num_samples))
     sample_weight = pd.Series(np.random.random(num_samples))
