@@ -4,7 +4,6 @@ from sklearn.metrics import (
     f1_score,
     log_loss,
     matthews_corrcoef,
-    ndcg_score,
     precision_score,
     recall_score,
 )
@@ -198,19 +197,19 @@ roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
     )
     for mode in ["weighted", "micro", "macro"]
 ]
-"""~"""
-ndcg = Metric[float](
-    name="NDCG Score",
-    key="ndcg",
-    category=MetricCategories.class_err,
-    info="Compute Normalized Discounted Cumulative Gain. Sum the true scores ranked in the order induced by the predicted scores, after applying a logarithmic discount. Then divide by the best possible score (Ideal DCG, obtained for a perfect ranking) to obtain a score between 0 and 1. This ranking metric returns a high value if true labels are ranked high by y_score.",
-    func=ndcg_score,
-    parameters={},
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    accepts_probabilities=False,
-    supports_multiclass=True,
-)
+# """~"""
+# ndcg = Metric[float](
+#     name="NDCG Score",
+#     key="ndcg",
+#     category=MetricCategories.class_err,
+#     info="Compute Normalized Discounted Cumulative Gain. Sum the true scores ranked in the order induced by the predicted scores, after applying a logarithmic discount. Then divide by the best possible score (Ideal DCG, obtained for a perfect ranking) to obtain a score between 0 and 1. This ranking metric returns a high value if true labels are ranked high by y_score.",
+#     func=ndcg_score,
+#     parameters={},
+#     plot_funcs=[(display_single_value, dict(width=750.0))],
+#     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+#     accepts_probabilities=False,
+#     supports_multiclass=True,
+# )
 
 standard_deviation = Metric[float](
     name="Standard Deviation",
@@ -265,7 +264,7 @@ multiclass_classification_metrics = [
     roc_auc_multi_macro,
     roc_auc_multi_weighted,
     matthew_corr,
-    ndcg,
+    # ndcg,
     consistency_group,
 ]
 """~"""
