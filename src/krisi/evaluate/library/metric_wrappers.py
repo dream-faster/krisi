@@ -42,7 +42,7 @@ def wrap_brier_score(
 ) -> float:
     return brier_score_loss(
         y_true=y,
-        y_prob=probs,
+        y_prob=probs.iloc[:, 1],
         **kwargs,
     )
 
@@ -52,7 +52,7 @@ def wrap_roc_auc(
 ) -> float:
     return roc_auc_score(
         y_true=y,
-        y_score=probs,
+        y_score=probs.iloc[:, 1],
         labels=list(probs.columns),
         **kwargs,
     )

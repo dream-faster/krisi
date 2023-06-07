@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -104,11 +104,9 @@ def display_density_plot(data: MetricResult, **kwargs) -> "go.Figure":
     return fig
 
 
-def callibration_plot(
+def calculate_calibration_bins(
     data: MetricResult, bin_size: float = 0.1, **kwargs
-) -> "go.Figure":
-    import plotly.graph_objects as go
-
+) -> Tuple[np.ndarray, np.ndarray]:
     y_true = data["y"]
     y_prob = data["probs"]
 
@@ -125,6 +123,15 @@ def callibration_plot(
     num_positives = np.cumsum(bin_counts[:-1])
     fraction_positives = num_positives / (num_positives + np.sum(y_true))
 
+    return fraction_positives, bins
+
+
+def callibration_plot(
+    data: MetricResult, bin_size: float = 0.1, **kwargs
+) -> "go.Figure":
+    import plotly.graph_objects as go
+
+    fraction_positives, bins = calculate_calibration_bins(data, bin_size)
     scatter = go.Scatter(
         x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
     )

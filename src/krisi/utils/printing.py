@@ -10,6 +10,7 @@ from rich.table import Table
 
 from krisi.evaluate.type import Predictions, Targets
 from krisi.report.library.console.diagrams import (
+    callibration_plot,
     distribution_plot,
     histogram_plot,
     line_plot,
@@ -42,7 +43,9 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
         result = round(result, 3)
 
     if isiterable(result):
-        if isinstance(result, (pd.Series, pd.DataFrame)):
+        if isinstance(result, pd.DataFrame):
+            return plotextMixin(result, callibration_plot, title=metric.name)
+        if isinstance(result, pd.Series):
             return Pretty(result)
         elif isiterable(result[0]):
             return Pretty("Result is a complex Iterable")
