@@ -24,11 +24,14 @@ from krisi.evaluate.type import (
     PredictionsDS,
     PrintMode,
     Probabilities,
+    ProbabilitiesDF,
     SampleTypes,
     SaveModes,
     ScoreCardMetadata,
     Targets,
     TargetsDS,
+    Weights,
+    WeightsDS,
 )
 from krisi.evaluate.utils import (
     convert_to_series,
@@ -114,7 +117,8 @@ class ScoreCard:
 
     y: TargetsDS
     predictions: PredictionsDS
-    probabilities: Optional[Probabilities]
+    probabilities: Optional[ProbabilitiesDF]
+    sample_weight: Optional[WeightsDS]
     sample_type: SampleTypes
     default_metrics_keys: List[str]
     custom_metrics_keys: List[str]
@@ -127,6 +131,7 @@ class ScoreCard:
         y: Targets,
         predictions: Predictions,
         probabilities: Optional[Probabilities] = None,
+        sample_weight: Optional[Weights] = None,
         model_name: Optional[str] = None,
         model_description: str = "",
         dataset_name: Optional[str] = None,
@@ -158,6 +163,15 @@ class ScoreCard:
             if probabilities is not None
             else None
         )
+        self.__dict__["sample_weight"] = (
+            convert_to_series(
+                sample_weight,  # pd.Series([1.0] * len(y))
+                "sample_weight",
+            )
+            if sample_weight is not None
+            else None
+        )
+
         self.__dict__["sample_type"] = sample_type
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
@@ -392,7 +406,11 @@ class ScoreCard:
                 if isinstance(metric, Group):
                     group = metric
                     for metric_in_group in getattr(group, func_key_evaluate)(
-                        self.y, self.predictions, self.probabilities, **rolling_args
+                        self.y,
+                        self.predictions,
+                        self.probabilities,
+                        self.sample_weight,
+                        **rolling_args,
                     ):
                         if metric_in_group.key not in self.__dict__:
                             metric_in_group._from_group = True
@@ -404,7 +422,11 @@ class ScoreCard:
                             }
                 else:
                     getattr(metric, func_key_evaluate)(
-                        self.y, self.predictions, self.probabilities, **rolling_args
+                        self.y,
+                        self.predictions,
+                        self.probabilities,
+                        self.sample_weight,
+                        **rolling_args,
                     )
 
     def evaluate(self, defaults: bool = True) -> "ScoreCard":
@@ -457,6 +479,8 @@ class ScoreCard:
         self,
         mode: Union[str, PrintMode, List[PrintMode], List[str]] = PrintMode.extended,
         with_info: bool = False,
+        with_parameters: bool = True,
+        with_diagnostics: bool = False,
         input_analysis: bool = True,
         title: Optional[str] = None,
         frame_or_series: bool = True,
@@ -488,13 +512,21 @@ class ScoreCard:
                     repr=True,
                     categories=[el.value for el in MetricCategories],
                     with_info=with_info,
+                    with_parameters=with_parameters,
+                    with_diagnostics=with_diagnostics,
                     input_analysis=input_analysis,
                 )
 
             elif mode is PrintMode.minimal:
                 to_display = get_minimal_summary(self, dataframe=frame_or_series)
             elif mode is PrintMode.minimal_table:
-                to_display = get_large_metric_summary(self, title)
+                to_display = get_large_metric_summary(
+                    self,
+                    title,
+                    with_info=with_info,
+                    with_parameters=with_parameters,
+                    with_diagnostics=with_diagnostics,
+                )
             if isinstance(to_display, (pd.DataFrame, pd.Series)) and is_notebook():
                 from IPython.display import display
 
@@ -505,6 +537,8 @@ class ScoreCard:
     def save(
         self,
         with_info: bool = False,
+        with_parameters: bool = True,
+        with_diagnostics: bool = False,
         save_modes: List[Union[SaveModes, str]] = [
             SaveModes.minimal,
             SaveModes.obj,
@@ -535,7 +569,14 @@ class ScoreCard:
             save_minimal_summary(self, path)
         if SaveModes.obj in save_modes or SaveModes.obj.value in save_modes:
             save_object(self, path)
-        save_console(self, path, with_info, save_modes)
+        save_console(
+            self,
+            path,
+            with_info,
+            with_parameters=with_parameters,
+            with_diagnostics=with_diagnostics,
+            save_modes=save_modes,
+        )
 
         return self
 

@@ -13,14 +13,16 @@ def test_group_preprocess():
         name="residual_group",
         key="residual_group",
         metrics=[f_one_score_macro],
-        preprocess_func=lambda y, pred: y - pred,
+        preprocess_func=lambda y, pred, **kwargs: y - pred,
         postprocess_funcs=standard_deviation,
     )
 
     y = pd.Series(np.random.randint(0, 2, 1000))
     predictions = pd.Series(np.random.randint(0, 2, 1000))
 
-    groupped_metric.evaluate_over_time(y, predictions, None, {"window": 10})
+    groupped_metric.evaluate_over_time(
+        y, predictions, None, None, rolling_args={"window": 10}
+    )
 
 
 def test_group_postprocess():
@@ -34,4 +36,6 @@ def test_group_postprocess():
     y = pd.Series(np.random.randint(0, 2, 1000))
     predictions = pd.Series(np.random.randint(0, 2, 1000))
 
-    groupped_metric.evaluate_over_time(y, predictions, None, {"window": 10})
+    groupped_metric.evaluate_over_time(
+        y, predictions, None, None, rolling_args={"window": 10}
+    )

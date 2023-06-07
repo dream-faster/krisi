@@ -17,9 +17,11 @@ MetricResult = TypeVar(
 Predictions = Union[np.ndarray, pd.Series, List[Union[int, float]]]
 Targets = Union[np.ndarray, pd.Series, List[Union[int, float]]]
 Probabilities = Union[np.ndarray, pd.Series, pd.DataFrame, List[Union[int, float]]]
+Weights = Union[np.ndarray, pd.Series, pd.DataFrame, List[Union[int, float]]]
 PredictionsDS = pd.Series
 ProbabilitiesDF = pd.DataFrame
 TargetsDS = pd.Series
+WeightsDS = pd.Series
 MetricFunctionProb = Callable[[PredictionsDS, TargetsDS, ProbabilitiesDF], MetricResult]
 MetricFunctionNoProb = Callable[
     [PredictionsDS, TargetsDS, ProbabilitiesDF], MetricResult

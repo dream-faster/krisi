@@ -69,12 +69,19 @@ def get_minimal_summary(obj: "ScoreCard", dataframe: bool) -> Union[pd.DataFrame
     )
 
 
-def get_large_metric_summary(obj: "ScoreCard", title: str) -> Table:
+def get_large_metric_summary(
+    obj: "ScoreCard",
+    title: str,
+    with_info: bool,
+    with_parameters: bool,
+    with_diagnostics: bool,
+) -> Table:
     return create_metric_table(
         title=title,
         metrics=obj.get_all_metrics(),
-        with_info=False,
-        with_parameters=False,
+        with_info=with_info,
+        with_parameters=with_parameters,
+        with_diagnostics=with_diagnostics,
     )
 
 
@@ -83,6 +90,8 @@ def get_summary(
     categories: List[str],
     repr: bool = True,
     with_info: bool = False,
+    with_parameters: bool = True,
+    with_diagnostics: bool = False,
     input_analysis: bool = True,
 ) -> Union[Panel, Layout]:
     category_groups = group_by_categories(list(vars(obj).values()), categories)
@@ -102,7 +111,9 @@ def get_summary(
             create_metric_table(
                 f"{category if category is not None else 'Unknown Category':>15s}",
                 metrics,
-                with_info,
+                with_info=with_info,
+                with_parameters=with_parameters,
+                with_diagnostics=with_diagnostics,
                 show_header=True if index == 0 else False,
             )
             for index, (category, metrics) in enumerate(category_groups.items())

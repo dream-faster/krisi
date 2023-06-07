@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Union
 import pandas as pd
 
 from krisi.evaluate.type import (
+    Calculation,
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
@@ -13,6 +14,7 @@ from krisi.evaluate.type import (
     ProbabilitiesDF,
     SampleTypes,
     TargetsDS,
+    WeightsDS,
 )
 from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
@@ -50,10 +52,8 @@ class Metric(Generic[MetricResult]):
         Weather the `Metric` should only be evaluated on insample or out of sample data, by default None
     comp_complexity: Optional[ComputationalComplexity]
         How resource intensive the calculation is, by default None
-    disable_rolling: bool
-        Whether the metric should not be evaluated on a rolling basis, by default False
-        If this is switched on, the metric will still be evaluated when `evaluate_over_time` is called
-        but not on a rolling basis.
+    calculation: Calculation
+        Whether the metric should be evaluated only when calculating rolling, single or both, by default both
     accepts_probabilities: bool
         Whether the metric accepts probabilities as input, by default False
     supports_multiclass: bool
@@ -72,9 +72,10 @@ class Metric(Generic[MetricResult]):
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
-    disable_rolling: bool = False
+    calculation: Union[str, Calculation] = Calculation.both
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
+    diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
     _from_group: bool = False
 
     def __post_init__(self):
@@ -87,6 +88,7 @@ class Metric(Generic[MetricResult]):
             and self.plot_funcs_rolling is not None
         ):
             self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
+        self.calculation = Calculation.from_str(self.calculation)
 
     def __setitem__(self, key: str, item: Any) -> None:
         setattr(self, key, item)
@@ -101,11 +103,13 @@ class Metric(Generic[MetricResult]):
         print(print_metric(self, repr=True))
         return super().__repr__()
 
-    def _evaluation(self, *args) -> "Metric":
+    def _evaluation(self, *args, **kwargs) -> "Metric":
+        if self.calculation == Calculation.rolling:
+            return self
         if self._from_group:
             return self
         try:
-            result = self.func(*args, **self.parameters)
+            result = self.func(*args, **kwargs, **self.parameters)
         except Exception as e:
             result = e
         self.__safe_set(result, key="result")
@@ -116,22 +120,37 @@ class Metric(Generic[MetricResult]):
         y: TargetsDS,
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
+        sample_weight: Optional[WeightsDS] = None,
     ) -> None:
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
-        if self.accepts_probabilities and probabilities is not None:
-            self._evaluation(y, predictions, probabilities)
+        if self.accepts_probabilities:
+            if probabilities is not None:
+                self._evaluation(
+                    y, predictions, probabilities, sample_weight=sample_weight
+                )
+            else:
+                self.__safe_set(
+                    ValueError(
+                        "Metric requires probabilities, but None were provided."
+                    ),
+                    key="result",
+                )
         else:
-            self._evaluation(y, predictions)
+            self._evaluation(y, predictions, sample_weight=sample_weight)
+        if sample_weight is not None:
+            self.__dict__["diagnostics"] = dict(used_sample_weight=True)
 
     def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
         if self._from_group:
             return self
-        if self.disable_rolling:
+        if self.calculation == Calculation.single:
             return self
         else:
             _df = pd.concat(args, axis="columns")
+            if "sample_weight" in _df:
+                self.__dict__["diagnostics"] = dict(used_sample_weight=True)
             try:
                 df_rolled = (
                     _df.expanding()
@@ -139,17 +158,19 @@ class Metric(Generic[MetricResult]):
                     else _df.rolling(**rolling_args)
                 )
 
-                def probs_seperately(single_window):
+                def probs_seperately(single_window) -> dict:
                     if len(single_window.columns) > 2:
                         return dict(
-                            y=single_window.iloc[:, 0],
-                            predictions=single_window.iloc[:, 1],
+                            y=single_window["y"],
+                            predictions=single_window["predictions"],
+                            sample_weight=single_window["sample_weight"],
                             probs=single_window.iloc[:, 2:],
                         )
                     else:
                         return dict(
                             y=single_window.iloc[:, 0],
                             predictions=single_window.iloc[:, 1],
+                            sample_weight=single_window["sample_weight"],
                         )
 
                 result_rolling = [
@@ -169,14 +190,17 @@ class Metric(Generic[MetricResult]):
         y: TargetsDS,
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
+        sample_weight: Optional[WeightsDS] = None,
         rolling_args: dict = dict(),
     ) -> None:
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
-                y, predictions, probabilities, rolling_args=rolling_args
+                y, predictions, probabilities, sample_weight, rolling_args=rolling_args
             )
         else:
-            self._rolling_evaluation(y, predictions, rolling_args=rolling_args)
+            self._rolling_evaluation(
+                y, predictions, sample_weight, rolling_args=rolling_args
+            )
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:

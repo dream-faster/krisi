@@ -54,7 +54,7 @@ def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
 
 
 def __create_metric(
-    metric: "Metric", with_info: bool, with_parameters: bool
+    metric: "Metric", with_info: bool, with_parameters: bool, with_diagnostics: bool
 ) -> List[str]:
     metric_summarized = (
         [
@@ -62,6 +62,7 @@ def __create_metric(
             __display_result(metric),
         ]
         + ([Pretty(metric.parameters)] if with_parameters else [])
+        + ([Pretty(metric.diagnostics)] if with_diagnostics else [])
         + ([Pretty(metric.info)] if with_info else [])
     )
 
@@ -72,8 +73,9 @@ def create_metric_table(
     title: str,
     metrics: List["Metric"],
     with_info: bool,
+    with_parameters: bool,
+    with_diagnostics: bool,
     show_header: bool = False,
-    with_parameters: bool = True,
 ) -> Table:
     table = Table(
         title=title,
@@ -93,11 +95,14 @@ def create_metric_table(
         table.add_column("Parameters", style="green", width=1)
     if with_info:
         table.add_column("Info", width=3)
-
+    if with_diagnostics:
+        table.add_column("Diagnostics", width=3)
     for metric in metrics:
         if metric.result is None and metric.result_rolling is None:
             continue
-        metric_summarized = __create_metric(metric, with_info, with_parameters)
+        metric_summarized = __create_metric(
+            metric, with_info, with_parameters, with_diagnostics
+        )
         table.add_row(*metric_summarized)
 
     return table

@@ -10,6 +10,7 @@ from krisi.evaluate.type import (
     Probabilities,
     SampleTypes,
     Targets,
+    Weights,
 )
 
 logger = logging.getLogger("krisi")
@@ -19,6 +20,7 @@ def score(
     y: Targets,
     predictions: Predictions,
     probabilities: Optional[Probabilities] = None,
+    sample_weight: Optional[Weights] = None,
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
@@ -94,6 +96,7 @@ def score(
         y=y,
         predictions=predictions,
         probabilities=probabilities,
+        sample_weight=sample_weight,
         model_name=model_name,
         dataset_name=dataset_name,
         project_name=project_name,
