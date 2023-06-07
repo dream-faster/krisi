@@ -23,10 +23,21 @@ ProbabilitiesDF = pd.DataFrame
 TargetsDS = pd.Series
 WeightsDS = pd.Series
 MetricFunctionProb = Callable[[PredictionsDS, TargetsDS, ProbabilitiesDF], MetricResult]
+MetricFunctionProbWeights = Callable[
+    [PredictionsDS, TargetsDS, ProbabilitiesDF, WeightsDS], MetricResult
+]
 MetricFunctionNoProb = Callable[
     [PredictionsDS, TargetsDS, ProbabilitiesDF], MetricResult
 ]
-MetricFunction = Union[MetricFunctionNoProb, MetricFunctionProb]
+MetricFunctionNoProbWeights = Callable[
+    [PredictionsDS, TargetsDS, ProbabilitiesDF, WeightsDS], MetricResult
+]
+MetricFunction = Union[
+    MetricFunctionNoProb,
+    MetricFunctionProb,
+    MetricFunctionProbWeights,
+    MetricFunctionNoProbWeights,
+]
 
 
 class MetricCategories(Enum):
