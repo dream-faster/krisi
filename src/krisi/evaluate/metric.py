@@ -160,23 +160,32 @@ class Metric(Generic[MetricResult]):
 
                 def probs_seperately(single_window) -> dict:
                     if len(single_window.columns) > 2:
-                        return dict(
-                            y=single_window["y"],
-                            predictions=single_window["predictions"],
-                            sample_weight=single_window["sample_weight"],
-                            probs=single_window.iloc[:, 2:],
+                        sample_weight = (
+                            single_window.pop("sample_weight")
+                            if "sample_weight" in single_window
+                            else None
                         )
+                        if sample_weight is not None:
+                            return dict(
+                                y=single_window["y"],
+                                pred=single_window["predictions"],
+                                prob=single_window.iloc[:, 2:],
+                                sample_weight=sample_weight,
+                            )
+                        else:
+                            return dict(
+                                y=single_window["y"],
+                                pred=single_window["predictions"],
+                                prob=single_window.iloc[:, 2:],
+                            )
                     else:
                         return dict(
                             y=single_window.iloc[:, 0],
                             predictions=single_window.iloc[:, 1],
-                            sample_weight=single_window["sample_weight"],
                         )
 
                 result_rolling = [
-                    self.func(
-                        *probs_seperately(single_window).values(), **self.parameters
-                    )
+                    self.func(**probs_seperately(single_window), **self.parameters)
                     for single_window in df_rolled
                 ]
             except Exception as e:
