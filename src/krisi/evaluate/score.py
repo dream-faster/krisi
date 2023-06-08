@@ -89,7 +89,9 @@ def score(
         and calculation == Calculation.rolling
         or calculation == Calculation.both
     ):
-        rolling_args = dict(window=len(y) // 100, step=len(y) // 100)
+        rolling_default = len(y) // 90
+        rolling_default = max(10, rolling_default)
+        rolling_args = dict(window=rolling_default, step=rolling_default)
         logger.info(f"rolling_args not specified, using default: {rolling_args}")
 
     sc = ScoreCard(
