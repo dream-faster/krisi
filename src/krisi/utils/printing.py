@@ -41,8 +41,9 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
         result = round(result, 3)
 
     if isinstance(result, dict):
-        if len(result.keys()) > 0:
-            return Pretty(pd.Series(result))
+        if len(result) > 0:
+            return "\n".join([f"{key}:\n {value}" for key, value in result.items()])
+
         else:
             return ""
 
@@ -76,10 +77,13 @@ def __display_result(metric: "Metric") -> List[Union[str, Pretty, plotextMixin]]
 def __create_metric(
     metric: "Metric", with_info: bool, with_parameters: bool, with_diagnostics: bool
 ) -> List[str]:
+    results_as_strings = __display_result(metric)
+    if isinstance(results_as_strings[0], plotextMixin):
+        results_as_strings = ["", *results_as_strings[:-1]]
     metric_summarized = (
         [
             f"{metric.name} ({metric.key})",
-            *__display_result(metric),
+            *results_as_strings,
         ]
         + ([__convert_result(metric.parameters, title="")] if with_parameters else [])
         + ([Pretty(metric.diagnostics)] if with_diagnostics else [])
