@@ -106,7 +106,7 @@ def display_density_plot(data: MetricResult, **kwargs) -> "go.Figure":
 
 
 def calculate_calibration_bins(
-    data: MetricResult, n_bins: float = 10, **kwargs
+    data: MetricResult, n_bins: int = 10, **kwargs
 ) -> Tuple[np.ndarray, np.ndarray]:
     y_true = data["y"]
     y_prob = data["probs"]
@@ -129,12 +129,10 @@ def calculate_calibration_bins(
     # return fraction_positives, bins
 
 
-def callibration_plot(
-    data: MetricResult, bin_size: float = 0.1, **kwargs
-) -> "go.Figure":
+def callibration_plot(data: MetricResult, n_bins: int = 10, **kwargs) -> "go.Figure":
     import plotly.graph_objects as go
 
-    fraction_positives, bins = calculate_calibration_bins(data, bin_size)
+    fraction_positives, bins = calculate_calibration_bins(data, n_bins)
     scatter = go.Scatter(
         x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
     )
