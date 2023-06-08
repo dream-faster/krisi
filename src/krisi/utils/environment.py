@@ -1,4 +1,6 @@
 def is_notebook() -> bool:
+    if "get_ipython" not in globals():
+        return False
     try:
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
@@ -9,5 +11,6 @@ def is_notebook() -> bool:
             return False  # Terminal running IPython
         else:
             return False  # Other type (?)
+
     except NameError:
         return False  # Probably standard Python interpreter

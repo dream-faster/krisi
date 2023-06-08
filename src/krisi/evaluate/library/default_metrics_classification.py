@@ -113,6 +113,7 @@ calibration = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
+    calculation=Calculation.single,
 )
 """~"""
 brier_score_multi = Metric[float](
