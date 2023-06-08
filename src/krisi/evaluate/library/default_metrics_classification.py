@@ -8,7 +8,6 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from krisi.evaluate.group import Group
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_density_plot,
@@ -226,32 +225,6 @@ roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
 #     supports_multiclass=True,
 # )
 
-standard_deviation = Metric[float](
-    name="Standard Deviation",
-    key="std",
-    category=MetricCategories.stats,
-    info="Standard Deviation",
-    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).std(),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-)
-median = Metric[float](
-    name="Median",
-    key="median",
-    category=MetricCategories.stats,
-    info="Median",
-    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).median(),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-)
-
-consistency_group = Group[pd.Series](
-    name="Consistency",
-    key="consistency",
-    metrics=[f_one_score_weighted, matthew_corr],
-    postprocess_funcs=[standard_deviation, median],
-    calculation=Calculation.rolling,
-)
 
 binary_classification_metrics = [
     accuracy_binary,
@@ -284,7 +257,6 @@ multiclass_classification_metrics = [
     roc_auc_multi_weighted,
     matthew_corr,
     # ndcg,
-    consistency_group,
     # s_score,
 ]
 """~"""
