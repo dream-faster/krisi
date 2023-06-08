@@ -265,7 +265,9 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
         return None
     elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
         return None
-    elif isiterable(obj.result_rolling):
+    elif isiterable(obj.result_rolling) and len(obj.result_rolling) > 0:
+        if isinstance(obj.result_rolling[0], (pd.DataFrame, pd.Series)):
+            return None
         return [
             InteractiveFigure(
                 f"{obj.key}_{plot_funcs_rolling.__name__}",
