@@ -14,19 +14,19 @@ from krisi.evaluate.library.default_metrics_regression import (
 )
 
 score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
     default_metrics=all_regression_metrics,  # This is the default
 ).print()
 
 score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
     default_metrics=minimal_regression_metrics,
 ).print(input_analysis=False)
 
 score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
     default_metrics=low_computation_regression_metrics,
 ).print(input_analysis=False)

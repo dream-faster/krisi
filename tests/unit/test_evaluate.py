@@ -1,5 +1,8 @@
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.utils.data import generate_random_classification
+from krisi.utils.state import GlobalState, RunType, set_global_state
+
+set_global_state(GlobalState(run_type=RunType.test))
 
 
 def test_sample_weights():
@@ -16,6 +19,3 @@ def test_sample_weights():
     sc.evaluate()
     sc.evaluate_over_time()
     sc.print()
-
-
-test_sample_weights()

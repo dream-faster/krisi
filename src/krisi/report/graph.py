@@ -8,6 +8,7 @@ import pandas as pd
 from typing_extensions import Literal
 
 from krisi.evaluate.type import PathConst
+from krisi.utils.devutils.environment_checks import handle_test
 from krisi.utils.io import ensure_path
 
 
@@ -143,6 +144,7 @@ def __create_corr_network(
         plt.savefig(f"{save_location}/{file_name}_{corr_direction}.png", format="PNG")
     if "display" in save_or_display:
         plt.show()
+    handle_test()
 
 
 def create_animation(

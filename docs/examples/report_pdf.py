@@ -6,13 +6,12 @@ Static, PDF report
 
 import numpy as np
 
-from dev_utils.utils import handle_test
 from krisi import score
 from krisi.report.type import DisplayModes
 
 sc = score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
     model_name="<your_model_name>",
     dataset_name="<your_dataset_name>",
     project_name="Example Project",
@@ -22,5 +21,3 @@ sc = score(
 sc.generate_report(
     display_modes=[DisplayModes.pdf],
 )
-
-handle_test()

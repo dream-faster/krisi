@@ -1,5 +1,4 @@
-import logging
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
@@ -12,8 +11,6 @@ from krisi.evaluate.type import (
     Targets,
     Weights,
 )
-
-logger = logging.getLogger("krisi")
 
 
 def score(
@@ -30,6 +27,7 @@ def score(
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
+    surpress_warnings: bool = False,
     **kwargs,
 ) -> ScoreCard:
     """
@@ -84,13 +82,6 @@ def score(
     """
 
     calculation = Calculation.from_str(calculation)
-    if (
-        rolling_args is None
-        and calculation == Calculation.rolling
-        or calculation == Calculation.both
-    ):
-        rolling_args = dict(window=len(y) // 100, step=len(y) // 100)
-        logger.info(f"rolling_args not specified, using default: {rolling_args}")
 
     sc = ScoreCard(
         y=y,
@@ -105,6 +96,7 @@ def score(
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
         rolling_args=rolling_args,
+        surpress_warnings=surpress_warnings,
         **kwargs,
     )
 
@@ -119,48 +111,3 @@ def score(
         raise ValueError(f"Calculation type {calculation} not recognized.")
 
     return sc
-
-
-def score_in_out_of_sample(
-    y_insample: Targets,
-    insample_predictions: Predictions,
-    y_outsample: Targets,
-    outsample_predictions: Predictions,
-    insample_probabilities: Optional[Probabilities] = None,
-    outsample_probabilities: Optional[Probabilities] = None,
-    model_name: Optional[str] = None,
-    dataset_name: Optional[str] = None,
-    project_name: Optional[str] = None,
-    default_metrics: Optional[List[Metric]] = None,
-    custom_metrics: Optional[List[Metric]] = None,
-    dataset_type: Optional[Union[DatasetType, str]] = None,
-    calculation: Union[Calculation, str] = Calculation.single,
-) -> Tuple[ScoreCard, ScoreCard]:
-    insample_summary = score(
-        y=y_insample,
-        predictions=insample_predictions,
-        probabilities=insample_probabilities,
-        model_name=model_name,
-        dataset_name=dataset_name,
-        project_name=project_name,
-        default_metrics=default_metrics,
-        custom_metrics=custom_metrics,
-        dataset_type=dataset_type,
-        sample_type=SampleTypes.insample,
-        calculation=calculation,
-    )
-    outsample_summary = score(
-        y=y_outsample,
-        predictions=outsample_predictions,
-        probabilities=outsample_probabilities,
-        model_name=model_name,
-        dataset_name=dataset_name,
-        project_name=project_name,
-        default_metrics=default_metrics,
-        custom_metrics=custom_metrics,
-        dataset_type=dataset_type,
-        sample_type=SampleTypes.outofsample,
-        calculation=calculation,
-    )
-
-    return insample_summary, outsample_summary

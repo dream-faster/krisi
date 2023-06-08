@@ -8,7 +8,6 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from krisi.evaluate.group import Group
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_density_plot,
@@ -113,6 +112,7 @@ calibration = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
+    calculation=Calculation.single,
 )
 """~"""
 brier_score_multi = Metric[float](
@@ -179,24 +179,8 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
 ]
 """~"""
 
-roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
-    Metric[float](
-        name=f"ROC AUC ({mode}))",
-        key=f"roc_auc_{mode}",
-        category=MetricCategories.class_err,
-        info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
-        func=wrap_roc_auc,
-        parameters={"average": mode, "multi_class": "ovr"},
-        plot_funcs=[(display_single_value, dict(width=750.0))],
-        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-        accepts_probabilities=True,
-        supports_multiclass=True,
-    )
-    for mode in ["weighted", "micro", "macro"]
-]
-"""~"""
 
-roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
+roc_auc_multi_micro, roc_auc_multi_macro = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
         key=f"roc_auc_{mode}",
@@ -209,7 +193,7 @@ roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
     )
-    for mode in ["weighted", "micro", "macro"]
+    for mode in ["micro", "macro"]
 ]
 # """~"""
 # ndcg = Metric[float](
@@ -225,32 +209,6 @@ roc_auc_multi_weighted, roc_auc_multi_micro, roc_auc_multi_macro = [
 #     supports_multiclass=True,
 # )
 
-standard_deviation = Metric[float](
-    name="Standard Deviation",
-    key="std",
-    category=MetricCategories.stats,
-    info="Standard Deviation",
-    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).std(),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-)
-median = Metric[float](
-    name="Median",
-    key="median",
-    category=MetricCategories.stats,
-    info="Median",
-    func=lambda rolling_res, **kwargs: pd.Series(rolling_res).median(),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-)
-
-consistency_group = Group[pd.Series](
-    name="Consistency",
-    key="consistency",
-    metrics=[f_one_score_weighted, matthew_corr],
-    postprocess_funcs=[standard_deviation, median],
-    calculation=Calculation.rolling,
-)
 
 binary_classification_metrics = [
     accuracy_binary,
@@ -280,14 +238,13 @@ multiclass_classification_metrics = [
     f_one_score_micro,
     brier_score_multi,
     roc_auc_multi_macro,
-    roc_auc_multi_weighted,
+    # roc_auc_multi_weighted,
     matthew_corr,
     # ndcg,
-    consistency_group,
     # s_score,
 ]
 """~"""
 minimal_multiclass_classification_metrics = [
     f_one_score_weighted,
-    roc_auc_multi_weighted,
+    # roc_auc_multi_weighted,
 ]

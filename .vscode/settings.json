@@ -1,5 +1,8 @@
 {
-  "python.testing.pytestArgs": ["tests"],
+  "python.testing.pytestArgs": [
+    "tests",
+    "-s"
+  ],
   "python.analysis.typeCheckingMode": "basic",
   "python.languageServer": "Pylance",
   "python.testing.unittestEnabled": false,

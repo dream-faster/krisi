@@ -8,6 +8,7 @@ from typing_extensions import Literal
 
 from krisi.evaluate.type import PathConst
 from krisi.report.graph import create_save_graphs
+from krisi.utils.devutils.environment_checks import handle_test
 
 from .utils import corr_without_symmetry, unroll
 
@@ -89,6 +90,7 @@ def __create_summary(
         plt.savefig(f"{save_location}/{path_friendly}.png", format="PNG")
     if "display" in save_or_display:
         plt.show()
+    handle_test()
 
 
 def get_rolled_corr_metrics(

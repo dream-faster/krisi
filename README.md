@@ -62,7 +62,7 @@ The project was entirely built in ``python``.
 
 Prerequisites
 
-* ``python >= 3.7`` and ``pip``
+* ``python >= 3.8`` and ``pip``
 
 
 Then run:
@@ -115,8 +115,8 @@ import numpy as np
 from krisi import score
 
 sc = score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
 ).print()
 ```
 <details>

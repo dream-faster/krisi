@@ -83,6 +83,23 @@ def isiterable(obj: Any) -> bool:
         return False
 
 
+def isnumber(obj: Any) -> bool:
+    if isinstance(obj, (int, float, np.number)):
+        return True
+    else:
+        return False
+
+
+def check_iterable_with_number(iterable: Any):
+    if isinstance(iterable, Exception) or iterable is None:
+        return False
+
+    if isiterable(iterable) and len(iterable) > 0:
+        if isnumber(iterable[0]):
+            return True
+    return False
+
+
 def strip_builtin_functions(dict_to_strip: dict) -> dict:
     return {key_: value_ for key_, value_ in dict_to_strip.items() if key_[:2] != "__"}
 

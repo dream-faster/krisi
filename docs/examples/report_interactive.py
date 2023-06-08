@@ -13,8 +13,8 @@ from krisi.evaluate.type import Calculation
 from krisi.report.type import DisplayModes
 
 sc = score(
-    y=np.random.normal(0, 0.1, 1000),
-    predictions=np.random.normal(0, 0.1, 1000),
+    y=np.random.random(1000),
+    predictions=np.random.random(1000),
     model_name="ARIMA",
     model_description="You can explain main features of the project to be displayed in the report",
     dataset_name="APPLE Stocks",

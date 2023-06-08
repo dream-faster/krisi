@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.type import (
@@ -19,11 +20,13 @@ from krisi.evaluate.type import (
 from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
 from krisi.utils.iterable_helpers import (
+    check_iterable_with_number,
     filter_nan,
     isiterable,
     string_to_id,
     wrap_in_list,
 )
+from krisi.utils.state import RunType, get_global_state
 
 
 @dataclass
@@ -70,6 +73,7 @@ class Metric(Generic[MetricResult]):
     category: Optional[MetricCategories] = None
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
+    rolling_properties: Optional[pd.Series] = None
     parameters: dict = field(default_factory=dict)
     func: Optional[MetricFunction] = None
     plot_funcs: Optional[Union[List[PlotDefinition], PlotDefinition]] = None
@@ -119,6 +123,8 @@ class Metric(Generic[MetricResult]):
             result = self.func(*args, **kwargs, **self.parameters)
         except Exception as e:
             result = e
+            if get_global_state().run_type == RunType.test:
+                raise e
         self.__safe_set(result, key="result")
         return self
 
@@ -151,31 +157,35 @@ class Metric(Generic[MetricResult]):
 
     @staticmethod
     def __handle_window(
-        window,
-    ) -> Tuple[TargetsDS, PredictionsDS, Optional[ProbabilitiesDF], dict]:
-        y = window["y"]
-        pred = window["predictions"]
-        if len(window.columns) > 2:
-            sample_weight = (
-                window.pop("sample_weight") if "sample_weight" in window else None
+        window: pd.DataFrame,
+    ) -> Tuple[
+        Tuple[TargetsDS, Optional[PredictionsDS], Optional[ProbabilitiesDF]], dict
+    ]:
+        sample_weight = (
+            window.pop("sample_weight") if "sample_weight" in window else None
+        )
+        if "y" not in window:
+            return tuple([window[col] for col in window]), dict(
+                sample_weight=sample_weight
             )
-            prob = window.iloc[:, 2:]
 
-            return y, pred, prob, dict(sample_weight=sample_weight)
-        else:
-            return y, pred, None, dict()
+        y = window.pop("y")
+        pred = window.pop("predictions")
+        prob = window if len(window.columns) > 0 else None
+
+        return (y, pred, prob), dict(sample_weight=sample_weight)
 
     @staticmethod
     def __calc_window(window: pd.DataFrame, func: MetricFunction, parameters: dict):
-        y, pred, prob, sample_weight = Metric.__handle_window(window)
+        result, sample_weight = Metric.__handle_window(window)
 
         return func(
-            *filter_nan([y, pred, prob]),
+            *filter_nan(list(result)),
             **sample_weight,
             **parameters,
         )
 
-    def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
+    def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> "Metric":
         if self._from_group:
             return self
         if self.calculation == Calculation.single:
@@ -183,7 +193,11 @@ class Metric(Generic[MetricResult]):
         if self.func is None:
             raise ValueError("`func` has to be set on Metric to calculate result.")
         else:
-            _df = pd.concat(args, axis="columns")
+            _df = pd.concat(
+                kwargs.values() if (args is None or len(args) == 0) else args,
+                axis="columns",
+            )
+
             if "sample_weight" in _df:
                 self.__dict__["diagnostics"] = dict(used_sample_weight=True)
             try:
@@ -196,10 +210,13 @@ class Metric(Generic[MetricResult]):
                 result_rolling = [
                     Metric.__calc_window(single_window, self.func, self.parameters)
                     for single_window in df_rolled
+                    if len(single_window) > 0
                 ]
 
             except Exception as e:
                 result_rolling = e
+                if get_global_state().run_type == RunType.test:
+                    raise e
             self.__safe_set(result_rolling, key="result_rolling")
 
         return self
@@ -214,11 +231,32 @@ class Metric(Generic[MetricResult]):
     ) -> None:
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
-                y, predictions, probabilities, sample_weight, rolling_args=rolling_args
+                y=y,
+                predictions=predictions,
+                probabilities=probabilities,
+                sample_weight=sample_weight,
+                rolling_args=rolling_args,
             )
         else:
             self._rolling_evaluation(
-                y, predictions, sample_weight, rolling_args=rolling_args
+                y=y,
+                predictions=predictions,
+                sample_weight=sample_weight,
+                rolling_args=rolling_args,
+            )
+
+    def evaluate_rolling_properties(self):
+        if check_iterable_with_number(self.result_rolling):
+            self.__safe_set(
+                pd.Series(
+                    data=dict(
+                        mean=np.mean(self.result_rolling),
+                        std=np.std(self.result_rolling),
+                        min=np.min(self.result_rolling),
+                        max=np.max(self.result_rolling),
+                    )
+                ),
+                key="rolling_properties",
             )
 
     def is_evaluated(self, rolling: bool = False):
@@ -245,12 +283,28 @@ class Metric(Generic[MetricResult]):
         pass
 
     def __safe_set(
-        self, result: Union[Exception, MetricResult, List[MetricResult]], key: str
+        self,
+        result: Union[Exception, MetricResult, List[MetricResult], pd.Series],
+        key: str,
     ):
         if self.__dict__[key] is not None:
             raise ValueError("This metric already contains a result.")
         else:
             self.__dict__[key] = result
+
+    # def __add__(self, other):
+    #     result = getattr(self, "result", 0)
+    #     result_rolling = getattr(self, "result_rolling", 0)
+    #     result += other
+    #     result_rolling += other
+
+    # object.__sub__(self, other)
+    # object.__mul__(self, other)
+    # object.__matmul__(self, other)
+    # object.__truediv__(self, other)
+    # object.__floordiv__(self, other)
+    # object.__mod__(self, other)
+    # object.__divmod__(self, other)
 
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
@@ -259,7 +313,9 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
         return None
     elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
         return None
-    elif isiterable(obj.result_rolling):
+    elif isiterable(obj.result_rolling) and len(obj.result_rolling) > 0:
+        if isinstance(obj.result_rolling[0], (pd.DataFrame, pd.Series)):
+            return None
         return [
             InteractiveFigure(
                 f"{obj.key}_{plot_funcs_rolling.__name__}",
@@ -305,4 +361,4 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
         ]
 
 
-PostProcessFunction = Callable[[Metric], Metric]
+PostProcessFunction = Callable[[Metric, WeightsDS, bool], Metric]
