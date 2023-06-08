@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 from copy import deepcopy
 from pathlib import Path
@@ -58,6 +59,9 @@ from krisi.utils.iterable_helpers import (
     strip_builtin_functions,
     wrap_in_list,
 )
+from krisi.utils.state import RunType, get_global_state, set_global_state
+
+logger = logging.getLogger("krisi")
 
 
 class ScoreCard:
@@ -143,7 +147,13 @@ class ScoreCard:
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
+        surpress_warnings: bool = False,
     ) -> None:
+        if surpress_warnings:
+            state = get_global_state()
+            state.run_type = RunType.dev
+            set_global_state(state)
+
         dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
         check_valid_pred_target(y, predictions)
         default_metrics = (
@@ -173,6 +183,16 @@ class ScoreCard:
         )
 
         self.__dict__["sample_type"] = sample_type
+        if rolling_args is None:
+            window_size = len(y) // 20  # 5% of the data
+            rolling_args = dict(
+                window=window_size,
+                step=window_size,
+                min_periods=window_size,
+                closed="left",
+            )
+            logger.info(f"rolling_args not specified, using default: {rolling_args}")
+
         self.__dict__["rolling_args"] = (
             rolling_args if rolling_args is not None else dict(window=len(y) // 100)
         )

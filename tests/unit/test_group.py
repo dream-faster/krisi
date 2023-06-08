@@ -21,7 +21,11 @@ def test_group_preprocess():
     predictions = pd.Series(np.random.randint(0, 2, 1000))
 
     groupped_metric.evaluate_over_time(
-        y, predictions, None, None, rolling_args={"window": 10}
+        y,
+        predictions,
+        None,
+        None,
+        rolling_args={"window": 10, "min_periods": 10, "step": 10, "closed": "left"},
     )
 
 
@@ -37,5 +41,9 @@ def test_group_postprocess():
     predictions = pd.Series(np.random.randint(0, 2, 1000))
 
     groupped_metric.evaluate_over_time(
-        y, predictions, None, None, rolling_args={"window": 10}
+        y,
+        predictions,
+        None,
+        None,
+        rolling_args={"window": 10, "min_periods": 10, "step": 10, "closed": "left"},
     )
