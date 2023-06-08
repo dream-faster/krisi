@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from krisi.evaluate.group import Group
+from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
 from krisi.evaluate.library.default_metrics_regression import residuals_mean
 from krisi.evaluate.metric import Metric
 
@@ -11,7 +12,7 @@ from krisi.evaluate.metric import Metric
 def example_postporcess_func(
     metric: Metric, sample_weight: pd.Series, rolling: bool
 ) -> Metric:
-    if rolling:
+    if not rolling:
         if isinstance(metric.result, Exception) or metric.result is None:
             return metric
         if isinstance(metric.result, List):
@@ -27,7 +28,6 @@ def test_group_preprocess():
         key="residual_group",
         metrics=[residuals_mean],
         preprocess_func=lambda y, pred, **kwargs: y - pred,
-        postprocess_funcs=example_postporcess_func,
     )
 
     y = pd.Series(np.random.randint(0, 2, 1000))
@@ -46,7 +46,7 @@ def test_group_postprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[residuals_mean],
+        metrics=[f_one_score_macro],
         postprocess_funcs=example_postporcess_func,
     )
 

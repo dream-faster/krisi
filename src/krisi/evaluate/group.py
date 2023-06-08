@@ -57,24 +57,25 @@ class Group(Metric, Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: ProbabilitiesDF,
         sample_weights: WeightsDS,
-    ) -> Union[
-        Tuple[Any, None], Tuple[TargetsDS, PredictionsDS, Optional[ProbabilitiesDF]]
-    ]:
+    ) -> Tuple[Tuple, dict]:
+        unnamed_results, named_results = [], dict()
         if self.preprocess_func is not None:
             if self.accepts_probabilities and probabilities is not None:
-                results = self.preprocess_func(
+                unnamed_results = self.preprocess_func(
                     y, predictions, probabilities, sample_weights=sample_weights
                 )
             else:
-                results = self.preprocess_func(
+                unnamed_results = self.preprocess_func(
                     y, predictions, sample_weights=sample_weights
                 )
         else:
-            results = (y, predictions, probabilities)
+            named_results = dict(
+                y=y, predictions=predictions, probabilities=probabilities
+            )
 
-        if not isinstance(results, (list, tuple)):
-            results = (results,)
-        return results
+        if not isinstance(unnamed_results, (list, tuple)):
+            unnamed_results = (unnamed_results,)
+        return unnamed_results, named_results
 
     def _postprocess(
         self, all_metrics: List[Metric], sample_weight: WeightsDS, rolling: bool
@@ -106,9 +107,9 @@ class Group(Metric, Generic[MetricResult]):
     ) -> List[Metric]:
         if self.calculation == Calculation.rolling:
             return []
-        results = self._preprocess(y, predictions, probabilities, sample_weight)
+        args, kwargs = self._preprocess(y, predictions, probabilities, sample_weight)
         all_metrics = [
-            metric._evaluation(*results, sample_weight=sample_weight)
+            metric._evaluation(*args, **kwargs, sample_weight=sample_weight)
             for metric in self.metrics
         ]
         return self._postprocess(
@@ -125,10 +126,10 @@ class Group(Metric, Generic[MetricResult]):
     ) -> List[Metric]:
         if self.calculation == Calculation.single:
             return []
-        results = self._preprocess(y, predictions, probabilities, sample_weight)
+        args, kwargs = self._preprocess(y, predictions, probabilities, sample_weight)
         all_metrics = [
             metric._rolling_evaluation(
-                *results, sample_weight, rolling_args=rolling_args
+                *args, **kwargs, sample_weight=sample_weight, rolling_args=rolling_args
             )
             for metric in self.metrics
         ]

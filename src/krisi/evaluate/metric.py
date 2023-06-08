@@ -185,7 +185,7 @@ class Metric(Generic[MetricResult]):
             **parameters,
         )
 
-    def _rolling_evaluation(self, *args, rolling_args: dict) -> "Metric":
+    def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> "Metric":
         if self._from_group:
             return self
         if self.calculation == Calculation.single:
@@ -193,7 +193,10 @@ class Metric(Generic[MetricResult]):
         if self.func is None:
             raise ValueError("`func` has to be set on Metric to calculate result.")
         else:
-            _df = pd.concat(args, axis="columns")
+            _df = pd.concat(
+                kwargs if (args is None or len(args) == 0) else args, axis="columns"
+            )
+
             if "sample_weight" in _df:
                 self.__dict__["diagnostics"] = dict(used_sample_weight=True)
             try:
@@ -227,11 +230,18 @@ class Metric(Generic[MetricResult]):
     ) -> None:
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
-                y, predictions, probabilities, sample_weight, rolling_args=rolling_args
+                y=y,
+                predictions=predictions,
+                probabilities=probabilities,
+                sample_weight=sample_weight,
+                rolling_args=rolling_args,
             )
         else:
             self._rolling_evaluation(
-                y, predictions, sample_weight, rolling_args=rolling_args
+                y=y,
+                predictions=predictions,
+                sample_weight=sample_weight,
+                rolling_args=rolling_args,
             )
 
     def evaluate_rolling_properties(self):
