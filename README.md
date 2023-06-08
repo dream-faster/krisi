@@ -62,7 +62,7 @@ The project was entirely built in ``python``.
 
 Prerequisites
 
-* ``python >= 3.7`` and ``pip``
+* ``python >= 3.8`` and ``pip``
 
 
 Then run:
