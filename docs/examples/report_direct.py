@@ -8,7 +8,6 @@ import numpy as np
 
 from krisi import score
 from krisi.report.type import DisplayModes
-from krisi.utils.devutils.environment_checks import handle_test
 
 sc = score(
     y=np.random.random(1000),
@@ -21,5 +20,3 @@ sc = score(
 sc.generate_report(
     display_modes=[DisplayModes.direct],
 )
-
-handle_test()

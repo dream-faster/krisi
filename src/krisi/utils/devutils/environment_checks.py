@@ -2,8 +2,8 @@ import os
 import sys
 
 
-def handle_test():
-    if "PYTEST_CURRENT_TEST" in os.environ:
+def handle_test() -> None:
+    if is_testing():
         import matplotlib.pyplot as plt
 
         plt.close("all")

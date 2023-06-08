@@ -13,6 +13,7 @@ from krisi.report.pdf import (
 )
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.report.vizualise import create_subplots_from_mutiple_plots
+from krisi.utils.devutils.environment_checks import handle_test
 from krisi.utils.io import ensure_path
 from krisi.utils.iterable_helpers import (
     flatten,
@@ -92,6 +93,7 @@ class Report:
         if DisplayModes.direct_one_subplot in self.modes:
             create_subplots_from_mutiple_plots(self.figures, title=self.title).show()
 
+        handle_test()
         if DisplayModes.interactive in self.modes:
             run_app(
                 figures_by_category,

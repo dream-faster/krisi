@@ -14,7 +14,6 @@ from krisi.analyse import (
     plot_corr_over_time,
 )
 from krisi.report.graph import create_save_graphs
-from krisi.utils.devutils.environment_checks import handle_test
 
 df = pd.read_csv(
     "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets/energy/industrial_pv_load.csv",
@@ -38,6 +37,3 @@ for name, df_ in [
     )
     plot_corr_over_time(df, window, step, name=name, save_or_display=["display"])
     create_save_graphs([matrix_corr_over_time(df, window, step, threshold=0.25)[1]])
-
-
-handle_test()
