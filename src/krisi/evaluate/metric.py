@@ -71,6 +71,7 @@ class Metric(Generic[MetricResult]):
     category: Optional[MetricCategories] = None
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
+    result_rolling_properties: Optional[pd.Series] = None
     parameters: dict = field(default_factory=dict)
     func: Optional[MetricFunction] = None
     plot_funcs: Optional[Union[List[PlotDefinition], PlotDefinition]] = None
@@ -154,26 +155,30 @@ class Metric(Generic[MetricResult]):
 
     @staticmethod
     def __handle_window(
-        window,
-    ) -> Tuple[TargetsDS, PredictionsDS, Optional[ProbabilitiesDF], dict]:
-        y = window["y"]
-        pred = window["predictions"]
-        if len(window.columns) > 2:
-            sample_weight = (
-                window.pop("sample_weight") if "sample_weight" in window else None
+        window: pd.DataFrame,
+    ) -> Tuple[
+        Tuple[TargetsDS, Optional[PredictionsDS], Optional[ProbabilitiesDF]], dict
+    ]:
+        sample_weight = (
+            window.pop("sample_weight") if "sample_weight" in window else None
+        )
+        if "y" not in window:
+            return tuple([window[col] for col in window]), dict(
+                sample_weight=sample_weight
             )
-            prob = window.iloc[:, 2:]
 
-            return y, pred, prob, dict(sample_weight=sample_weight)
-        else:
-            return y, pred, None, dict(sample_weight=None)
+        y = window.pop("y")
+        pred = window.pop("predictions")
+        prob = window if len(window.columns) > 0 else None
+
+        return (y, pred, prob), dict(sample_weight=sample_weight)
 
     @staticmethod
     def __calc_window(window: pd.DataFrame, func: MetricFunction, parameters: dict):
-        y, pred, prob, sample_weight = Metric.__handle_window(window)
+        result, sample_weight = Metric.__handle_window(window)
 
         return func(
-            *filter_nan([y, pred, prob]),
+            *filter_nan(list(result)),
             **sample_weight,
             **parameters,
         )

@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 def handle_test():
@@ -9,7 +10,12 @@ def handle_test():
 
 
 def is_testing() -> bool:
+    in_testing = False
     if "PYTEST_CURRENT_TEST" in os.environ:
-        return True
-    else:
-        return False
+        in_testing = True
+
+    script_name = os.path.basename(sys.argv[0])
+    if script_name in ["pytest", "py.test"]:
+        in_testing = True
+
+    return in_testing

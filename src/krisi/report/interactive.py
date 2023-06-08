@@ -4,6 +4,7 @@ from krisi.evaluate.type import ScoreCardMetadata
 from krisi.report.type import InteractiveFigure, PlotlyInput
 from krisi.utils.environment import is_notebook
 from krisi.utils.iterable_helpers import del_dict_keys, flatten
+from krisi.utils.state import RunType, get_global_state
 
 if TYPE_CHECKING:
     from dash import dcc, html
@@ -187,7 +188,8 @@ def run_app(
                 + [Input(input_id, "value") for input_id in component.global_input_ids],
             )(component.get_figure)
 
-    if isnotebook:
-        app.run_server(mode="inline", debug=False, threaded=True)
-    else:
-        app.run(debug=False, threaded=True)
+    if get_global_state().run_type != RunType.test:
+        if isnotebook:
+            app.run_server(mode="inline", debug=False, threaded=True)
+        else:
+            app.run(debug=False, threaded=True)
