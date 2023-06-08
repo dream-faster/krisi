@@ -6,9 +6,9 @@ Figures individually saved
 
 import numpy as np
 
-from dev_utils.utils import handle_test
 from krisi import score
 from krisi.report.type import DisplayModes
+from krisi.utils.devutils.environment_checks import handle_test
 
 sc = score(
     y=np.random.normal(0, 0.1, 1000),

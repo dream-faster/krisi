@@ -74,7 +74,7 @@ def bennet_s(
     float
         float
     """
-    tn, fp, fn, tp = confusion_matrix(y, preds, sample_weight=sample_weight)
+    tn, fp, fn, tp = confusion_matrix(y, preds, sample_weight=sample_weight).ravel()
 
     p_0 = (tn + tp) / (tn + fp + fn + tp)
 

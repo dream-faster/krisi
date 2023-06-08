@@ -41,16 +41,16 @@ def test_evaluate_classification():
     from docs.examples import evaluate_classification  # noqa
 
 
+def test_evaluate_probabilities():
+    from docs.examples import evaluate_probabilities  # noqa
+
+
 def test_report_direct_save():
     from docs.examples import report_direct_save  # noqa
 
 
 def test_scorecard_basic():
     from docs.examples import scorecard_basic  # noqa
-
-
-def test_utils():
-    from dev_utils import utils  # noqa
 
 
 def test_report_direct():
@@ -79,6 +79,18 @@ def test_evaluate_compare_classification():
 
 def test_evaluate_compare_regression():
     from docs.examples import evaluate_compare_regression  # noqa
+
+
+def test_evaluate_probabilities_binary():
+    from docs.examples import evaluate_probabilities_binary  # noqa
+
+
+def test_evaluate_classification_multilabel():
+    from docs.examples import evaluate_classification_multilabel  # noqa
+
+
+def test_evaluate_classification_with_probabilities():
+    from docs.examples import evaluate_classification_with_probabilities  # noqa
 
 
 def test_a_start_report_console():

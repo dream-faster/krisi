@@ -24,6 +24,7 @@ from krisi.utils.iterable_helpers import (
     string_to_id,
     wrap_in_list,
 )
+from krisi.utils.state import RunType, get_global_state
 
 
 @dataclass
@@ -119,6 +120,8 @@ class Metric(Generic[MetricResult]):
             result = self.func(*args, **kwargs, **self.parameters)
         except Exception as e:
             result = e
+            if get_global_state().run_type == RunType.test:
+                raise e
         self.__safe_set(result, key="result")
         return self
 
@@ -200,6 +203,8 @@ class Metric(Generic[MetricResult]):
 
             except Exception as e:
                 result_rolling = e
+                if get_global_state().run_type == RunType.test:
+                    raise e
             self.__safe_set(result_rolling, key="result_rolling")
 
         return self

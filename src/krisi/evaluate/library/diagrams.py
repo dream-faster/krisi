@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, List, Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.calibration import calibration_curve
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
@@ -105,25 +106,27 @@ def display_density_plot(data: MetricResult, **kwargs) -> "go.Figure":
 
 
 def calculate_calibration_bins(
-    data: MetricResult, bin_size: float = 0.1, **kwargs
+    data: MetricResult, n_bins: float = 10, **kwargs
 ) -> Tuple[np.ndarray, np.ndarray]:
     y_true = data["y"]
     y_prob = data["probs"]
 
-    # sort probabilities and corresponding true labels in ascending order
-    order = np.argsort(y_prob)
-    y_true = y_true[order]
-    y_prob = y_prob[order]
+    prob_true, prob_pred = calibration_curve(y_true, y_prob, n_bins=n_bins)
+    return prob_true, prob_pred
+    # # sort probabilities and corresponding true labels in ascending order
+    # order = np.argsort(y_prob)
+    # y_true = y_true[order]
+    # y_prob = y_prob[order]
 
-    # calculate fraction of positives at each probability bin
-    bins = np.arange(0, 1.1, bin_size)
-    bin_indices = np.digitize(y_prob, bins)
-    bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
+    # # calculate fraction of positives at each probability bin
+    # bins = np.arange(0, 1.1, bin_size)
+    # bin_indices = np.digitize(y_prob, bins)
+    # bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
 
-    num_positives = np.cumsum(bin_counts[:-1])
-    fraction_positives = num_positives / (num_positives + np.sum(y_true))
+    # num_positives = np.cumsum(bin_counts[:-1])
+    # fraction_positives = num_positives / (num_positives + np.sum(y_true))
 
-    return fraction_positives, bins
+    # return fraction_positives, bins
 
 
 def callibration_plot(

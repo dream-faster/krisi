@@ -8,13 +8,13 @@ Analysing rolling correlations
 import numpy as np
 import pandas as pd
 
-from dev_utils.utils import handle_test
 from krisi.analyse import (
     get_rolled_corr_metrics,
     matrix_corr_over_time,
     plot_corr_over_time,
 )
 from krisi.report.graph import create_save_graphs
+from krisi.utils.devutils.environment_checks import handle_test
 
 df = pd.read_csv(
     "https://raw.githubusercontent.com/dream-faster/datasets/main/datasets/energy/industrial_pv_load.csv",
