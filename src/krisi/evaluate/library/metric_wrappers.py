@@ -50,10 +50,14 @@ def wrap_brier_score(
 def wrap_roc_auc(
     y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
 ) -> float:
+    probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
+    prob_columns = list(probs.columns)
+    if len(prob_columns) == 2:
+        probs = probs.iloc[:, 1]
     return roc_auc_score(
         y_true=y,
-        y_score=probs.iloc[:, 1],
-        labels=list(probs.columns),
+        y_score=probs,
+        labels=prob_columns,
         **kwargs,
     )
 
