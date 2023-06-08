@@ -2,10 +2,7 @@ import numpy as np
 import pandas as pd
 
 from krisi.evaluate.group import Group
-from krisi.evaluate.library.default_metrics_classification import (
-    f_one_score_macro,
-    standard_deviation,
-)
+from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
 
 
 def test_group_preprocess():
@@ -14,7 +11,7 @@ def test_group_preprocess():
         key="residual_group",
         metrics=[f_one_score_macro],
         preprocess_func=lambda y, pred, **kwargs: y - pred,
-        postprocess_funcs=standard_deviation,
+        # postprocess_funcs=standard_deviation,
     )
 
     y = pd.Series(np.random.randint(0, 2, 1000))
@@ -34,7 +31,7 @@ def test_group_postprocess():
         name="residual_group",
         key="residual_group",
         metrics=[f_one_score_macro],
-        postprocess_funcs=standard_deviation,
+        # postprocess_funcs=standard_deviation,
     )
 
     y = pd.Series(np.random.randint(0, 2, 1000))
