@@ -115,7 +115,7 @@ def create_metric_table(
         "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
     )
     table.add_column("Result", style="magenta", width=1)
-    table.add_column("Rolling", width=6)
+    table.add_column("Rolling", width=8)
     table.add_column("Rolling Props", width=1)
     if with_parameters:
         table.add_column("Parameters", style="green", width=1)
