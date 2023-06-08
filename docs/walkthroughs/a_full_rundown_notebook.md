@@ -25,8 +25,8 @@ pio.renderers.default = "png"
 
 
 ```python
-y=np.random.normal(0, 0.1, 1000) # Targets
-predictions=np.random.normal(0, 0.1, 1000) # Artifical predictions
+y=np.random.random(1000) # Targets
+predictions=np.random.random(1000) # Artifical predictions
 ```
 
 ### Use the `score` helper function to evaluate your results
@@ -393,7 +393,7 @@ Once we have saved the object we can load it in. `load_scorecards` loads in all 
 ```python
 from krisi import compare
 
-compare([score(np.random.normal(0, 0.1, 1000), np.random.normal(0, 0.1, 1000)) for _ in range(5)], sort_by='rmse', metric_keys=['mae', 'mse'])
+compare([score(np.random.random(1000), np.random.random(1000)) for _ in range(5)], sort_by='rmse', metric_keys=['mae', 'mse'])
 ```
 
 
@@ -473,8 +473,8 @@ You can also save scorecards and load them in. `krisi` will save and load from t
 project_name = "Comparing Multiple Scorecards"
 
 for i in range(5):
-    score(np.random.normal(0, 0.1, 1000), 
-          np.random.normal(0, 0.1, 1000), 
+    score(np.random.random(1000), 
+          np.random.random(1000), 
           project_name=project_name).save()
 
 compare(load_scorecards(project_name), sort_by='rmse', metric_keys=['mae', 'mse'])
@@ -585,7 +585,7 @@ For saved files look in `output/<project_name>` for saved plots look in `output/
 
 
 ```python
-scorecard_rolling = score(np.random.normal(0, 0.1, 1000), np.random.normal(0, 0.1, 1000), calculation='both')
+scorecard_rolling = score(np.random.random(1000), np.random.random(1000), calculation='both')
 ```
 
     /Users/daniel/mambaforge/envs/krisitest/lib/python3.10/site-packages/sklearn/metrics/_regression.py:918: UndefinedMetricWarning:
