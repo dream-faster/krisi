@@ -166,7 +166,7 @@ class Metric(Generic[MetricResult]):
 
             return y, pred, prob, dict(sample_weight=sample_weight)
         else:
-            return y, pred, None, dict()
+            return y, pred, None, dict(sample_weight=None)
 
     @staticmethod
     def __calc_window(window: pd.DataFrame, func: MetricFunction, parameters: dict):
@@ -199,6 +199,7 @@ class Metric(Generic[MetricResult]):
                 result_rolling = [
                     Metric.__calc_window(single_window, self.func, self.parameters)
                     for single_window in df_rolled
+                    if len(single_window) > 0
                 ]
 
             except Exception as e:
