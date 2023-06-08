@@ -448,6 +448,8 @@ class ScoreCard:
                         self.sample_weight,
                         **rolling_args,
                     )
+            if func_key_evaluate == "evaluate_over_time":
+                metric.evaluate_rolling_properties()
 
     def evaluate(self, defaults: bool = True) -> None:
         """

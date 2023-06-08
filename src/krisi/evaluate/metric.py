@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.type import (
@@ -19,6 +20,7 @@ from krisi.evaluate.type import (
 from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
 from krisi.utils.iterable_helpers import (
+    check_iterable_with_number,
     filter_nan,
     isiterable,
     string_to_id,
@@ -71,7 +73,7 @@ class Metric(Generic[MetricResult]):
     category: Optional[MetricCategories] = None
     result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
-    result_rolling_properties: Optional[pd.Series] = None
+    rolling_properties: Optional[pd.Series] = None
     parameters: dict = field(default_factory=dict)
     func: Optional[MetricFunction] = None
     plot_funcs: Optional[Union[List[PlotDefinition], PlotDefinition]] = None
@@ -232,6 +234,20 @@ class Metric(Generic[MetricResult]):
                 y, predictions, sample_weight, rolling_args=rolling_args
             )
 
+    def evaluate_rolling_properties(self):
+        if check_iterable_with_number(self.result_rolling):
+            self.__safe_set(
+                pd.Series(
+                    data=dict(
+                        mean=np.mean(self.result_rolling),
+                        std=np.std(self.result_rolling),
+                        min=np.min(self.result_rolling),
+                        max=np.max(self.result_rolling),
+                    )
+                ),
+                key="rolling_properties",
+            )
+
     def is_evaluated(self, rolling: bool = False):
         if rolling:
             return self.result_rolling is not None
@@ -256,7 +272,9 @@ class Metric(Generic[MetricResult]):
         pass
 
     def __safe_set(
-        self, result: Union[Exception, MetricResult, List[MetricResult]], key: str
+        self,
+        result: Union[Exception, MetricResult, List[MetricResult], pd.Series],
+        key: str,
     ):
         if self.__dict__[key] is not None:
             raise ValueError("This metric already contains a result.")
