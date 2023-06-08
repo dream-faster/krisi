@@ -31,35 +31,46 @@ def get_term_size() -> int:
     return term_size.columns
 
 
-def __display_result(metric: "Metric") -> Union[Pretty, plotextMixin]:
-    if metric.result is None:
-        result = deepcopy(metric.result_rolling)
-    else:
-        result = deepcopy(metric.result)
-
+def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
+    result = deepcopy(result)
+    if result is None:
+        return ""
     if isinstance(result, Exception):
         result = str(result)
     elif isinstance(result, float):
         result = round(result, 3)
 
+    if isinstance(result, dict):
+        if len(result.keys()) > 0:
+            return Pretty(pd.Series(result))
+        else:
+            return ""
+
     if isiterable(result):
         if isinstance(result, pd.DataFrame):
             if "probs" in result:
-                return plotextMixin(result, callibration_plot, title=metric.name)
+                return plotextMixin(result, callibration_plot, title=title)
             else:
                 return Pretty(result)
         if isinstance(result, pd.Series):
             if len(result) > 10:
-                return plotextMixin(result.tolist(), line_plot, title=metric.name)
+                return plotextMixin(result.tolist(), line_plot, title=title)
             else:
                 return Pretty(result)
         elif isiterable(result[0]):
             return Pretty("Result is a complex Iterable")
         else:
             # Create a Console Plot
-            return plotextMixin(result, line_plot, title=metric.name)
+            return plotextMixin(result, line_plot, title=title)
     else:
         return Pretty(result, max_depth=2, max_length=3)
+
+
+def __display_result(metric: "Metric") -> List[Union[str, Pretty, plotextMixin]]:
+    return [
+        __convert_result(res, title=metric.name)
+        for res in [metric.result, metric.result_rolling, metric.rolling_properties]
+    ]
 
 
 def __create_metric(
@@ -68,9 +79,9 @@ def __create_metric(
     metric_summarized = (
         [
             f"{metric.name} ({metric.key})",
-            __display_result(metric),
+            *__display_result(metric),
         ]
-        + ([Pretty(metric.parameters)] if with_parameters else [])
+        + ([__convert_result(metric.parameters, title="")] if with_parameters else [])
         + ([Pretty(metric.diagnostics)] if with_diagnostics else [])
         + ([Pretty(metric.info)] if with_info else [])
     )
@@ -99,13 +110,16 @@ def create_metric_table(
     table.add_column(
         "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
     )
-    table.add_column("Result", style="magenta", width=5)
+    table.add_column("Result", style="magenta", width=1)
+    table.add_column("Rolling", width=6)
+    table.add_column("Rolling Props", width=1)
     if with_parameters:
         table.add_column("Parameters", style="green", width=1)
     if with_info:
         table.add_column("Info", width=3)
     if with_diagnostics:
         table.add_column("Diagnostics", width=3)
+
     for metric in metrics:
         if metric.result is None and metric.result_rolling is None:
             continue
