@@ -90,7 +90,9 @@ class Group(Metric, Generic[MetricResult]):
                             )
                         )
                     else:
-                        all_metrics_.append(postprocess_func(metric, sample_weight))
+                        all_metrics_.append(
+                            postprocess_func(metric, sample_weight, rolling)
+                        )
 
             all_metrics = all_metrics_
         return all_metrics

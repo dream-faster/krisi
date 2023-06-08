@@ -281,6 +281,20 @@ class Metric(Generic[MetricResult]):
         else:
             self.__dict__[key] = result
 
+    # def __add__(self, other):
+    #     result = getattr(self, "result", 0)
+    #     result_rolling = getattr(self, "result_rolling", 0)
+    #     result += other
+    #     result_rolling += other
+
+    # object.__sub__(self, other)
+    # object.__mul__(self, other)
+    # object.__matmul__(self, other)
+    # object.__truediv__(self, other)
+    # object.__floordiv__(self, other)
+    # object.__mod__(self, other)
+    # object.__divmod__(self, other)
+
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_funcs_rolling is None:
@@ -336,4 +350,4 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
         ]
 
 
-PostProcessFunction = Callable[[Metric], Metric]
+PostProcessFunction = Callable[[Metric, WeightsDS, bool], Metric]

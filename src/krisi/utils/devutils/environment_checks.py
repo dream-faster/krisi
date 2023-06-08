@@ -14,8 +14,9 @@ def is_testing() -> bool:
     if "PYTEST_CURRENT_TEST" in os.environ:
         in_testing = True
 
-    script_name = os.path.basename(sys.argv[0])
-    if script_name in ["pytest", "py.test"]:
-        in_testing = True
+    for argv_ in sys.argv:
+        script_name = os.path.basename(argv_)
+        if script_name in ["pytest", "py.test"]:
+            in_testing = True
 
     return in_testing
