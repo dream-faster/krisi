@@ -194,7 +194,8 @@ class Metric(Generic[MetricResult]):
             raise ValueError("`func` has to be set on Metric to calculate result.")
         else:
             _df = pd.concat(
-                kwargs if (args is None or len(args) == 0) else args, axis="columns"
+                kwargs.values() if (args is None or len(args) == 0) else args,
+                axis="columns",
             )
 
             if "sample_weight" in _df:

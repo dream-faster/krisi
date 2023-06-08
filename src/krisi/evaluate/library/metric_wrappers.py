@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -48,12 +48,22 @@ def wrap_brier_score(
 
 
 def wrap_roc_auc(
-    y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
+    y: TargetsDS,
+    preds: PredictionsDS,
+    probs: ProbabilitiesDF,
+    sample_weigth: Optional[None] = None,
+    **kwargs,
 ) -> float:
     probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
     prob_columns = list(probs.columns)
     if len(prob_columns) == 2:
         probs = probs.iloc[:, 1]
+
+    # from sklearn.datasets import load_iris
+
+    # X, y_ = load_iris(return_X_y=True)
+    # clf = LogisticRegression(solver="liblinear").fit(X, y_)
+    # rcs = roc_auc_score(y, clf.predict_proba(X), multi_class="ovr")
     return roc_auc_score(
         y_true=y,
         y_score=probs,
