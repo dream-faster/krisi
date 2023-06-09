@@ -132,7 +132,7 @@ residuals_mean = Metric[float](
     name="Mean of the Residuals",
     key="residuals_mean",
     category=MetricCategories.residual,
-    func=lambda res, **kwargs: res.mean(),
+    func=lambda res, *args, **kwargs: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     purpose=Purpose.diagram,
@@ -167,7 +167,7 @@ residual_group = Group[pd.Series](
     name="residual_group",
     key="residual_group",
     metrics=[residuals_mean, residuals_std],
-    preprocess_func=lambda y, pred, **kwargs: y - pred,
+    preprocess_func=lambda y, pred, prob, **kwargs: y - pred,
     purpose=Purpose.group,
 )
 """ ~ """

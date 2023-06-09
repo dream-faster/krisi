@@ -24,7 +24,6 @@ from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
 from krisi.utils.iterable_helpers import (
     check_iterable_with_number,
-    filter_none,
     isiterable,
     string_to_id,
     wrap_in_list,
@@ -164,32 +163,48 @@ class Metric(Generic[MetricResult]):
     @staticmethod
     def __handle_window(
         window: pd.DataFrame,
-    ) -> Tuple[
-        Tuple[TargetsDS, Optional[PredictionsDS], Optional[ProbabilitiesDF]], dict
-    ]:
+    ) -> Tuple[Union[dict, Tuple], WeightsDS]:
         sample_weight = (
             window.pop("sample_weight") if "sample_weight" in window else None
         )
         if "y" not in window:
-            return tuple([window[col] for col in window]), dict(
-                sample_weight=sample_weight
-            )
+            return tuple([window[col] for col in window]), sample_weight
 
         y = window.pop("y")
         pred = window.pop("predictions")
         prob = window if len(window.columns) > 0 else None
 
-        return (y, pred, prob), dict(sample_weight=sample_weight)
+        return dict(y=y, pred=pred, prob=prob), sample_weight
 
     @staticmethod
-    def __calc_window(window: pd.DataFrame, func: MetricFunction, parameters: dict):
+    def __calc_window(
+        window: pd.DataFrame,
+        func: MetricFunction,
+        parameters: dict,
+        accepts_probabilities: bool,
+    ):
         result, sample_weight = Metric.__handle_window(window)
 
-        return func(
-            *filter_none(list(result)),
-            **sample_weight,
-            **parameters,
-        )
+        if isinstance(result, dict):
+            y = result["y"]
+            pred = result["pred"]
+            prob = result["prob"]
+
+            if accepts_probabilities:
+                if prob is not None:
+                    return func(y, prob, sample_weight=sample_weight, **parameters)
+                else:
+                    return ValueError(
+                        "Metric requires probabilities, but None were provided."
+                    )
+            else:
+                return func(y, pred, sample_weight=sample_weight, **parameters)
+        else:
+            return func(
+                *(list(result)),
+                sample_weight=sample_weight,
+                **parameters,
+            )
 
     def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> Metric:
         if self._from_group:
@@ -214,7 +229,12 @@ class Metric(Generic[MetricResult]):
                 )
 
                 result_rolling = [
-                    Metric.__calc_window(single_window, self.func, self.parameters)
+                    Metric.__calc_window(
+                        single_window,
+                        self.func,
+                        self.parameters,
+                        self.accepts_probabilities,
+                    )
                     for single_window in df_rolled
                     if len(single_window) > 0
                 ]

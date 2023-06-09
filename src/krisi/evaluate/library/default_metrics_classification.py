@@ -111,7 +111,7 @@ calibration = Metric[float](
     key="calibration",
     category=MetricCategories.class_err,
     info="Used to plot the calibration of a model with it probabilities.",
-    func=lambda y, pred, prob, **kwargs: pd.concat(
+    func=lambda y, prob, **kwargs: pd.concat(
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
     plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.1))],
@@ -127,7 +127,7 @@ brier_score_multi = Metric[float](
     key="brier_score_multi",
     category=MetricCategories.class_err,
     info="Multilabel calculation of the Brier score loss. The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
-    func=lambda y, pred, prob, **kwargs: brier_multi(y, prob, **kwargs),
+    func=lambda y, prob, **kwargs: brier_multi(y, prob, **kwargs),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
@@ -155,7 +155,7 @@ cross_entropy = Metric[float](
     key="cross_entropy",
     category=MetricCategories.class_err,
     info="Log loss, aka logistic loss or cross-entropy loss. This is the loss function used in (multinomial) logistic regression and extensions of it such as neural networks, defined as the negative log-likelihood of a logistic model that returns y_pred probabilities for its training data y_true.",
-    func=lambda y, pred, prob, **kwargs: log_loss(
+    func=lambda y, prob, **kwargs: log_loss(
         y, prob, labels=list(prob.columns), **kwargs
     ),
     plot_funcs=[
