@@ -31,14 +31,21 @@ def get_term_size() -> int:
     return term_size.columns
 
 
-def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
+def __convert_result(
+    result, title: str, return_string: bool = False
+) -> Union[str, Pretty, plotextMixin]:
     result = deepcopy(result)
     if result is None:
         return ""
-    if isinstance(result, Exception):
-        result = str(result)
-    elif isinstance(result, float):
+    if isinstance(result, float):
         result = round(result, 3)
+
+        if return_string:
+            return str(result)
+    if isinstance(result, str) and return_string:
+        return result
+    elif isinstance(result, Exception):
+        result = str(result)
 
     if isinstance(result, dict):
         if len(result) > 0:
@@ -55,7 +62,7 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
 
         return "\n".join(
             [
-                f"{round(res, 3)}"
+                f"{__convert_result(res, title, return_string=True)}"
                 if not isinstance(res, pd.Series)
                 else string_from_ds(res)
                 for res in result
