@@ -55,16 +55,19 @@ def __convert_result(
             return ""
     if isinstance(result, Tuple):
 
-        def string_from_ds(ds: pd.Series) -> str:
+        def string_from_ds(ds: pd.Series, title: str) -> str:
             return "\n".join(
-                [f"({key}\n {round(value, 3)})" for key, value in ds.items()]
+                [
+                    f"({key}\n {__convert_result(value, title, True)})"
+                    for key, value in ds.items()
+                ]
             )
 
         return "\n".join(
             [
                 f"{__convert_result(res, title, return_string=True)}"
                 if not isinstance(res, pd.Series)
-                else string_from_ds(res)
+                else string_from_ds(res, title)
                 for res in result
                 if res is not None
             ]

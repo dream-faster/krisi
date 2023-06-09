@@ -38,26 +38,35 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
     ) -> List[Metric]:
         if rolling:
             return []
-        predictions, probabilities = model.predict(y, sample_weight)
+        benchmark_predictions, benchmark_probabilities = model.predict(y, sample_weight)
 
         for metric in all_metrics:
             if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
                 continue
-            copy_of_metric = deepcopy(metric)
-            copy_of_metric.result = None
-            copy_of_metric.result_rolling = None
-            # copy_of_metric.key += f"_{metric.purpose.value}_{model.name}"
-            # copy_of_metric.name += f" {metric.purpose.value} with {model.name}"
-            if copy_of_metric.accepts_probabilities:
-                copy_of_metric.evaluate(y, probabilities)
+            benchmark_metric = deepcopy(metric)
+            benchmark_metric.result = None
+            benchmark_metric.result_rolling = None
+
+            if benchmark_metric.accepts_probabilities:
+                benchmark_metric.evaluate(y, benchmark_probabilities)
             else:
-                copy_of_metric.evaluate(y, predictions)
+                benchmark_metric.evaluate(y, benchmark_predictions)
 
-            if metric.purpose == Purpose.objective:
-                comparison_result = copy_of_metric.result - metric.result
-            elif metric.purpose == Purpose.loss:
-                comparison_result = metric.result - copy_of_metric.result
-
+            benchmark_result = (
+                benchmark_metric.result
+                if isinstance(benchmark_metric.result, (float, int))
+                else None
+            )
+            model_result = (
+                metric.result if isinstance(metric.result, (float, int)) else None
+            )
+            if benchmark_result is not None and model_result is not None:
+                if metric.purpose == Purpose.objective:
+                    comparison_result = benchmark_result - model_result
+                elif metric.purpose == Purpose.loss:
+                    comparison_result = model_result - benchmark_result
+            else:
+                comparison_result = "Either benchmark or model result is None."
             metric.comparison_result = pd.concat(
                 [pd.Series([comparison_result], index=["Δ NS"])], axis=0
             )
