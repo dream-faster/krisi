@@ -1,13 +1,5 @@
 import os
 import sys
-from importlib.util import find_spec
-
-
-def handle_test() -> None:
-    if is_testing() and find_spec("matplotlib") is not None:
-        import matplotlib.pyplot as plt
-
-        plt.close("all")
 
 
 def is_testing() -> bool:
