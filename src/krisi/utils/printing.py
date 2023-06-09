@@ -112,7 +112,7 @@ def create_metric_table(
     )
 
     table.add_column(
-        "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
+        "Metric Name", justify="right", style="cyan", width=3, no_wrap=False
     )
     table.add_column("Result", style="magenta", width=1)
     table.add_column("Rolling", width=8)

@@ -63,14 +63,14 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
         rolling: bool,
     ) -> List[Metric]:
         if rolling:
-            return all_metrics
+            return []
         df = model.predict(y)
         predictions = df.iloc[:, 0]
         probabilities = df.iloc[:, 1:]
 
         new_metrics = []
         for metric in all_metrics:
-            if metric.purpose == Purpose.objective or Purpose.diagram:
+            if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
                 continue
             copy_of_metric = deepcopy(metric)
             copy_of_metric.result = None
@@ -87,6 +87,6 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
             elif metric.purpose == Purpose.loss:
                 copy_of_metric.result = metric.result - copy_of_metric.result
             new_metrics.append(copy_of_metric)
-        return all_metrics + new_metrics
+        return new_metrics
 
     return postporcess_func

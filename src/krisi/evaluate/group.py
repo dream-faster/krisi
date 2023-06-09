@@ -98,7 +98,7 @@ class Group(Metric, Generic[MetricResult]):
             all_metrics = all_metrics_
         return all_metrics
 
-    def handle_args_to_pass_in(
+    def __handle_args_to_pass_in(
         self,
         result: Any,
         y: TargetsDS,
@@ -132,7 +132,7 @@ class Group(Metric, Generic[MetricResult]):
 
         all_metrics = [
             metric._evaluation(
-                *self.handle_args_to_pass_in(
+                *self.__handle_args_to_pass_in(
                     results,
                     y,
                     predictions,
@@ -166,7 +166,7 @@ class Group(Metric, Generic[MetricResult]):
         results = self._preprocess(y, predictions, probabilities, sample_weight)
         all_metrics = [
             metric._rolling_evaluation(
-                *self.handle_args_to_pass_in(
+                *self.__handle_args_to_pass_in(
                     results,
                     y,
                     predictions,
