@@ -66,7 +66,7 @@ class Group(Metric, Generic[MetricResult]):
             else None
         )
 
-        if not isinstance(results, (list, tuple)):
+        if not isinstance(results, (list, tuple)) and results is not None:
             results = (results,)
         return results
 
@@ -114,7 +114,7 @@ class Group(Metric, Generic[MetricResult]):
             else:
                 return [y, predictions]
         else:
-            return [result]
+            return result
 
     def evaluate(
         self,

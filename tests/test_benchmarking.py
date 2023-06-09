@@ -1,9 +1,11 @@
+from copy import deepcopy
 from typing import List, Optional
 
 import pandas as pd
 
 from krisi.evaluate import score
 from krisi.evaluate.group import Group
+from krisi.evaluate.library.benchmarking import RandomClassifier
 from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import PredictionsDS, ProbabilitiesDF, TargetsDS, WeightsDS
@@ -23,20 +25,31 @@ def example_postporcess_func(
     rolling: bool,
 ) -> List[Metric]:
     metric = all_metrics[0]
-    if not rolling:
-        if isinstance(metric.result, Exception) or metric.result is None:
-            return metric
-        if isinstance(metric.result, List):
-            metric.result = pd.Series(metric.result) + 1
+
+    model = RandomClassifier([0, 1], [0.0, 1.0])
+    df = model.predict(y)
+    predictions = df.iloc[:, 0]
+    probabilities = df.iloc[:, 1:]
+
+    new_metrics = []
+    for metric in all_metrics:
+        copy_of_metric = deepcopy(metric)
+        copy_of_metric.result = None
+        copy_of_metric.result_rolling = None
+        copy_of_metric.key += f"_difference_{model.__class__.__name__}"
+        if copy_of_metric.accepts_probabilities:
+            copy_of_metric.evaluate(y, probabilities)
         else:
-            metric.result = metric.result + 1
-    return all_metrics
+            copy_of_metric.evaluate(y, predictions)
+        copy_of_metric.result = copy_of_metric.result - metric.result
+        new_metrics.append(copy_of_metric)
+    return all_metrics + new_metrics
 
 
 def test_benchmarking_random():
     groupped_metric = Group[pd.Series](
-        name="residual_group",
-        key="residual_group",
+        name="benchmarking",
+        key="benchmarking",
         metrics=[f_one_score_macro],
         postprocess_funcs=example_postporcess_func,
     )
