@@ -241,12 +241,14 @@ binary_classification_metrics = [
     cross_entropy,
     s_score,
 ]
-binary_classification_metrics_benchmarking = Group[pd.Series](
+benchmarking = Group[pd.Series](
     name="benchmarking",
     key="benchmarking",
     metrics=binary_classification_metrics,
     postprocess_funcs=[model_benchmarking(RandomClassifier())],
 )
+
+binary_classification_metrics_benchmarking = [benchmarking]
 
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
