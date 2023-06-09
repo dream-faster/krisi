@@ -62,6 +62,8 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
         sample_weight: Optional[WeightsDS],
         rolling: bool,
     ) -> List[Metric]:
+        if rolling:
+            return all_metrics
         df = model.predict(y)
         predictions = df.iloc[:, 0]
         probabilities = df.iloc[:, 1:]
