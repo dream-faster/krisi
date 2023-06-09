@@ -8,7 +8,7 @@ Quick Classification to Console
 import numpy as np
 
 from krisi import score
-from krisi.utils.devutils.data import create_probabilities
+from krisi.utils.data import create_probabilities
 
 num_labels = 3
 num_samples = 1000

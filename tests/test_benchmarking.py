@@ -4,7 +4,7 @@ from krisi.evaluate import score
 from krisi.evaluate.group import Group
 from krisi.evaluate.library.benchmarking import RandomClassifier, model_benchmarking
 from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
-from krisi.utils.devutils.data import (
+from krisi.utils.data import (
     generate_synthetic_data,
     generate_synthetic_predictions_binary,
 )

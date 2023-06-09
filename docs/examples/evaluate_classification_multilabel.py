@@ -6,7 +6,7 @@ Classification with multiple labels and probabilities
 
 
 from krisi import library, score
-from krisi.utils.devutils.data import generate_random_classification
+from krisi.utils.data import generate_random_classification
 
 y, preds, probs, sample_weight = generate_random_classification(
     num_labels=5, num_samples=1000

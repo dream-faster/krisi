@@ -171,9 +171,14 @@ def generate_synthetic_data(
 def generate_synthetic_predictions_binary(
     target: pd.Series,
     sample_weights: pd.Series,
+    index: Optional[pd.Index] = None,
 ) -> pd.DataFrame:
-    prob_mean_class_1 = (target * sample_weights).mean()
-    prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(target)).clip(0, 1)
+    if index is None:
+        index = target.index
+    target = target.copy()
+    target[target == 0.0] = -1
+    prob_mean_class_1 = (target * sample_weights).mean() * 2 + 0.5
+    prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(index)).clip(0, 1)
     prob_class_0 = 1 - prob_class_1
     return pd.DataFrame(
         {
@@ -183,5 +188,5 @@ def generate_synthetic_predictions_binary(
                 "int"
             ),
         },
-        index=target.index,
+        index=index,
     )
