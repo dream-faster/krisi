@@ -8,6 +8,8 @@ from sklearn.metrics import (
     recall_score,
 )
 
+from krisi.evaluate.group import Group
+from krisi.evaluate.library.benchmarking import RandomClassifier, model_benchmarking
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_density_plot,
@@ -220,7 +222,12 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
 #     accepts_probabilities=False,
 #     supports_multiclass=True,
 # )
-
+benchmarking = Group[pd.Series](
+    name="benchmarking",
+    key="benchmarking",
+    metrics=[f_one_score_macro],
+    postprocess_funcs=[model_benchmarking(RandomClassifier())],
+)
 
 binary_classification_metrics = [
     accuracy_binary,
@@ -238,6 +245,7 @@ binary_classification_metrics = [
     roc_auc_binary_weighted,
     cross_entropy,
     s_score,
+    benchmarking,
 ]
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]

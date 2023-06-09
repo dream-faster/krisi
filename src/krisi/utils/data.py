@@ -170,11 +170,13 @@ def generate_synthetic_data(
 
 def generate_synthetic_predictions_binary(
     target: pd.Series,
-    sample_weights: pd.Series,
+    sample_weights: Optional[pd.Series] = None,
     index: Optional[pd.Index] = None,
 ) -> pd.DataFrame:
     if index is None:
         index = target.index
+    if sample_weights is None:
+        sample_weights = pd.Series(np.ones(len(index)), index=index)
     target = target.copy()
     target[target == 0.0] = -1
     prob_mean_class_1 = (target * sample_weights).mean() * 2 + 0.5
