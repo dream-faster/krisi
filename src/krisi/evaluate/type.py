@@ -9,6 +9,8 @@ from typing import Any, Callable, List, Tuple, TypeVar, Union
 import numpy as np
 import pandas as pd
 
+from krisi.utils.enums import ParsableEnum
+
 MetricResult = TypeVar(
     "MetricResult", bound=Union[float, int, str, List, Tuple, pd.DataFrame, pd.Series]
 )
@@ -151,3 +153,10 @@ class DatasetType(Enum):
             DatasetType.classification_binary,
             DatasetType.classification_multiclass,
         ]
+
+
+class Purpose(ParsableEnum):
+    objective = "objective"
+    loss = "loss"
+    diagram = "diagram"
+    group = "group"

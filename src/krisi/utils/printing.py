@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ from krisi.report.library.console.diagrams import (
     line_plot,
 )
 from krisi.utils.console_plot import plotextMixin
-from krisi.utils.iterable_helpers import calculate_nans, isiterable
+from krisi.utils.iterable_helpers import calculate_nans, filter_none, isiterable
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -31,14 +31,21 @@ def get_term_size() -> int:
     return term_size.columns
 
 
-def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
+def __convert_result(
+    result, title: str, return_string: bool = False
+) -> Union[str, Pretty, plotextMixin]:
     result = deepcopy(result)
     if result is None:
         return ""
-    if isinstance(result, Exception):
-        result = str(result)
-    elif isinstance(result, float):
+    if isinstance(result, float):
         result = round(result, 3)
+
+        if return_string:
+            return str(result)
+    if isinstance(result, str) and return_string:
+        return result
+    elif isinstance(result, Exception):
+        result = str(result)
 
     if isinstance(result, dict):
         if len(result) > 0:
@@ -46,6 +53,29 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
 
         else:
             return ""
+    if isinstance(result, Tuple):
+
+        def string_from_ds(ds: pd.Series, title: str) -> str:
+            return "\n".join(
+                [
+                    f"({key}\n {__convert_result(value, title, True)})"
+                    for key, value in ds.items()
+                ]
+            )
+
+        result = filter_none(list(result))
+        if len(result) == 1:
+            return __convert_result(result[0], title, return_string=True)
+
+        return "\n".join(
+            [
+                f"{__convert_result(res, title, return_string=True)}"
+                if not isinstance(res, pd.Series)
+                else string_from_ds(res, title)
+                for res in result
+                if res is not None
+            ]
+        )
 
     if isiterable(result):
         if isinstance(result, pd.DataFrame):
@@ -70,7 +100,11 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
 def __display_result(metric: "Metric") -> List[Union[str, Pretty, plotextMixin]]:
     return [
         __convert_result(res, title=metric.name)
-        for res in [metric.result, metric.result_rolling, metric.rolling_properties]
+        for res in [
+            (metric.result, metric.comparison_result),
+            metric.result_rolling,
+            metric.rolling_properties,
+        ]
     ]
 
 
@@ -112,7 +146,7 @@ def create_metric_table(
     )
 
     table.add_column(
-        "Metric Name", justify="right", style="cyan", width=1, no_wrap=False
+        "Metric Name", justify="right", style="cyan", width=2, no_wrap=False
     )
     table.add_column("Result", style="magenta", width=1)
     table.add_column("Rolling", width=8)

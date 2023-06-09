@@ -8,6 +8,8 @@ from sklearn.metrics import (
     recall_score,
 )
 
+from krisi.evaluate.group import Group
+from krisi.evaluate.library.benchmarking import RandomClassifier, model_benchmarking
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_density_plot,
@@ -21,7 +23,7 @@ from krisi.evaluate.library.metric_wrappers import (
     wrap_roc_auc,
 )
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import Calculation, MetricCategories
+from krisi.evaluate.type import Calculation, MetricCategories, Purpose
 
 accuracy_binary = Metric[float](
     name="Accuracy",
@@ -31,6 +33,7 @@ accuracy_binary = Metric[float](
     func=accuracy_score,
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
 )
 """ ~ """
 
@@ -44,6 +47,7 @@ recall_binary, recall_macro = [
         func=recall_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro"]
 ]
@@ -58,6 +62,7 @@ precision_binary, precision_macro = [
         func=precision_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro"]
 ]
@@ -73,6 +78,7 @@ f_one_score_binary, f_one_score_macro, f_one_score_micro, f_one_score_weighted =
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro", "micro", "weighted"]
 ]
@@ -85,6 +91,7 @@ matthew_corr = Metric[float](
     func=matthews_corrcoef,
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
 )
 """~"""
 brier_score = Metric[float](
@@ -98,6 +105,7 @@ brier_score = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=False,
+    purpose=Purpose.loss,
 )
 """~"""
 calibration = Metric[float](
@@ -105,7 +113,7 @@ calibration = Metric[float](
     key="calibration",
     category=MetricCategories.class_err,
     info="Used to plot the calibration of a model with it probabilities.",
-    func=lambda y, pred, prob, **kwargs: pd.concat(
+    func=lambda y, prob, **kwargs: pd.concat(
         [y, prob.iloc[:, 0].rename("probs")], axis="columns"
     ),
     plot_funcs=[(callibration_plot, dict(width=1500.0, bin_size=0.1))],
@@ -113,6 +121,7 @@ calibration = Metric[float](
     accepts_probabilities=True,
     supports_multiclass=True,
     calculation=Calculation.single,
+    purpose=Purpose.diagram,
 )
 """~"""
 brier_score_multi = Metric[float](
@@ -120,11 +129,12 @@ brier_score_multi = Metric[float](
     key="brier_score_multi",
     category=MetricCategories.class_err,
     info="Multilabel calculation of the Brier score loss. The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
-    func=lambda y, pred, prob, **kwargs: brier_multi(y, prob, **kwargs),
+    func=lambda y, prob, **kwargs: brier_multi(y, prob, **kwargs),
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
+    purpose=Purpose.loss,
 )
 """~"""
 s_score = Metric[float](
@@ -137,6 +147,7 @@ s_score = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=False,
     supports_multiclass=False,
+    purpose=Purpose.objective,
 )
 """~"""
 
@@ -146,7 +157,7 @@ cross_entropy = Metric[float](
     key="cross_entropy",
     category=MetricCategories.class_err,
     info="Log loss, aka logistic loss or cross-entropy loss. This is the loss function used in (multinomial) logistic regression and extensions of it such as neural networks, defined as the negative log-likelihood of a logistic model that returns y_pred probabilities for its training data y_true.",
-    func=lambda y, pred, prob, **kwargs: log_loss(
+    func=lambda y, prob, **kwargs: log_loss(
         y, prob, labels=list(prob.columns), **kwargs
     ),
     plot_funcs=[
@@ -159,6 +170,7 @@ cross_entropy = Metric[float](
     ],
     accepts_probabilities=True,
     supports_multiclass=True,
+    purpose=Purpose.loss,
 )
 """~"""
 
@@ -174,6 +186,7 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["micro", "macro", "weighted"]
 ]
@@ -192,6 +205,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["micro", "macro"]
 ]
@@ -227,6 +241,15 @@ binary_classification_metrics = [
     cross_entropy,
     s_score,
 ]
+benchmarking = Group[pd.Series](
+    name="benchmarking",
+    key="benchmarking",
+    metrics=binary_classification_metrics,
+    postprocess_funcs=[model_benchmarking(RandomClassifier())],
+)
+
+binary_classification_metrics_benchmarking = [benchmarking]
+
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
 """~"""

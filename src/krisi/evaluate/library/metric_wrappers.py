@@ -37,9 +37,7 @@ def brier_multi(targets: TargetsDS, probs: ProbabilitiesDF, **kwargs):
     )
 
 
-def wrap_brier_score(
-    y: TargetsDS, preds: PredictionsDS, probs: ProbabilitiesDF, **kwargs
-) -> float:
+def wrap_brier_score(y: TargetsDS, probs: ProbabilitiesDF, **kwargs) -> float:
     return brier_score_loss(
         y_true=y,
         y_prob=probs.iloc[:, 1],
@@ -49,9 +47,8 @@ def wrap_brier_score(
 
 def wrap_roc_auc(
     y: TargetsDS,
-    preds: PredictionsDS,
     probs: ProbabilitiesDF,
-    sample_weigth: Optional[None] = None,
+    sample_weight: Optional[None] = None,
     **kwargs,
 ) -> float:
     probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
