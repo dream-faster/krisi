@@ -1,6 +1,7 @@
 from copy import deepcopy
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple
 
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate.metric import Metric
@@ -14,20 +15,51 @@ from krisi.evaluate.type import (
 from krisi.utils.data import generate_synthetic_predictions_binary
 
 
-class RandomClassifier:
+class Model:
+    def predict(
+        self, y: pd.Series, sample_weight: WeightsDS
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        raise NotImplementedError
+
+
+class RandomClassifier(Model):
     def __init__(self) -> None:
-        self.name = "RandomClassifier"
+        self.name = "NS"
 
     def predict(
         self, y: pd.Series, sample_weight: WeightsDS
-    ) -> Union[pd.Series, pd.DataFrame]:
+    ) -> Tuple[pd.Series, pd.DataFrame]:
         preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
         predictions = preds_probs.iloc[:, 0]
         probabilities = preds_probs.iloc[:, 1:3]
         return predictions, probabilities
 
 
-def model_benchmarking(model: RandomClassifier) -> Callable:
+class PerfectModel(Model):
+    def __init__(self) -> None:
+        self.name = "PM"
+
+    def predict(
+        self, y: pd.Series, sample_weight: WeightsDS
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        predictions = y
+        probabilities = pd.get_dummies(y, dtype=float)
+        return predictions, probabilities
+
+
+class WorstModel(Model):
+    def __init__(self) -> None:
+        self.name = "WM"
+
+    def predict(
+        self, y: pd.Series, sample_weight: WeightsDS
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        predictions = np.logical_xor(y, 1).astype(int)
+        probabilities = pd.get_dummies(predictions, dtype=float)
+        return predictions, probabilities
+
+
+def model_benchmarking(model: Model) -> Callable:
     def postporcess_func(
         all_metrics: List[Metric],
         y: TargetsDS,
@@ -72,7 +104,11 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
             else:
                 comparison_result = "Either benchmark or model result is None."
             metric.comparison_result = pd.concat(
-                [pd.Series([comparison_result], index=["Δ NS"])], axis=0
+                [
+                    metric.comparison_result,
+                    pd.Series([comparison_result], index=[f"Δ {model.name}"]),
+                ],
+                axis=0,
             )
         return all_metrics
 
