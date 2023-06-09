@@ -1,8 +1,6 @@
 from copy import deepcopy
-from random import choices
 from typing import Callable, List, Optional, Union
 
-import numpy as np
 import pandas as pd
 
 from krisi.evaluate.metric import Metric
@@ -13,44 +11,20 @@ from krisi.evaluate.type import (
     TargetsDS,
     WeightsDS,
 )
+from krisi.utils.data import generate_synthetic_predictions_binary
 
 
 class RandomClassifier:
-    def __init__(
-        self, all_classes: List[int], probability_mean: Optional[List[float]] = None
-    ) -> None:
-        self.all_classes = all_classes
-        if probability_mean is not None:
-            assert len(probability_mean) == len(all_classes)
-        self.probability_mean = (
-            [1 / len(all_classes) for _ in range(len(all_classes))]
-            if probability_mean is None
-            else probability_mean
-        )
-        self.name = f"RandomClassifier_{all_classes}_{probability_mean}"
+    def __init__(self) -> None:
+        self.name = "RandomClassifier"
 
-    def predict(self, X: pd.Series) -> Union[pd.Series, pd.DataFrame]:
-        predictions = pd.Series(
-            choices(population=self.all_classes, k=len(X)),
-            index=X.index,
-            name="predictions_RandomClassifier",
-        )
-        probabilities = pd.concat(
-            [
-                pd.Series(
-                    np.random.normal(prob_mean, 0.1, len(X)).clip(0, 1),
-                    index=X.index,
-                    name=f"probabilities_RandomClassifier_{associated_class}",
-                )
-                for associated_class, prob_mean in zip(
-                    self.all_classes, self.probability_mean
-                )
-            ],
-            axis="columns",
-        )
-        probabilities = probabilities.div(probabilities.sum(axis=1), axis=0)
-
-        return pd.concat([predictions, probabilities], axis="columns")
+    def predict(
+        self, y: pd.Series, sample_weight: WeightsDS
+    ) -> Union[pd.Series, pd.DataFrame]:
+        preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+        predictions = preds_probs.iloc[:, 0]
+        probabilities = preds_probs.iloc[:, 1:3]
+        return predictions, probabilities
 
 
 def model_benchmarking(model: RandomClassifier) -> Callable:
@@ -64,9 +38,7 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
     ) -> List[Metric]:
         if rolling:
             return []
-        df = model.predict(y)
-        predictions = df.iloc[:, 0]
-        probabilities = df.iloc[:, 1:]
+        predictions, probabilities = model.predict(y, sample_weight)
 
         new_metrics = []
         for metric in all_metrics:

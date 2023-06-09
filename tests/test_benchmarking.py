@@ -16,16 +16,13 @@ def test_benchmarking_random():
         name="benchmarking",
         key="benchmarking",
         metrics=[f_one_score_macro],
-        postprocess_funcs=[
-            model_benchmarking(RandomClassifier([0, 1], [0.0, 1.0])),
-            model_benchmarking(RandomClassifier([0, 1], [0.5, 0.5])),
-        ],
+        postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     X, y = generate_synthetic_data(task=Task.classification)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
-    probabilities = preds_probs.iloc[:, :2]
-    predictions = preds_probs.iloc[:, 2]
+    predictions = preds_probs.iloc[:, 0]
+    probabilities = preds_probs.iloc[:, 1:3]
 
     sc = score(
         y,
@@ -35,6 +32,3 @@ def test_benchmarking_random():
         default_metrics=[groupped_metric],
     )
     sc.print()
-
-
-test_benchmarking_random()
