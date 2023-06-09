@@ -48,9 +48,13 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
             benchmark_metric.result_rolling = None
 
             if benchmark_metric.accepts_probabilities:
-                benchmark_metric.evaluate(y, benchmark_probabilities)
+                benchmark_metric._evaluation(
+                    y, benchmark_probabilities, sample_weight=sample_weight
+                )
             else:
-                benchmark_metric.evaluate(y, benchmark_predictions)
+                benchmark_metric._evaluation(
+                    y, benchmark_predictions, sample_weight=sample_weight
+                )
 
             benchmark_result = (
                 benchmark_metric.result
