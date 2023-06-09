@@ -1,11 +1,11 @@
-from typing import Any, Iterable, List, Tuple, Union
+from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from typing_extensions import get_args, get_origin
 
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import DatasetType, Predictions, Targets
+from krisi.evaluate.type import DatasetType, Predictions, Targets, Weights
 from krisi.utils.iterable_helpers import flatten, isiterable
 
 valid_types = ["int64", "float64", "float32", "float", "int"]
@@ -36,10 +36,16 @@ def check_no_duplicate_metrics(metrics: List[Metric]):
     ), f"Duplicate metric key found in {metrics}. Please remove the duplicates."
 
 
-def check_valid_pred_target(y: Targets, predictions: Predictions):
+def check_valid_pred_target(
+    y: Targets, predictions: Predictions, sample_weights: Optional[Weights]
+):
     assert len(y) == len(
         predictions
     ), f"Target length {len(y)} should match predictions length {len(predictions)}"
+    if sample_weights is not None:
+        assert len(y) == len(
+            sample_weights
+        ), f"Target length {len(y)} should match sample_weights length {len(sample_weights)}"
 
     assert isinstance(
         y, unpack_type(Targets)
