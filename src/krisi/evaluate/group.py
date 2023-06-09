@@ -10,6 +10,7 @@ from .type import (
     MetricResult,
     PredictionsDS,
     ProbabilitiesDF,
+    Purpose,
     TargetsDS,
     WeightsDS,
 )
@@ -38,6 +39,7 @@ class Group(Metric, Generic[MetricResult]):
         postprocess_funcs: Optional[
             Union[List[PostProcessFunction], PostProcessFunction]
         ] = None,
+        purpose: Purpose = Purpose.group,
     ) -> None:
         self.calculation = Calculation.from_str(calculation)
         self.preprocess_func = preprocess_func
@@ -47,6 +49,7 @@ class Group(Metric, Generic[MetricResult]):
         self.key = key
         self.name = name
         self.metrics = deepcopy(metrics)
+        self.purpose = purpose
 
         for metric in self.metrics:
             metric.key = f"{metric.key}_{self.key}"

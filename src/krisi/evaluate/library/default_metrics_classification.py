@@ -21,7 +21,7 @@ from krisi.evaluate.library.metric_wrappers import (
     wrap_roc_auc,
 )
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import Calculation, MetricCategories
+from krisi.evaluate.type import Calculation, MetricCategories, Purpose
 
 accuracy_binary = Metric[float](
     name="Accuracy",
@@ -31,6 +31,7 @@ accuracy_binary = Metric[float](
     func=accuracy_score,
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
 )
 """ ~ """
 
@@ -44,6 +45,7 @@ recall_binary, recall_macro = [
         func=recall_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro"]
 ]
@@ -58,6 +60,7 @@ precision_binary, precision_macro = [
         func=precision_score,
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro"]
 ]
@@ -73,6 +76,7 @@ f_one_score_binary, f_one_score_macro, f_one_score_micro, f_one_score_weighted =
         plot_funcs=[(display_single_value, dict(width=750.0))],
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["binary", "macro", "micro", "weighted"]
 ]
@@ -85,6 +89,7 @@ matthew_corr = Metric[float](
     func=matthews_corrcoef,
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
 )
 """~"""
 brier_score = Metric[float](
@@ -98,6 +103,7 @@ brier_score = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=False,
+    purpose=Purpose.loss,
 )
 """~"""
 calibration = Metric[float](
@@ -113,6 +119,7 @@ calibration = Metric[float](
     accepts_probabilities=True,
     supports_multiclass=True,
     calculation=Calculation.single,
+    purpose=Purpose.diagram,
 )
 """~"""
 brier_score_multi = Metric[float](
@@ -125,6 +132,7 @@ brier_score_multi = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
+    purpose=Purpose.loss,
 )
 """~"""
 s_score = Metric[float](
@@ -137,6 +145,7 @@ s_score = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=False,
     supports_multiclass=False,
+    purpose=Purpose.objective,
 )
 """~"""
 
@@ -159,6 +168,7 @@ cross_entropy = Metric[float](
     ],
     accepts_probabilities=True,
     supports_multiclass=True,
+    purpose=Purpose.loss,
 )
 """~"""
 
@@ -174,6 +184,7 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["micro", "macro", "weighted"]
 ]
@@ -192,6 +203,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
         accepts_probabilities=True,
         supports_multiclass=True,
+        purpose=Purpose.objective,
     )
     for mode in ["micro", "macro"]
 ]

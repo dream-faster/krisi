@@ -23,6 +23,7 @@ from krisi.evaluate.type import (
     Calculation,
     ComputationalComplexity,
     MetricCategories,
+    Purpose,
     SampleTypes,
 )
 
@@ -34,6 +35,7 @@ mae = Metric[float](
     func=lambda y, pred, **kwargs: mean_absolute_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -44,6 +46,7 @@ mape = Metric[float](
     func=lambda y, pred, **kwargs: mean_absolute_percentage_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -56,6 +59,7 @@ smape = Metric[float](
     ),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -68,6 +72,7 @@ mse = Metric[float](
     func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -80,6 +85,7 @@ rmse = Metric[float](
     func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -91,6 +97,7 @@ rmsle = Metric[float](
     func=lambda y, pred, **kwargs: mean_squared_log_error(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.loss,
 )
 """ ~ """
 
@@ -102,6 +109,7 @@ r_two = Metric[float](
     func=lambda y, pred, **kwargs: r2_score(y, pred, **kwargs),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
 )
 """ ~ """
 
@@ -116,6 +124,7 @@ residuals = Metric[List[float]](
         (display_time_series, dict(width=1500.0)),
     ],
     calculation=Calculation.single,
+    purpose=Purpose.diagram,
 )
 """ ~ """
 
@@ -126,6 +135,7 @@ residuals_mean = Metric[float](
     func=lambda res, **kwargs: res.mean(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.diagram,
 )
 """ ~ """
 
@@ -136,6 +146,7 @@ residuals_std = Metric[float](
     func=lambda res, **kwargs: res.std(),
     plot_funcs=[(display_single_value, dict(width=900.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.diagram,
 )
 """ ~ """
 
@@ -148,6 +159,7 @@ ljung_box_statistics = Metric[pd.DataFrame](
     restrict_to_sample=SampleTypes.insample,
     comp_complexity=ComputationalComplexity.high,
     calculation=Calculation.single,
+    purpose=Purpose.diagram,
 )
 """ ~ """
 
@@ -156,6 +168,7 @@ residual_group = Group[pd.Series](
     key="residual_group",
     metrics=[residuals_mean, residuals_std],
     preprocess_func=lambda y, pred, **kwargs: y - pred,
+    purpose=Purpose.group,
 )
 """ ~ """
 

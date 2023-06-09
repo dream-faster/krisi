@@ -15,6 +15,7 @@ from krisi.evaluate.type import (
     MetricResult,
     PredictionsDS,
     ProbabilitiesDF,
+    Purpose,
     SampleTypes,
     TargetsDS,
     WeightsDS,
@@ -87,6 +88,7 @@ class Metric(Generic[MetricResult]):
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
     diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
+    purpose: Optional[Union[str, Purpose]] = None
     _from_group: bool = False
 
     def __post_init__(self):
@@ -100,6 +102,9 @@ class Metric(Generic[MetricResult]):
         ):
             self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
         self.calculation = Calculation.from_str(self.calculation)
+        self.purpose = (
+            Purpose.from_str(self.purpose) if self.purpose is not None else None
+        )
 
     def __setitem__(self, key: str, item: Any) -> None:
         setattr(self, key, item)
