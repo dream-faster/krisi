@@ -70,7 +70,7 @@ def func_actual():
 # res2 = timeingit(func2)
 # # res3 = timeingit(func3)
 # res4 = timeingit(func4)
-timeingit(func_actual)
+# timeingit(func_actual)
 
 # assert res1 == res2 == res4
 # assert res1 == res2 == res3 == res4

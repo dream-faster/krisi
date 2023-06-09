@@ -16,7 +16,7 @@ from krisi.report.library.console.diagrams import (
     line_plot,
 )
 from krisi.utils.console_plot import plotextMixin
-from krisi.utils.iterable_helpers import calculate_nans, isiterable
+from krisi.utils.iterable_helpers import calculate_nans, filter_none, isiterable
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -62,6 +62,10 @@ def __convert_result(
                     for key, value in ds.items()
                 ]
             )
+
+        result = filter_none(list(result))
+        if len(result) == 1:
+            return __convert_result(result[0], title, return_string=True)
 
         return "\n".join(
             [

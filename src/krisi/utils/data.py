@@ -69,7 +69,7 @@ def generate_synthetic_data(
     task = Task.from_str(task)
     # Based on https://github.com/convergenceIM/alpha-scientist/blob/master/content/04_Walk_Forward_Modeling.ipynb
     if index is None:
-        index = pd.RangeIndex(0, 1000)
+        index = pd.RangeIndex(0, num_obs)
 
     def add_memory(s, n_days=50, memory_strength=0.1):
         """adds autoregressive behavior to series of data"""
@@ -176,7 +176,7 @@ def generate_synthetic_predictions_binary(
     if index is None:
         index = target.index
     if sample_weights is None:
-        sample_weights = pd.Series(np.ones(len(index)), index=index)
+        sample_weights = pd.Series(np.ones(len(target)), index=index)
     target = target.copy()
     target[target == 0.0] = -1
     prob_mean_class_1 = (target * sample_weights).mean() * 2 + 0.5
