@@ -224,7 +224,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
 # )
 
 
-binary_classification_metrics_without_benchmark = [
+binary_classification_metrics = [
     accuracy_binary,
     recall_binary,
     precision_binary,
@@ -241,15 +241,13 @@ binary_classification_metrics_without_benchmark = [
     cross_entropy,
     s_score,
 ]
-benchmarking = Group[pd.Series](
+binary_classification_metrics_benchmarking = Group[pd.Series](
     name="benchmarking",
     key="benchmarking",
-    metrics=binary_classification_metrics_without_benchmark,
+    metrics=binary_classification_metrics,
     postprocess_funcs=[model_benchmarking(RandomClassifier())],
 )
-binary_classification_metrics = binary_classification_metrics_without_benchmark + [
-    benchmarking
-]
+
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
 """~"""

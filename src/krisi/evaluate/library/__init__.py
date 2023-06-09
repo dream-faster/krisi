@@ -5,6 +5,7 @@ from krisi.evaluate.type import DatasetType
 
 from .default_metrics_classification import (
     binary_classification_metrics,
+    binary_classification_metrics_benchmarking,
     minimal_binary_classification_metrics,
     minimal_multiclass_classification_metrics,
     multiclass_classification_metrics,
@@ -18,7 +19,7 @@ from .default_metrics_regression import (
 
 def get_default_metrics_for_dataset_type(type: DatasetType) -> List[Metric]:
     if type == DatasetType.classification_binary:
-        return binary_classification_metrics
+        return binary_classification_metrics_benchmarking
     elif type == DatasetType.classification_multiclass:
         return multiclass_classification_metrics
     elif type == DatasetType.regression:

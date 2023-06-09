@@ -109,9 +109,7 @@ class Group(Metric, Generic[MetricResult]):
         if result is None:
             if accept_probabilities:
                 if probabilities is None:
-                    raise ValueError(
-                        "Metric requires probabilities, but None were provided."
-                    )
+                    return None
                 else:
                     return [y, probabilities]
             else:
@@ -130,19 +128,21 @@ class Group(Metric, Generic[MetricResult]):
             return []
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        all_metrics = [
-            metric._evaluation(
-                *self.__handle_args_to_pass_in(
-                    results,
-                    y,
-                    predictions,
-                    probabilities,
-                    metric.accepts_probabilities,
-                ),
-                sample_weight=sample_weight,
+        all_metrics = []
+        for metric in self.metrics:
+            args_to_pass = self.__handle_args_to_pass_in(
+                results,
+                y,
+                predictions,
+                probabilities,
+                metric.accepts_probabilities,
             )
-            for metric in self.metrics
-        ]
+            if args_to_pass is not None:
+                metric._evaluation(
+                    *args_to_pass,
+                    sample_weight=sample_weight,
+                )
+            all_metrics.append(metric)
 
         return self._postprocess(
             all_metrics,
@@ -164,20 +164,24 @@ class Group(Metric, Generic[MetricResult]):
         if self.calculation == Calculation.single:
             return []
         results = self._preprocess(y, predictions, probabilities, sample_weight)
-        all_metrics = [
-            metric._rolling_evaluation(
-                *self.__handle_args_to_pass_in(
-                    results,
-                    y,
-                    predictions,
-                    probabilities,
-                    metric.accepts_probabilities,
-                ),
-                sample_weight=sample_weight,
-                rolling_args=rolling_args,
+
+        all_metrics = []
+        for metric in self.metrics:
+            args_to_pass = self.__handle_args_to_pass_in(
+                results,
+                y,
+                predictions,
+                probabilities,
+                metric.accepts_probabilities,
             )
-            for metric in self.metrics
-        ]
+            if args_to_pass is not None:
+                metric._rolling_evaluation(
+                    *args_to_pass,
+                    sample_weight=sample_weight,
+                    rolling_args=rolling_args,
+                )
+            all_metrics.append(metric)
+
         return self._postprocess(
             all_metrics,
             y,
