@@ -172,7 +172,7 @@ class Metric(Generic[MetricResult]):
             return tuple([window[col] for col in window]), sample_weight
 
         y = window.pop("y")
-        pred = window.pop("predictions")
+        pred = window.pop("predictions") if "predictions" in window else None
         prob = window if len(window.columns) > 0 else None
 
         return dict(y=y, pred=pred, prob=prob), sample_weight

@@ -20,8 +20,6 @@ def deepcopy_and_evaluate(
     postprocess_func: Metric, metric: Metric, sample_weight: WeightsDS, rolling: bool
 ) -> Metric:
     postprocess_metric = deepcopy(postprocess_func)
-    postprocess_metric.key = f"{postprocess_metric.key}_{metric.key}"
-    postprocess_metric.name = f"{postprocess_metric.name} of {metric.name}"
     postprocess_metric._evaluation(
         metric.result_rolling if rolling else metric.result, sample_weight=sample_weight
     )
@@ -51,8 +49,8 @@ class Group(Metric, Generic[MetricResult]):
         self.metrics = deepcopy(metrics)
         self.purpose = purpose
 
-        for metric in self.metrics:
-            metric.key = f"{metric.key}_{self.key}"
+        # for metric in self.metrics:
+        #     metric.key = f"{metric.key}_{self.key}"
 
     def _preprocess(
         self,
