@@ -6,6 +6,7 @@ import pandas as pd
 
 from krisi.report.type import InteractiveFigure
 from krisi.utils.iterable_helpers import wrap_in_list
+from krisi.utils.state import RunType, get_global_state
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
@@ -159,7 +160,8 @@ def __vizualise_with_plotly(
         margin=dict(l=75, r=75, b=50, t=75, pad=0),
         hovermode="x unified",
     )
-    fig.show()
+    if not get_global_state().run_type == RunType.test:
+        fig.show()
 
 
 def plot_y_predictions(

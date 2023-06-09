@@ -13,7 +13,6 @@ from krisi.report.pdf import (
 )
 from krisi.report.type import DisplayModes, InteractiveFigure, PlotlyInput
 from krisi.report.vizualise import create_subplots_from_mutiple_plots
-from krisi.utils.devutils.environment_checks import handle_test
 from krisi.utils.io import ensure_path
 from krisi.utils.iterable_helpers import (
     flatten,
@@ -22,6 +21,7 @@ from krisi.utils.iterable_helpers import (
     replace_if_None,
     wrap_in_list,
 )
+from krisi.utils.state import RunType, get_global_state
 
 if TYPE_CHECKING:
     from krisi.evaluate.metric import Metric
@@ -80,7 +80,11 @@ class Report:
             )
 
         if DisplayModes.direct in self.modes:
-            [figure.get_figure(**figure.plot_args).show() for figure in self.figures]
+            if not get_global_state().run_type == RunType.test:
+                [
+                    figure.get_figure(**figure.plot_args).show()
+                    for figure in self.figures
+                ]
 
         if DisplayModes.direct_save in self.modes:
             diagram_path = Path(os.path.join(self.save_path, Path("diagrams")))
@@ -91,9 +95,11 @@ class Report:
                 )
 
         if DisplayModes.direct_one_subplot in self.modes:
-            create_subplots_from_mutiple_plots(self.figures, title=self.title).show()
+            if not get_global_state().run_type == RunType.test:
+                create_subplots_from_mutiple_plots(
+                    self.figures, title=self.title
+                ).show()
 
-        handle_test()
         if DisplayModes.interactive in self.modes:
             run_app(
                 figures_by_category,
