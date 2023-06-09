@@ -37,6 +37,7 @@ def example_postporcess_func(
         copy_of_metric.result = None
         copy_of_metric.result_rolling = None
         copy_of_metric.key += f"_difference_{model.__class__.__name__}"
+        copy_of_metric.name += f" difference with {model.__class__.__name__}"
         if copy_of_metric.accepts_probabilities:
             copy_of_metric.evaluate(y, probabilities)
         else:
@@ -59,10 +60,14 @@ def test_benchmarking_random():
     probabilities = preds_probs.iloc[:, :2]
     predictions = preds_probs.iloc[:, 2]
 
-    score(
+    sc = score(
         y,
         predictions,
         probabilities,
         sample_weight=sample_weight,
         default_metrics=[groupped_metric],
     )
+    sc.print()
+
+
+test_benchmarking_random()
