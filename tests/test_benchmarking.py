@@ -1,13 +1,17 @@
 from typing import List, Optional
 
-import numpy as np
 import pandas as pd
 
+from krisi.evaluate import score
 from krisi.evaluate.group import Group
 from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
-from krisi.evaluate.library.default_metrics_regression import residuals_mean
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import PredictionsDS, ProbabilitiesDF, TargetsDS, WeightsDS
+from krisi.utils.devutils.data import (
+    generate_synthetic_data,
+    generate_synthetic_predictions_binary,
+)
+from krisi.utils.devutils.type import Task
 
 
 def example_postporcess_func(
@@ -29,41 +33,23 @@ def example_postporcess_func(
     return all_metrics
 
 
-def test_group_preprocess():
-    groupped_metric = Group[pd.Series](
-        name="residual_group",
-        key="residual_group",
-        metrics=[residuals_mean],
-        preprocess_func=lambda y, pred, probs, **kwargs: y - pred,
-    )
-
-    y = pd.Series(np.random.randint(0, 2, 1000))
-    predictions = pd.Series(np.random.randint(0, 2, 1000))
-    groupped_metric.evaluate(y, predictions, None, None)
-    groupped_metric.evaluate_over_time(
-        y,
-        predictions,
-        None,
-        None,
-        rolling_args={"window": 10, "min_periods": 10, "step": 10, "closed": "left"},
-    )
-
-
-def test_group_postprocess():
+def test_benchmarking_random():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
         metrics=[f_one_score_macro],
         postprocess_funcs=example_postporcess_func,
     )
+    X, y = generate_synthetic_data(task=Task.classification)
+    sample_weight = pd.Series([1.0] * len(y))
+    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+    probabilities = preds_probs.iloc[:, :2]
+    predictions = preds_probs.iloc[:, 2]
 
-    y = pd.Series(np.random.randint(0, 2, 1000))
-    predictions = pd.Series(np.random.randint(0, 2, 1000))
-
-    groupped_metric.evaluate_over_time(
+    score(
         y,
         predictions,
-        None,
-        None,
-        rolling_args={"window": 10, "min_periods": 10, "step": 10, "closed": "left"},
+        probabilities,
+        sample_weight=sample_weight,
+        default_metrics=[groupped_metric],
     )

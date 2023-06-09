@@ -1,7 +1,7 @@
 import pandas as pd
 
 from krisi.report import plot_y_predictions
-from krisi.utils.data import generating_arima_synthetic_data
+from krisi.utils.devutils.data import generating_arima_synthetic_data
 
 
 def test_plot_y_predictions():

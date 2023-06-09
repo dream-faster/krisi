@@ -36,7 +36,7 @@ class Group(Metric, Generic[MetricResult]):
         calculation: Union[str, Calculation] = Calculation.both,
         preprocess_func: Optional[MetricFunction] = None,
         postprocess_funcs: Optional[
-            Union[List[Metric], Metric, List[PostProcessFunction], PostProcessFunction]
+            Union[List[PostProcessFunction], PostProcessFunction]
         ] = None,
     ) -> None:
         self.calculation = Calculation.from_str(calculation)
@@ -57,46 +57,64 @@ class Group(Metric, Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: ProbabilitiesDF,
         sample_weights: WeightsDS,
-    ) -> Tuple[Tuple, dict]:
-        unnamed_results, named_results = [], dict()
-        if self.preprocess_func is not None:
-            if self.accepts_probabilities and probabilities is not None:
-                unnamed_results = self.preprocess_func(
-                    y, predictions, probabilities, sample_weights=sample_weights
-                )
-            else:
-                unnamed_results = self.preprocess_func(
-                    y, predictions, sample_weights=sample_weights
-                )
-        else:
-            named_results = dict(
-                y=y, predictions=predictions, probabilities=probabilities
+    ) -> Optional[Tuple]:
+        results = (
+            self.preprocess_func(
+                y, predictions, probabilities, sample_weights=sample_weights
             )
+            if self.preprocess_func is not None
+            else None
+        )
 
-        if not isinstance(unnamed_results, (list, tuple)):
-            unnamed_results = (unnamed_results,)
-        return unnamed_results, named_results
+        if not isinstance(results, (list, tuple)):
+            results = (results,)
+        return results
 
     def _postprocess(
-        self, all_metrics: List[Metric], sample_weight: WeightsDS, rolling: bool
+        self,
+        all_metrics: List[Metric],
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: ProbabilitiesDF,
+        sample_weight: WeightsDS,
+        rolling: bool,
     ) -> List[Metric]:
         if self.postprocess_funcs is not None:
             all_metrics_ = []
-            for metric in all_metrics:
-                for postprocess_func in self.postprocess_funcs:
-                    if isinstance(postprocess_func, Metric):
-                        all_metrics_.append(
-                            deepcopy_and_evaluate(
-                                postprocess_func, metric, sample_weight, rolling
-                            )
-                        )
-                    else:
-                        all_metrics_.append(
-                            postprocess_func(metric, sample_weight, rolling)
-                        )
+
+            for postprocess_func in self.postprocess_funcs:
+                all_metrics_ += postprocess_func(
+                    all_metrics,
+                    y,
+                    predictions,
+                    probabilities,
+                    sample_weight=sample_weight,
+                    rolling=rolling,
+                )
 
             all_metrics = all_metrics_
         return all_metrics
+
+    def handle_args_to_pass_in(
+        self,
+        result: Any,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: ProbabilitiesDF,
+        accept_probabilities: bool,
+    ):
+        if result is None:
+            if accept_probabilities:
+                if probabilities is None:
+                    raise ValueError(
+                        "Metric requires probabilities, but None were provided."
+                    )
+                else:
+                    return [y, probabilities]
+            else:
+                return [y, predictions]
+        else:
+            return [result]
 
     def evaluate(
         self,
@@ -107,13 +125,29 @@ class Group(Metric, Generic[MetricResult]):
     ) -> List[Metric]:
         if self.calculation == Calculation.rolling:
             return []
-        args, kwargs = self._preprocess(y, predictions, probabilities, sample_weight)
+        results = self._preprocess(y, predictions, probabilities, sample_weight)
+
         all_metrics = [
-            metric._evaluation(*args, **kwargs, sample_weight=sample_weight)
+            metric._evaluation(
+                *self.handle_args_to_pass_in(
+                    results,
+                    y,
+                    predictions,
+                    probabilities,
+                    metric.accepts_probabilities,
+                ),
+                sample_weight=sample_weight,
+            )
             for metric in self.metrics
         ]
+
         return self._postprocess(
-            all_metrics, sample_weight=sample_weight, rolling=False
+            all_metrics,
+            y,
+            predictions,
+            probabilities,
+            sample_weight=sample_weight,
+            rolling=False,
         )
 
     def evaluate_over_time(
@@ -126,14 +160,29 @@ class Group(Metric, Generic[MetricResult]):
     ) -> List[Metric]:
         if self.calculation == Calculation.single:
             return []
-        args, kwargs = self._preprocess(y, predictions, probabilities, sample_weight)
+        results = self._preprocess(y, predictions, probabilities, sample_weight)
         all_metrics = [
             metric._rolling_evaluation(
-                *args, **kwargs, sample_weight=sample_weight, rolling_args=rolling_args
+                *self.handle_args_to_pass_in(
+                    results,
+                    y,
+                    predictions,
+                    probabilities,
+                    metric.accepts_probabilities,
+                ),
+                sample_weight=sample_weight,
+                rolling_args=rolling_args,
             )
             for metric in self.metrics
         ]
-        return self._postprocess(all_metrics, sample_weight=sample_weight, rolling=True)
+        return self._postprocess(
+            all_metrics,
+            y,
+            predictions,
+            probabilities,
+            sample_weight=sample_weight,
+            rolling=True,
+        )
 
     def __str__(self) -> str:
         return "\n".join([metric.__str__() for metric in self.metrics])

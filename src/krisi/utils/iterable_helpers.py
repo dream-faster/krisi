@@ -158,5 +158,5 @@ def empty_if_None(metrics: Optional[List]) -> List:
     return metrics if metrics is not None else []
 
 
-def filter_nan(list: List) -> List:
+def filter_none(list: List) -> List:
     return [el for el in list if el is not None]

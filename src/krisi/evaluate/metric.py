@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
@@ -21,7 +23,7 @@ from krisi.report.console import print_metric
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
 from krisi.utils.iterable_helpers import (
     check_iterable_with_number,
-    filter_nan,
+    filter_none,
     isiterable,
     string_to_id,
     wrap_in_list,
@@ -112,7 +114,7 @@ class Metric(Generic[MetricResult]):
         print(print_metric(self, repr=True))
         return super().__repr__()
 
-    def _evaluation(self, *args, **kwargs) -> "Metric":
+    def _evaluation(self, *args, **kwargs) -> Metric:
         if self.calculation == Calculation.rolling:
             return self
         if self._from_group:
@@ -134,15 +136,13 @@ class Metric(Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
-    ) -> None:
+    ) -> Metric:
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
         if self.accepts_probabilities:
             if probabilities is not None:
-                self._evaluation(
-                    y, predictions, probabilities, sample_weight=sample_weight
-                )
+                self._evaluation(y, probabilities, sample_weight=sample_weight)
             else:
                 self.__safe_set(
                     ValueError(
@@ -154,6 +154,7 @@ class Metric(Generic[MetricResult]):
             self._evaluation(y, predictions, sample_weight=sample_weight)
         if sample_weight is not None:
             self.__dict__["diagnostics"] = dict(used_sample_weight=True)
+        return self
 
     @staticmethod
     def __handle_window(
@@ -180,12 +181,12 @@ class Metric(Generic[MetricResult]):
         result, sample_weight = Metric.__handle_window(window)
 
         return func(
-            *filter_nan(list(result)),
+            *filter_none(list(result)),
             **sample_weight,
             **parameters,
         )
 
-    def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> "Metric":
+    def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> Metric:
         if self._from_group:
             return self
         if self.calculation == Calculation.single:
@@ -228,7 +229,7 @@ class Metric(Generic[MetricResult]):
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
         rolling_args: dict = dict(),
-    ) -> None:
+    ) -> Metric:
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
                 y=y,
@@ -244,6 +245,7 @@ class Metric(Generic[MetricResult]):
                 sample_weight=sample_weight,
                 rolling_args=rolling_args,
             )
+        return self
 
     def evaluate_rolling_properties(self):
         if check_iterable_with_number(self.result_rolling):
@@ -361,4 +363,14 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
         ]
 
 
-PostProcessFunction = Callable[[Metric, WeightsDS, bool], Metric]
+PostProcessFunction = Callable[
+    [
+        List[Metric],
+        TargetsDS,
+        Optional[PredictionsDS],
+        Optional[ProbabilitiesDF],
+        Optional[WeightsDS],
+        bool,
+    ],
+    Metric,
+]
