@@ -155,7 +155,7 @@ class ScoreCard:
             set_global_state(state)
 
         dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
-        check_valid_pred_target(y, predictions)
+        check_valid_pred_target(y, predictions, sample_weight)
         default_metrics = (
             wrap_in_list(default_metrics) if default_metrics is not None else None
         )

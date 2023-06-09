@@ -59,11 +59,6 @@ def wrap_roc_auc(
     if len(prob_columns) == 2:
         probs = probs.iloc[:, 1]
 
-    # from sklearn.datasets import load_iris
-
-    # X, y_ = load_iris(return_X_y=True)
-    # clf = LogisticRegression(solver="liblinear").fit(X, y_)
-    # rcs = roc_auc_score(y, clf.predict_proba(X), multi_class="ovr")
     return roc_auc_score(
         y_true=y,
         y_score=probs,
