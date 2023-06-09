@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -46,6 +46,22 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
 
         else:
             return ""
+    if isinstance(result, Tuple):
+
+        def string_from_ds(ds: pd.Series) -> str:
+            return "\n".join(
+                [f"({key}\n {round(value, 3)})" for key, value in ds.items()]
+            )
+
+        return "\n".join(
+            [
+                f"{round(res, 3)}"
+                if not isinstance(res, pd.Series)
+                else string_from_ds(res)
+                for res in result
+                if res is not None
+            ]
+        )
 
     if isiterable(result):
         if isinstance(result, pd.DataFrame):
@@ -70,7 +86,11 @@ def __convert_result(result, title: str) -> Union[str, Pretty, plotextMixin]:
 def __display_result(metric: "Metric") -> List[Union[str, Pretty, plotextMixin]]:
     return [
         __convert_result(res, title=metric.name)
-        for res in [metric.result, metric.result_rolling, metric.rolling_properties]
+        for res in [
+            (metric.result, metric.comparison_result),
+            metric.result_rolling,
+            metric.rolling_properties,
+        ]
     ]
 
 

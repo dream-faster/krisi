@@ -40,25 +40,27 @@ def model_benchmarking(model: RandomClassifier) -> Callable:
             return []
         predictions, probabilities = model.predict(y, sample_weight)
 
-        new_metrics = []
         for metric in all_metrics:
             if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
                 continue
             copy_of_metric = deepcopy(metric)
             copy_of_metric.result = None
             copy_of_metric.result_rolling = None
-            copy_of_metric.key += f"_{metric.purpose.value}_{model.name}"
-            copy_of_metric.name += f" {metric.purpose.value} with {model.name}"
+            # copy_of_metric.key += f"_{metric.purpose.value}_{model.name}"
+            # copy_of_metric.name += f" {metric.purpose.value} with {model.name}"
             if copy_of_metric.accepts_probabilities:
                 copy_of_metric.evaluate(y, probabilities)
             else:
                 copy_of_metric.evaluate(y, predictions)
 
             if metric.purpose == Purpose.objective:
-                copy_of_metric.result = copy_of_metric.result - metric.result
+                comparison_result = copy_of_metric.result - metric.result
             elif metric.purpose == Purpose.loss:
-                copy_of_metric.result = metric.result - copy_of_metric.result
-            new_metrics.append(copy_of_metric)
-        return new_metrics
+                comparison_result = metric.result - copy_of_metric.result
+
+            metric.comparison_result = pd.concat(
+                [pd.Series([comparison_result], index=["Δ NS"])], axis=0
+            )
+        return all_metrics
 
     return postporcess_func

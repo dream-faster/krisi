@@ -88,6 +88,7 @@ class Metric(Generic[MetricResult]):
     supports_multiclass: bool = False
     diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
     purpose: Optional[Union[str, Purpose]] = None
+    comparison_result: Optional[pd.Series] = None
     _from_group: bool = False
 
     def __post_init__(self):
