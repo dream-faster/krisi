@@ -177,7 +177,7 @@ all_regression_metrics = [
     mape,
     smape,
     mse,
-    # rmse,
+    rmse,
     # rmsle,
     r_two,
     residuals,
@@ -190,7 +190,7 @@ minimal_regression_metrics = [
     mae,
     mape,
     mse,
-    # rmse,
+    rmse,
     rmsle,
     r_two,
 ]
