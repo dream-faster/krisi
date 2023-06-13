@@ -149,8 +149,8 @@ class ScoreCard:
         rolling_args: Optional[Dict[str, Any]] = None,
         raise_exceptions: bool = False,
     ) -> None:
-        state = get_global_state()
         if raise_exceptions:
+            state = get_global_state()
             state.run_type = RunType.test
             set_global_state(state)
 
