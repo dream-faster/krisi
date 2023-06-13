@@ -27,7 +27,7 @@ def score(
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
-    surpress_warnings: bool = False,
+    raise_exceptions: bool = False,
     **kwargs,
 ) -> ScoreCard:
     """
@@ -96,7 +96,7 @@ def score(
         default_metrics=default_metrics,
         custom_metrics=custom_metrics,
         rolling_args=rolling_args,
-        surpress_warnings=surpress_warnings,
+        raise_exceptions=raise_exceptions,
         **kwargs,
     )
 
