@@ -147,11 +147,11 @@ class ScoreCard:
         default_metrics: Optional[List[Metric]] = None,
         custom_metrics: Optional[List[Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
-        surpress_warnings: bool = False,
+        raise_exceptions: bool = False,
     ) -> None:
-        if surpress_warnings:
-            state = get_global_state()
-            state.run_type = RunType.dev
+        state = get_global_state()
+        if raise_exceptions:
+            state.run_type = RunType.test
             set_global_state(state)
 
         dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
