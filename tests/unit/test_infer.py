@@ -28,3 +28,8 @@ def test_recognize_binary_data():
         infer_dataset_type(pd.Series([0.0, 1.0, 1.0, 0.0]))
         is DatasetType.classification_binary_balanced
     )
+
+    assert (
+        infer_dataset_type(pd.Series([0.0, 0.0, 1.0, 0.0, 0.0, 0.0]))
+        is DatasetType.classification_binary_imbalanced
+    )

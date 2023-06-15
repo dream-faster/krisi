@@ -78,7 +78,7 @@ def infer_dataset_type(y: Targets) -> DatasetType:
             return DatasetType.regression
         if len(set(y)) == 2:
             class_1 = y[0]
-            no_of_class_1 = len(y == class_1)
+            no_of_class_1 = np.count_nonzero(y == class_1)
             ratio = no_of_class_1 / len(y)
             if ratio < 0.2 or ratio > 0.8:
                 return DatasetType.classification_binary_imbalanced
