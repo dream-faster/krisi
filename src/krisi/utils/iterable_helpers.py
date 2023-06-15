@@ -134,7 +134,7 @@ def wrap_in_list(input: Union[T, List[T]]) -> List[T]:
     return input if isinstance(input, List) else [input]
 
 
-def replace_if_None(input: Any, replacement: Any) -> Any:
+def replace_if_none(input: Any, replacement: Any) -> Any:
     return replacement if input is None else input
 
 
@@ -154,7 +154,7 @@ def del_dict_keys(d: dict, keys: Union[str, List[str]]) -> dict:
     return {k: v for k, v in d.items() if k not in keys}
 
 
-def empty_if_None(metrics: Optional[List]) -> List:
+def empty_if_none(metrics: Optional[List]) -> List:
     return metrics if metrics is not None else []
 
 

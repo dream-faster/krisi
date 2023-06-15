@@ -15,7 +15,7 @@ sc = score(
     y=y,
     predictions=preds,
     probabilities=probs,
-    # dataset_type="classification_binary", # if automatic inference of dataset type fails
+    # dataset_type="classification_binary_balanced", # if automatic inference of dataset type fails
     calculation="single",
 )
 sc.print()
@@ -24,7 +24,7 @@ sc = score(
     y=y,
     predictions=preds,
     probabilities=probs,
-    # dataset_type="classification_binary", # if automatic inference of dataset type fails
+    # dataset_type="classification_binary_balanced", # if automatic inference of dataset type fails
     calculation="both",
 )
 sc.print()

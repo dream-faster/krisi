@@ -21,9 +21,15 @@ def test_recognize_regression_data():
 
 def test_recognize_binary_data():
     assert (
-        infer_dataset_type(pd.Series([0, 1, 1, 0])) is DatasetType.classification_binary
+        infer_dataset_type(pd.Series([0, 1, 1, 0]))
+        is DatasetType.classification_binary_balanced
     )
     assert (
         infer_dataset_type(pd.Series([0.0, 1.0, 1.0, 0.0]))
-        is DatasetType.classification_binary
+        is DatasetType.classification_binary_balanced
+    )
+
+    assert (
+        infer_dataset_type(pd.Series([0.0, 0.0, 1.0, 0.0, 0.0, 0.0]))
+        is DatasetType.classification_binary_imbalanced
     )

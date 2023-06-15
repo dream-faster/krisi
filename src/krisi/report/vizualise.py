@@ -1,10 +1,10 @@
 import pkgutil
-from enum import Enum
 from typing import TYPE_CHECKING, List, Optional, Union
 
 import pandas as pd
 
 from krisi.report.type import InteractiveFigure
+from krisi.utils.enums import ParsableEnum
 from krisi.utils.iterable_helpers import wrap_in_list
 from krisi.utils.state import RunType, get_global_state
 
@@ -12,19 +12,9 @@ if TYPE_CHECKING:
     import plotly.graph_objects as go
 
 
-class VizualisationMethod(Enum):
+class VizualisationMethod(ParsableEnum):
     overlap = "overlap"
     seperate = "seperate"
-
-    @staticmethod
-    def from_str(value: Union[str, "VizualisationMethod"]) -> "VizualisationMethod":
-        if isinstance(value, VizualisationMethod):
-            return value
-        for strategy in VizualisationMethod:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown VizualisationMethod: {value}")
 
 
 def __calc_plot_names(

@@ -9,8 +9,8 @@ from krisi.evaluate.library.benchmarking import (
     model_benchmarking,
 )
 from krisi.evaluate.library.default_metrics_classification import (
-    benchmarking,
-    binary_classification_metrics,
+    binary_classification_balanced_metrics,
+    binary_classification_metrics_balanced_benchmarking,
     f_one_score_macro,
 )
 from krisi.sharedtypes import Task
@@ -44,7 +44,7 @@ def test_benchmarking_random():
 
 
 def test_benchmarking_random_all_metrics():
-    groupped_metric = benchmarking
+    groupped_metric = binary_classification_metrics_balanced_benchmarking
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
@@ -56,7 +56,7 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[groupped_metric],
+        default_metrics=groupped_metric,
     )
     sc.print()
 
@@ -65,7 +65,7 @@ def test_perfect_to_best():
     benchmark = Group[pd.Series](
         name="benchmarking",
         key="benchmarking",
-        metrics=binary_classification_metrics,
+        metrics=binary_classification_balanced_metrics,
         postprocess_funcs=[
             model_benchmarking(PerfectModel()),
             model_benchmarking(WorstModel()),
