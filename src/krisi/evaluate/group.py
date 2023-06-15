@@ -27,6 +27,8 @@ def deepcopy_and_evaluate(
 
 
 class Group(Metric, Generic[MetricResult]):
+    metrics: List[Metric]
+
     def __init__(
         self,
         name: str,
@@ -49,8 +51,8 @@ class Group(Metric, Generic[MetricResult]):
         self.metrics = deepcopy(metrics)
         self.purpose = purpose
 
-        # for metric in self.metrics:
-        #     metric.key = f"{metric.key}_{self.key}"
+        for metric in self.metrics:
+            metric.key = f"{metric.key}_{self.key}"
 
     def _preprocess(
         self,
@@ -94,7 +96,12 @@ class Group(Metric, Generic[MetricResult]):
                 )
 
             all_metrics = all_metrics_
-        return all_metrics
+        self.metrics = all_metrics
+
+        return self.metrics
+
+    def get_all_metrics(self) -> List[Metric]:
+        return self.metrics
 
     def __handle_args_to_pass_in(
         self,
@@ -115,6 +122,10 @@ class Group(Metric, Generic[MetricResult]):
         else:
             return result
 
+    def evaluate_rolling_properties(self):
+        for metric in self.metrics:
+            metric.evaluate_rolling_properties()
+
     def evaluate(
         self,
         y: TargetsDS,
@@ -126,7 +137,6 @@ class Group(Metric, Generic[MetricResult]):
             return []
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        all_metrics = []
         for metric in self.metrics:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
@@ -140,10 +150,9 @@ class Group(Metric, Generic[MetricResult]):
                     *args_to_pass,
                     sample_weight=sample_weight,
                 )
-            all_metrics.append(metric)
 
         return self._postprocess(
-            all_metrics,
+            self.metrics,
             y,
             predictions,
             probabilities,
@@ -163,7 +172,6 @@ class Group(Metric, Generic[MetricResult]):
             return []
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        all_metrics = []
         for metric in self.metrics:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
@@ -178,10 +186,9 @@ class Group(Metric, Generic[MetricResult]):
                     sample_weight=sample_weight,
                     rolling_args=rolling_args,
                 )
-            all_metrics.append(metric)
 
         return self._postprocess(
-            all_metrics,
+            self.metrics,
             y,
             predictions,
             probabilities,

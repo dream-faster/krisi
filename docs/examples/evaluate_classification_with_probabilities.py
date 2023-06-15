@@ -19,12 +19,13 @@ sc = score(
     calculation="single",
 )
 sc.print()
-sc.generate_report()
 
-score(
+sc = score(
     y=y,
     predictions=preds,
     probabilities=probs,
     # dataset_type="classification_binary", # if automatic inference of dataset type fails
-    calculation="rolling",
-).print()
+    calculation="both",
+)
+sc.print()
+sc.generate_report()
