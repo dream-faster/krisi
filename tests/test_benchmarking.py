@@ -13,11 +13,11 @@ from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_metrics,
     f_one_score_macro,
 )
+from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
     generate_synthetic_predictions_binary,
 )
-from krisi.utils.devutils.type import Task
 
 
 def test_benchmarking_random():
