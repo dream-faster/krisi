@@ -69,7 +69,7 @@ def model_benchmarking(model: Model) -> Callable:
         rolling: bool,
     ) -> List[Metric]:
         if rolling:
-            return []
+            return all_metrics
         benchmark_predictions, benchmark_probabilities = model.predict(y, sample_weight)
 
         for metric in all_metrics:

@@ -144,8 +144,8 @@ class ScoreCard:
         project_description: str = "",
         dataset_type: Optional[Union[DatasetType, str]] = None,
         sample_type: SampleTypes = SampleTypes.outofsample,
-        default_metrics: Optional[List[Metric]] = None,
-        custom_metrics: Optional[List[Metric]] = None,
+        default_metrics: Optional[Union[List[Metric], Metric]] = None,
+        custom_metrics: Optional[Union[List[Metric], Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
         raise_exceptions: bool = False,
     ) -> None:
@@ -423,33 +423,17 @@ class ScoreCard:
     ):
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                if isinstance(metric, Group):
-                    group = metric
-                    for metric_in_group in getattr(group, func_key_evaluate)(
-                        self.y,
-                        self.predictions,
-                        self.probabilities,
-                        self.sample_weight,
-                        **rolling_args,
-                    ):
-                        if metric_in_group.key not in self.__dict__:
-                            metric_in_group._from_group = True
-                            self[metric_in_group.key] = metric_in_group
-                        else:
-                            self[metric_in_group.key] = {
-                                result_key: metric_in_group.result,
-                                "_from_group": True,
-                            }
-                else:
-                    getattr(metric, func_key_evaluate)(
-                        self.y,
-                        self.predictions,
-                        self.probabilities,
-                        self.sample_weight,
-                        **rolling_args,
-                    )
-            if func_key_evaluate == "evaluate_over_time":
-                metric.evaluate_rolling_properties()
+                getattr(metric, func_key_evaluate)(
+                    self.y,
+                    self.predictions,
+                    self.probabilities,
+                    self.sample_weight,
+                    **rolling_args,
+                )
+
+    def evaluate_rolling_properties(self):
+        for metric in self.get_all_metrics(defaults=True):
+            metric.evaluate_rolling_properties()
 
     def evaluate(self, defaults: bool = True) -> None:
         """
@@ -493,6 +477,7 @@ class ScoreCard:
             defaults=defaults,
             rolling_args={"rolling_args": self.rolling_args},
         )
+        self.evaluate_rolling_properties()
 
     def print(
         self,
@@ -552,6 +537,23 @@ class ScoreCard:
                 display(to_display)
             else:
                 print(to_display)
+
+    def cleanup_group(self) -> None:
+        for metric in self.get_all_metrics(defaults=True):
+            if isinstance(metric, Group):
+                group = metric
+                for metric_in_group in group.get_all_metrics():
+                    if metric_in_group.key not in self.__dict__:
+                        metric_in_group._from_group = True
+                        self[metric_in_group.key] = metric_in_group
+                    else:
+                        self[metric_in_group.key] = {
+                            f"result_{group.key}": metric_in_group.__dict__["result"],
+                            f"result_rolling_{group.key}": metric_in_group.__dict__[
+                                "result_rolling"
+                            ],
+                            "_from_group": True,
+                        }
 
     def save(
         self,

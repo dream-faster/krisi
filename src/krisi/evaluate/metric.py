@@ -141,7 +141,7 @@ class Metric(Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
-    ) -> Metric:
+    ) -> None:
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
@@ -159,7 +159,6 @@ class Metric(Generic[MetricResult]):
             self._evaluation(y, predictions, sample_weight=sample_weight)
         if sample_weight is not None:
             self.__dict__["diagnostics"] = dict(used_sample_weight=True)
-        return self
 
     @staticmethod
     def __handle_window(
@@ -255,7 +254,7 @@ class Metric(Generic[MetricResult]):
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
         rolling_args: dict = dict(),
-    ) -> Metric:
+    ) -> None:
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
                 y=y,
@@ -271,7 +270,6 @@ class Metric(Generic[MetricResult]):
                 sample_weight=sample_weight,
                 rolling_args=rolling_args,
             )
-        return self
 
     def evaluate_rolling_properties(self):
         if check_iterable_with_number(self.result_rolling):
@@ -319,20 +317,6 @@ class Metric(Generic[MetricResult]):
             raise ValueError("This metric already contains a result.")
         else:
             self.__dict__[key] = result
-
-    # def __add__(self, other):
-    #     result = getattr(self, "result", 0)
-    #     result_rolling = getattr(self, "result_rolling", 0)
-    #     result += other
-    #     result_rolling += other
-
-    # object.__sub__(self, other)
-    # object.__mul__(self, other)
-    # object.__matmul__(self, other)
-    # object.__truediv__(self, other)
-    # object.__floordiv__(self, other)
-    # object.__mod__(self, other)
-    # object.__divmod__(self, other)
 
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:

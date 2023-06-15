@@ -142,7 +142,7 @@ def plot_corr_over_time(
     step: int = 1,
     name: str = "",
     save_or_display: List[Literal["save", "display"]] = ["display"],
-    save_location: str = "structured_data/plots",
+    save_location: str = "output/structured_data/plots",
     top_k: int = 2,
 ) -> None:
     (

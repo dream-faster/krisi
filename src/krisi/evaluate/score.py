@@ -21,8 +21,8 @@ def score(
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
-    default_metrics: Optional[List[Metric]] = None,
-    custom_metrics: Optional[List[Metric]] = None,
+    default_metrics: Optional[Union[List[Metric], Metric]] = None,
+    custom_metrics: Optional[Union[List[Metric], Metric]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: SampleTypes = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
@@ -107,7 +107,9 @@ def score(
     elif calculation == Calculation.both:
         sc.evaluate()
         sc.evaluate_over_time()
+
     else:
         raise ValueError(f"Calculation type {calculation} not recognized.")
 
+    sc.cleanup_group()
     return sc
