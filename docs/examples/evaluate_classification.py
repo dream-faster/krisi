@@ -15,4 +15,5 @@ score(
     y=y,
     predictions=preds,
     # dataset_type="classification_multilabel", # if automatic inference of dataset type fails
+    calculation="both",
 ).print()

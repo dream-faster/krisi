@@ -148,7 +148,7 @@ def __create_corr_network(
 
 
 def create_animation(
-    path: str = "structured_data/plots", file_suffix: str = "positive"
+    path: str = "output/structured_data/plots", file_suffix: str = "positive"
 ):
     import os
 
