@@ -40,6 +40,7 @@ class Group(Metric, Generic[MetricResult]):
             Union[List[PostProcessFunction], PostProcessFunction]
         ] = None,
         purpose: Purpose = Purpose.group,
+        append_key: bool = True,
     ) -> None:
         self.calculation = Calculation.from_str(calculation)
         self.preprocess_func = preprocess_func
@@ -50,9 +51,9 @@ class Group(Metric, Generic[MetricResult]):
         self.name = name
         self.metrics = deepcopy(metrics)
         self.purpose = purpose
-
-        for metric in self.metrics:
-            metric.key = f"{metric.key}_{self.key}"
+        if append_key:
+            for metric in self.metrics:
+                metric.key = f"{metric.key}_{self.key}"
 
     def _preprocess(
         self,

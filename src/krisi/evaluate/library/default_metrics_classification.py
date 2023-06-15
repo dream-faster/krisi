@@ -242,10 +242,11 @@ binary_classification_metrics = [
     s_score,
 ]
 benchmarking = Group[pd.Series](
-    name="benchmarking",
-    key="benchmarking",
+    name="benchmark",
+    key="benchmark",
     metrics=binary_classification_metrics,
     postprocess_funcs=[model_benchmarking(RandomClassifier())],
+    append_key=False,
 )
 
 binary_classification_metrics_benchmarking = [benchmarking]
