@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
+    balanced_accuracy_score,
+    cohen_kappa_score,
     f1_score,
     log_loss,
     matthews_corrcoef,
@@ -36,6 +38,17 @@ accuracy_binary = Metric[float](
     purpose=Purpose.objective,
 )
 """ ~ """
+accuracy_binary_balanced = Metric[float](
+    name="Balanced Accuracy",
+    key="balanced_accuracy",
+    category=MetricCategories.class_err,
+    info="Compute the balanced accuracy. The balanced accuracy in binary and multiclass classification problems to deal with imbalanced datasets. It is defined as the average of recall obtained on each class.",
+    func=balanced_accuracy_score,
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
+)
+""" ~ """
 
 recall_binary, recall_macro = [
     Metric[float](
@@ -66,6 +79,18 @@ precision_binary, precision_macro = [
     )
     for mode in ["binary", "macro"]
 ]
+
+kappa = Metric[float](
+    name="Cohen's Kappa",
+    key="kappa",
+    category=MetricCategories.class_err,
+    info="Compute Cohen’s kappa: a statistic that measures inter-annotator agreement. This function computes Cohen’s kappa [1], a score that expresses the level of agreement between two annotators on a classification problem. ",
+    func=cohen_kappa_score,
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    purpose=Purpose.objective,
+)
+
 """~"""
 f_one_score_binary, f_one_score_macro, f_one_score_micro, f_one_score_weighted = [
     Metric[float](
@@ -224,7 +249,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
 # )
 
 
-binary_classification_metrics = [
+binary_classification_balanced_metrics = [
     accuracy_binary,
     recall_binary,
     precision_binary,
@@ -232,6 +257,7 @@ binary_classification_metrics = [
     f_one_score_macro,
     f_one_score_micro,
     f_one_score_weighted,
+    kappa,
     matthew_corr,
     brier_score,
     calibration,
@@ -241,15 +267,39 @@ binary_classification_metrics = [
     cross_entropy,
     s_score,
 ]
-benchmarking = Group[pd.Series](
-    name="benchmark",
-    key="benchmark",
-    metrics=binary_classification_metrics,
-    postprocess_funcs=[model_benchmarking(RandomClassifier())],
-    append_key=False,
-)
 
-binary_classification_metrics_benchmarking = [benchmarking]
+binary_classification_imbalanced_metrics = [
+    accuracy_binary_balanced,
+    recall_macro,
+    precision_macro,
+    f_one_score_binary,
+    f_one_score_macro,
+    kappa,
+    matthew_corr,
+    brier_score,
+    calibration,
+    roc_auc_binary_macro,
+    cross_entropy,
+]
+binary_classification_metrics_balanced_benchmarking = [
+    Group[pd.Series](
+        name="benchmark",
+        key="benchmark",
+        metrics=binary_classification_balanced_metrics,
+        postprocess_funcs=[model_benchmarking(RandomClassifier())],
+        append_key=False,
+    )
+]
+binary_classification_metrics_imbalanced_benchmarking = [
+    Group[pd.Series](
+        name="benchmark",
+        key="benchmark",
+        metrics=binary_classification_imbalanced_metrics,
+        postprocess_funcs=[model_benchmarking(RandomClassifier())],
+        append_key=False,
+    )
+]
+
 
 """~"""
 minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]

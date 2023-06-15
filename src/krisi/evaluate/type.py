@@ -54,20 +54,10 @@ class SampleTypes(Enum):
     outofsample = "outofsample"
 
 
-class Calculation(Enum):
+class Calculation(ParsableEnum):
     single = "single"
     rolling = "rolling"
     both = "both"
-
-    @staticmethod
-    def from_str(value: Union[str, Calculation]) -> Calculation:
-        if isinstance(value, Calculation):
-            return value
-        for calc in Calculation:
-            if calc.value == value:
-                return calc
-        else:
-            raise ValueError(f"Unknown Calculation: {value}")
 
 
 class SaveModes(Enum):
@@ -111,20 +101,10 @@ class ScoreCardMetadata:
         super().__setattr__(key, item)
 
 
-class PrintMode(Enum):
+class PrintMode(ParsableEnum):
     extended = "extended"
     minimal = "minimal"
     minimal_table = "minimal_table"
-
-    @staticmethod
-    def from_str(value: Union[str, PrintMode]) -> PrintMode:
-        if isinstance(value, PrintMode):
-            return value
-        for strategy in PrintMode:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown PrintMode: {value}")
 
 
 class NamingPrefixes:
@@ -133,24 +113,16 @@ class NamingPrefixes:
     project = "Project_"
 
 
-class DatasetType(Enum):
+class DatasetType(ParsableEnum):
     regression = "regression"
-    classification_binary = "classification_binary"
+    classification_binary_balanced = "classification_binary_balanced"
+    classification_binary_imbalanced = "classification_binary_imbalanced"
     classification_multiclass = "classification_multiclass"
-
-    @staticmethod
-    def from_str(value: Union[str, DatasetType]) -> DatasetType:
-        if isinstance(value, DatasetType):
-            return value
-        for strategy in DatasetType:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown DatasetType: {value}")
 
     def is_classification(self):
         return self in [
-            DatasetType.classification_binary,
+            DatasetType.classification_binary_balanced,
+            DatasetType.classification_binary_imbalanced,
             DatasetType.classification_multiclass,
         ]
 

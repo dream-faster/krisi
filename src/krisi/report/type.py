@@ -1,9 +1,10 @@
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 from typing_extensions import Literal
+
+from krisi.utils.enums import ParsableEnum
 
 if TYPE_CHECKING:
     import plotly.graph_objects as go
@@ -41,22 +42,12 @@ class InteractiveFigure:
     plot_args: Dict[str, Any] = field(default_factory=dict)
 
 
-class DisplayModes(Enum):
+class DisplayModes(ParsableEnum):
     interactive = "interactive"
     pdf = "pdf"
     direct = "direct"
     direct_save = "direct_save"
     direct_one_subplot = "direct_one_subplot"
-
-    @staticmethod
-    def from_str(value: Union[str, "DisplayModes"]) -> "DisplayModes":
-        if isinstance(value, DisplayModes):
-            return value
-        for strategy in DisplayModes:
-            if strategy.value == value:
-                return strategy
-        else:
-            raise ValueError(f"Unknown DisplayModes: {value}")
 
 
 def plotly_interactive(
