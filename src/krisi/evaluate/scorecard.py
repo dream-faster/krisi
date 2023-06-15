@@ -51,11 +51,11 @@ from krisi.report.type import DisplayModes, InteractiveFigure
 from krisi.utils.environment import is_notebook
 from krisi.utils.io import ensure_path, save_console, save_minimal_summary, save_object
 from krisi.utils.iterable_helpers import (
-    empty_if_None,
+    empty_if_none,
     flatten,
     map_newdict_on_olddict,
     remove_nans,
-    replace_if_None,
+    replace_if_none,
     strip_builtin_functions,
     wrap_in_list,
 )
@@ -164,7 +164,7 @@ class ScoreCard:
         )
 
         check_no_duplicate_metrics(
-            empty_if_None(default_metrics) + empty_if_None(custom_metrics)
+            empty_if_none(default_metrics) + empty_if_none(custom_metrics)
         )
         self.__dict__["y"] = convert_to_series(y, "y")
         self.__dict__["predictions"] = convert_to_series(predictions, "predictions")
@@ -574,7 +574,7 @@ class ScoreCard:
             else:
                 dir_model_name = datetime.datetime.now().strftime("%H-%M-%S-%f")
 
-        path = replace_if_None(
+        path = replace_if_none(
             override_base_path,
             os.path.join(
                 self.metadata.save_path,
@@ -619,7 +619,7 @@ class ScoreCard:
         report_title: Optional[str] = None,
         override_base_path: Optional[Path] = None,
     ) -> None:
-        save_path = replace_if_None(override_base_path, self.metadata.save_path)
+        save_path = replace_if_none(override_base_path, self.metadata.save_path)
         ensure_path(save_path)
 
         display_modes = [
@@ -631,7 +631,7 @@ class ScoreCard:
             html_template_url,
             css_template_url,
             author=author,
-            report_title=replace_if_None(
+            report_title=replace_if_none(
                 report_title, f"Report on {self.metadata.project_name}"
             ),
             save_path=save_path,

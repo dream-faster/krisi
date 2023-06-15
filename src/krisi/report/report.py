@@ -18,7 +18,7 @@ from krisi.utils.iterable_helpers import (
     flatten,
     group_by_categories,
     remove_nans,
-    replace_if_None,
+    replace_if_none,
     wrap_in_list,
 )
 from krisi.utils.state import RunType, get_global_state
@@ -58,7 +58,7 @@ class Report:
         self.html_template_url = html_template_url
         self.css_template_url = css_template_url
         self.get_html_elements = get_html_elements
-        self.save_path = replace_if_None(
+        self.save_path = replace_if_none(
             save_path,
             Path(os.path.join(PathConst.default_eval_output_path, Path(title))),
         )
