@@ -56,7 +56,7 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[groupped_metric],
+        default_metrics=groupped_metric,
     )
     sc.print()
 
