@@ -118,7 +118,7 @@ def calculate_calibration_bins(
 
 
 def callibration_plot(
-    data: MetricResult, n_bins: int, pos_label: int, **kwargs
+    data: MetricResult, n_bins: int = 8, pos_label: int = 1, **kwargs
 ) -> "go.Figure":
     import plotly.graph_objects as go
 
