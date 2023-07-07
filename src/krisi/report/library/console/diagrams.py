@@ -25,7 +25,7 @@ def line_plot(data: pd.Series, width: float, height: float, title: str) -> str:
 def callibration_plot(data: pd.Series, width: float, height: float, title: str) -> str:
     plx.clf()
 
-    fraction_positives, bins = calculate_calibration_bins(data)
+    fraction_positives, bins = calculate_calibration_bins(data, pos_label=1, n_bins=8)
     plx.plot(
         bins, fraction_positives, marker="hd", color="red", label="Calibration Curve"
     )
