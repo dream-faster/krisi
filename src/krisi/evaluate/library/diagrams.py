@@ -106,33 +106,23 @@ def display_density_plot(data: MetricResult, **kwargs) -> "go.Figure":
 
 
 def calculate_calibration_bins(
-    data: MetricResult, n_bins: int = 10, **kwargs
+    data: MetricResult, pos_label: int, n_bins: int, **kwargs
 ) -> Tuple[np.ndarray, np.ndarray]:
     y_true = data["y"]
     y_prob = data["probs"]
 
-    prob_true, prob_pred = calibration_curve(y_true, y_prob, n_bins=n_bins)
+    prob_true, prob_pred = calibration_curve(
+        y_true, y_prob, pos_label=pos_label, n_bins=n_bins
+    )
     return prob_true, prob_pred
-    # # sort probabilities and corresponding true labels in ascending order
-    # order = np.argsort(y_prob)
-    # y_true = y_true[order]
-    # y_prob = y_prob[order]
-
-    # # calculate fraction of positives at each probability bin
-    # bins = np.arange(0, 1.1, bin_size)
-    # bin_indices = np.digitize(y_prob, bins)
-    # bin_counts = np.bincount(bin_indices, minlength=len(bins) + 1)
-
-    # num_positives = np.cumsum(bin_counts[:-1])
-    # fraction_positives = num_positives / (num_positives + np.sum(y_true))
-
-    # return fraction_positives, bins
 
 
-def callibration_plot(data: MetricResult, n_bins: int = 10, **kwargs) -> "go.Figure":
+def callibration_plot(
+    data: MetricResult, n_bins: int = 8, pos_label: int = 1, **kwargs
+) -> "go.Figure":
     import plotly.graph_objects as go
 
-    fraction_positives, bins = calculate_calibration_bins(data, n_bins)
+    fraction_positives, bins = calculate_calibration_bins(data, pos_label, n_bins)
     scatter = go.Scatter(
         x=bins, y=fraction_positives, mode="lines+markers", name="Data Points"
     )
