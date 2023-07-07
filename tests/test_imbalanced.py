@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate import score
@@ -27,3 +28,6 @@ def test_benchmarking_random_all_metrics():
         default_metrics=groupped_metric,
     )
     sc.print()
+
+    assert sc["imbalance_ratio_y"].result == 0.5
+    assert np.isclose(sc["imbalance_ratio_pred_y"].result, 1.0, atol=0.1)
