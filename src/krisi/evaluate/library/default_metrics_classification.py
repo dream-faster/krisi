@@ -21,8 +21,10 @@ from krisi.evaluate.library.diagrams import (
 from krisi.evaluate.library.metric_wrappers import (
     bennet_s,
     brier_multi,
+    pred_y_imbalance_ratio,
     wrap_brier_score,
     wrap_roc_auc,
+    y_label_imbalance_ratio,
 )
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import Calculation, MetricCategories, Purpose
@@ -248,6 +250,33 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
 #     supports_multiclass=True,
 # )
 
+imbalance_ratio_y = Metric[float](
+    name="Imbalance Ratio: labels in y",
+    key="imbalance_ratio_y",
+    category=MetricCategories.class_err,
+    info="Measurement of how skewed the target dataset is",
+    func=y_label_imbalance_ratio,
+    parameters={"pos_label": 1},
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=False,
+    supports_multiclass=False,
+    purpose=Purpose.diagram,
+)
+imbalance_ratio_pred_y = Metric[float](
+    name="Imbalance Ratio: y vs pred",
+    key="imbalance_ratio_pred_y",
+    category=MetricCategories.class_err,
+    info="Measurement of how skewed the pos_label for prediction vs target is",
+    func=pred_y_imbalance_ratio,
+    parameters={"pos_label": 1},
+    plot_funcs=[(display_single_value, dict(width=750.0))],
+    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+    accepts_probabilities=False,
+    supports_multiclass=False,
+    purpose=Purpose.diagram,
+)
+
 
 binary_classification_balanced_metrics = [
     accuracy_binary,
@@ -280,6 +309,8 @@ binary_classification_imbalanced_metrics = [
     calibration,
     roc_auc_binary_macro,
     cross_entropy,
+    imbalance_ratio_y,
+    imbalance_ratio_pred_y,
 ]
 binary_classification_metrics_balanced_benchmarking = [
     Group[pd.Series](
