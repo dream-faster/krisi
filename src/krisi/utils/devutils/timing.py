@@ -1,4 +1,5 @@
 from time import monotonic
+from typing import Any, Callable, Tuple
 
 import numpy as np
 import pandas as pd
@@ -18,11 +19,12 @@ predictions = pd.Series(np.random.rand(lengthofdataset), name="predictions")
 window = 30
 
 
-def timeingit(func):
+def timeingit(func: Callable) -> Tuple[Any, float]:
     start_time = monotonic()
     res = func()
-    print(f"Run time: {monotonic() - start_time} seconds")
-    return res
+    runtime = monotonic() - start_time
+    print(f"Run time: {runtime} seconds")
+    return res, runtime
 
 
 def func1():
