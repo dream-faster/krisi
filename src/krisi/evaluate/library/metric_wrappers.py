@@ -86,3 +86,36 @@ def bennet_s(
 
     S_Score = (2 * p_0) - 1
     return S_Score
+
+
+def y_label_imbalance_ratio(
+    y: TargetsDS,
+    preds: PredictionsDS,
+    sample_weight: Optional[WeightsDS] = None,
+    pos_label: int = 1,
+    **kwargs,
+) -> float:
+    label_frequencies = y.value_counts(normalize=True).dropna()
+    if len(label_frequencies) == 2:
+        return label_frequencies[pos_label]
+    else:
+        raise ValueError(
+            f"Imbalance only works on binary classification problems, got more than 2 labels: {label_frequencies}"
+        )
+
+
+def pred_y_imbalance_ratio(
+    y: TargetsDS,
+    preds: PredictionsDS,
+    sample_weight: Optional[WeightsDS] = None,
+    pos_label: int = 1,
+    **kwargs,
+) -> float:
+    prediction_frequencies = preds.value_counts().dropna()
+    target_frequencies = y.value_counts().dropna()
+    if len(prediction_frequencies) != 2 or len(target_frequencies) != 2:
+        raise ValueError(
+            f"pred_y_imbalance_ratio only works on binary classification problems, got more than 2 labels for either preds: {prediction_frequencies} or target: {target_frequencies}"
+        )
+
+    return prediction_frequencies[pos_label] / target_frequencies[pos_label]
