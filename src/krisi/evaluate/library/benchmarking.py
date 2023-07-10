@@ -36,14 +36,15 @@ class RandomClassifier(Model):
 
 
 class RandomClassifierSmoothed(Model):
-    def __init__(self) -> None:
+    def __init__(self, smoothing_window: int) -> None:
         self.name = "NS-Smooth"
+        self.smoothing_window = smoothing_window
 
     def predict(
         self, y: pd.Series, sample_weight: WeightsDS
     ) -> Tuple[pd.Series, pd.DataFrame]:
         preds_probs = generate_synthetic_predictions_binary(
-            y, sample_weight, smoothing_window=len(y) // 50
+            y, sample_weight, smoothing_window=self.smoothing_window
         )
         predictions = preds_probs.iloc[:, 0]
         probabilities = preds_probs.iloc[:, 1:3]
