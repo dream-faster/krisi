@@ -35,6 +35,21 @@ class RandomClassifier(Model):
         return predictions, probabilities
 
 
+class RandomClassifierSmoothed(Model):
+    def __init__(self) -> None:
+        self.name = "NS-Smooth"
+
+    def predict(
+        self, y: pd.Series, sample_weight: WeightsDS
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        preds_probs = generate_synthetic_predictions_binary(
+            y, sample_weight, smoothing_window=len(y) // 50
+        )
+        predictions = preds_probs.iloc[:, 0]
+        probabilities = preds_probs.iloc[:, 1:3]
+        return predictions, probabilities
+
+
 class PerfectModel(Model):
     def __init__(self) -> None:
         self.name = "PM"
