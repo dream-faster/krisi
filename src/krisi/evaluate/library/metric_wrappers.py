@@ -116,7 +116,7 @@ def pred_y_imbalance_ratio(
 ) -> float:
     prediction_frequencies = preds.value_counts().dropna()
     target_frequencies = y.value_counts().dropna()
-    if len(prediction_frequencies) == 1 or len(target_frequencies) != 1:
+    if len(prediction_frequencies) == 1 or len(target_frequencies) == 1:
         logger.warning("Only one class in either predictions or target, returning 0")
         return 0.0
     elif len(prediction_frequencies) != 2 or len(target_frequencies) != 2:
