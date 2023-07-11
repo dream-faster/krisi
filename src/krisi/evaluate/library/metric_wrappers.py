@@ -114,8 +114,8 @@ def pred_y_imbalance_ratio(
     pos_label: int = 1,
     **kwargs,
 ) -> float:
-    prediction_frequencies = preds.value_counts().dropna()
-    target_frequencies = y.value_counts().dropna()
+    prediction_frequencies = preds.value_counts(normalize=True).dropna()
+    target_frequencies = y.value_counts(normalize=True).dropna()
     if len(prediction_frequencies) == 1 or len(target_frequencies) == 1:
         logger.warning("Only one class in either predictions or target, returning 0")
         return 0.0
@@ -124,4 +124,4 @@ def pred_y_imbalance_ratio(
             f"pred_y_imbalance_ratio only works on binary classification problems, got more than 2 labels for either preds: {prediction_frequencies} or target: {target_frequencies}"
         )
 
-    return prediction_frequencies[pos_label] / target_frequencies[pos_label]
+    return abs(target_frequencies[pos_label] - prediction_frequencies[pos_label])
