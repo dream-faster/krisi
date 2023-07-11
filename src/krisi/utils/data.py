@@ -172,23 +172,35 @@ def generate_synthetic_predictions_binary(
     target: pd.Series,
     sample_weights: Optional[pd.Series] = None,
     index: Optional[pd.Index] = None,
+    smoothing_window: Optional[int] = None,
 ) -> pd.DataFrame:
     if index is None:
         index = target.index
     if sample_weights is None:
         sample_weights = pd.Series(np.ones(len(target)), index=index)
     target = target.copy()
-    target[target == 0.0] = -1
-    prob_mean_class_1 = (target * sample_weights).mean() / 2 + 0.5
-    prob_class_1 = np.random.normal(prob_mean_class_1, 0.1, len(index)).clip(0, 1)
+
+    weighted_target = target * sample_weights
+    expanding_target_mean = weighted_target.expanding(min_periods=1).mean()
+    prob_mean_class_1 = expanding_target_mean.mean()
+    prob_std_class_1 = expanding_target_mean.std()
+    prob_class_1 = pd.Series(
+        np.random.normal(prob_mean_class_1, prob_std_class_1, len(index)).clip(0, 1)
+    )
+
+    if smoothing_window is not None:
+        prob_class_1 = prob_class_1.rolling(
+            window=smoothing_window, min_periods=1
+        ).mean()
+
     prob_class_0 = 1 - prob_class_1
     return pd.DataFrame(
         {
-            "predictions_RandomClassifier": (prob_class_1 > prob_mean_class_1).astype(
-                "int"
-            ),
-            "probabilities_RandomClassifier_0": prob_class_0,
-            "probabilities_RandomClassifier_1": prob_class_1,
+            "predictions_RandomClassifier": (prob_class_1 > prob_class_1.mean())
+            .astype("int")
+            .values,
+            "probabilities_RandomClassifier_0": prob_class_0.values,
+            "probabilities_RandomClassifier_1": prob_class_1.values,
         },
         index=index,
     )

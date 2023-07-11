@@ -1,3 +1,4 @@
+import math
 from copy import deepcopy
 from typing import Callable, List, Optional, Tuple
 
@@ -17,7 +18,7 @@ from krisi.utils.data import generate_synthetic_predictions_binary
 
 class Model:
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         raise NotImplementedError
 
@@ -27,9 +28,37 @@ class RandomClassifier(Model):
         self.name = "NS"
 
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+        predictions = preds_probs.iloc[:, 0]
+        probabilities = preds_probs.iloc[:, 1:3]
+        return predictions, probabilities
+
+
+class RandomClassifierSmoothed(Model):
+    def __init__(self, smoothing_window: Optional[int] = None) -> None:
+        self.name = "NS-Smooth"
+        self.smoothing_window = smoothing_window
+
+    def predict(
+        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        def get_avarage_change_length(ds: pd.Series) -> float:
+            # This only works for binary classification
+            indices = ds.diff().fillna(0).ne(0).cumsum()
+            differences = indices.groupby(indices).size()
+            return differences.mean()
+
+        smoothing_window = (
+            math.floor(get_avarage_change_length(y))
+            if self.smoothing_window is None
+            else self.smoothing_window
+        )
+
+        preds_probs = generate_synthetic_predictions_binary(
+            y, sample_weight, smoothing_window=smoothing_window
+        )
         predictions = preds_probs.iloc[:, 0]
         probabilities = preds_probs.iloc[:, 1:3]
         return predictions, probabilities
@@ -113,3 +142,9 @@ def model_benchmarking(model: Model) -> Callable:
         return all_metrics
 
     return postporcess_func
+
+
+if __name__ == "__main__":
+    RandomClassifierSmoothed().predict(
+        pd.Series([0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1]),
+    )

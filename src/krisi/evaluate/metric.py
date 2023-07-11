@@ -318,6 +318,15 @@ class Metric(Generic[MetricResult]):
         else:
             self.__dict__[key] = result
 
+    def reset_metric(self) -> Metric:
+        self.result = None
+        self.result_rolling = None
+        self.rolling_properties = None
+        self.diagnostics = None
+        self._from_group = False
+        self.comparison_result = None
+        return self
+
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_funcs_rolling is None:
