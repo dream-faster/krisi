@@ -18,7 +18,7 @@ from krisi.utils.data import generate_synthetic_predictions_binary
 
 class Model:
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         raise NotImplementedError
 
@@ -28,7 +28,7 @@ class RandomClassifier(Model):
         self.name = "NS"
 
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
         predictions = preds_probs.iloc[:, 0]
