@@ -190,13 +190,15 @@ def generate_synthetic_predictions_binary(
 
     if smoothing_window is not None:
         prob_class_1 = (
-            pd.Series(prob_class_1).ewm(span=smoothing_window, min_periods=2).mean()
+            pd.Series(prob_class_1)
+            .rolling(window=smoothing_window, min_periods=2)
+            .mean()
         )
 
     prob_class_0 = 1 - prob_class_1
     return pd.DataFrame(
         {
-            "predictions_RandomClassifier": (prob_class_1 > prob_mean_class_1).astype(
+            "predictions_RandomClassifier": (prob_class_1 > prob_class_1.mean()).astype(
                 "int"
             ),
             "probabilities_RandomClassifier_0": prob_class_0,
