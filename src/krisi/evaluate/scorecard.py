@@ -245,7 +245,7 @@ class ScoreCard:
 
             return scorecard_copy
         elif isinstance(key, str):
-            return getattr(self, key, Metric("Unknown Metric"))
+            return deepcopy(getattr(self, key, Metric("Unknown Metric")))
 
     def __delitem__(self, key: str) -> None:
         del self[key]
