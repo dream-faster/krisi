@@ -323,6 +323,8 @@ class Metric(Generic[MetricResult]):
         self.result_rolling = None
         self.rolling_properties = None
         self.diagnostics = None
+        self._from_group = False
+        self.comparison_result = None
         return self
 
 
