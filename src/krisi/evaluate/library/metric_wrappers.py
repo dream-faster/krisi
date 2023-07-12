@@ -97,7 +97,9 @@ def y_label_imbalance_ratio(
 ) -> float:
     label_frequencies = y.value_counts(normalize=True).dropna()
     if len(label_frequencies) == 2:
-        return label_frequencies[pos_label]
+        return min(
+            label_frequencies[pos_label], 1 - label_frequencies[pos_label]
+        )  # always returns the smaller of the two
     elif len(label_frequencies) == 1:
         logger.warning("Only one class in target, returning 0")
         return 0.0

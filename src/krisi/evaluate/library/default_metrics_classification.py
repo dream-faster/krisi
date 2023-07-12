@@ -262,6 +262,7 @@ imbalance_ratio_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
+    calculation=Calculation.single,
 )
 imbalance_ratio_pred_y = Metric[float](
     name="Imbalance Ratio: y vs pred",
@@ -275,6 +276,7 @@ imbalance_ratio_pred_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
+    calculation=Calculation.single,
 )
 
 
