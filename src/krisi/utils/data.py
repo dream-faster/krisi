@@ -211,7 +211,7 @@ def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
 
     undividable = len(df_copy) % chunk_size != 0
     if undividable:
-        df_copy = df_copy.iloc[: -(len(df_copy) % chunk_size), :]
+        df_copy = df_copy.iloc[: -(len(df_copy) % chunk_size)]
 
     np.random.shuffle(df_copy.values.reshape(-1, chunk_size, len(df_copy.columns)))
 
@@ -222,7 +222,7 @@ def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
         df_copy = pd.concat(
             [
                 df_copy[:insert_remained_at_index],
-                df.iloc[-(df_copy.shape[1] % chunk_size) + 1 :, :],
+                df[-(len(df) % chunk_size) :],
                 df_copy[insert_remained_at_index:],
             ],
             axis=0,
