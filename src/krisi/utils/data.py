@@ -208,5 +208,28 @@ def generate_synthetic_predictions_binary(
 
 def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
     df_copy = df.copy()
-    np.random.shuffle(df_copy.values.reshape(-1, chunk_size, df_copy.shape[1]))
+
+    undividable = len(df_copy) % chunk_size != 0
+    if undividable:
+        df_copy = df_copy.iloc[: -(len(df_copy) % chunk_size), :]
+
+    np.random.shuffle(df_copy.values.reshape(-1, chunk_size, len(df_copy.columns)))
+
+    if undividable:
+        insert_remained_at_index = (
+            np.random.randint(low=0, high=len(df) // chunk_size) * chunk_size
+        )
+        df_copy = pd.concat(
+            [
+                df_copy[:insert_remained_at_index],
+                df.iloc[-(df_copy.shape[1] % chunk_size) + 1 :, :],
+                df_copy[insert_remained_at_index:],
+            ],
+            axis=0,
+        )
+    df_copy.index = df.index
+
     return df_copy
+
+
+shuffle_df_in_chunks(pd.DataFrame(np.random.randn(10, 5)), 3)
