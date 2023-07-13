@@ -204,3 +204,9 @@ def generate_synthetic_predictions_binary(
         },
         index=index,
     )
+
+
+def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
+    df_copy = df.copy()
+    np.random.shuffle(df_copy.values.reshape(-1, chunk_size, df_copy.shape[1]))
+    return df_copy
