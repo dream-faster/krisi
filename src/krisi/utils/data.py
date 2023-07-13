@@ -230,6 +230,3 @@ def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
     df_copy.index = df.index
 
     return df_copy
-
-
-shuffle_df_in_chunks(pd.DataFrame(np.random.randn(10, 5)), 3)
