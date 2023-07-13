@@ -13,7 +13,7 @@ from krisi.evaluate.type import (
     TargetsDS,
     WeightsDS,
 )
-from krisi.utils.data import generate_synthetic_predictions_binary
+from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_in_chunks
 
 
 class Model:
@@ -59,6 +59,20 @@ class RandomClassifierSmoothed(Model):
         preds_probs = generate_synthetic_predictions_binary(
             y, sample_weight, smoothing_window=smoothing_window
         )
+        predictions = preds_probs.iloc[:, 0]
+        probabilities = preds_probs.iloc[:, 1:3]
+        return predictions, probabilities
+
+
+class RandomClassifierChunked(Model):
+    def __init__(self, chunk_size: int) -> None:
+        self.name = "NS-Smooth"
+        self.chunk_size = chunk_size
+
+    def predict(
+        self, preds_probs: pd.DataFrame, sample_weight: Optional[WeightsDS] = None
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        preds_probs = shuffle_df_in_chunks(preds_probs, self.chunk_size)
         predictions = preds_probs.iloc[:, 0]
         probabilities = preds_probs.iloc[:, 1:3]
         return predictions, probabilities
