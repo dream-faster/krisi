@@ -126,4 +126,7 @@ def pred_y_imbalance_ratio(
             f"pred_y_imbalance_ratio only works on binary classification problems, got more than 2 labels for either preds: {prediction_frequencies} or target: {target_frequencies}"
         )
 
-    return abs(target_frequencies[pos_label] - prediction_frequencies[pos_label])
+    return abs(
+        min(target_frequencies[pos_label], 1 - target_frequencies[pos_label])
+        - min(prediction_frequencies[pos_label], 1 - prediction_frequencies[pos_label])
+    )
