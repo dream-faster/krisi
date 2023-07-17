@@ -3,7 +3,12 @@ from typing import Any, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import brier_score_loss, confusion_matrix, roc_auc_score
+from sklearn.metrics import (
+    average_precision_score,
+    brier_score_loss,
+    confusion_matrix,
+    roc_auc_score,
+)
 from statsmodels.stats.diagnostic import acorr_ljungbox
 
 from krisi.evaluate.type import (
@@ -60,6 +65,24 @@ def wrap_roc_auc(
         y_true=y,
         y_score=probs,
         labels=prob_columns,
+        **kwargs,
+    )
+
+
+def wrap_avg_precision(
+    y: TargetsDS,
+    probs: ProbabilitiesDF,
+    sample_weight: Optional[None] = None,
+    **kwargs,
+) -> float:
+    probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
+    prob_columns = list(probs.columns)
+    if len(prob_columns) == 2:
+        probs = probs.iloc[:, 1]
+
+    return average_precision_score(
+        y_true=y,
+        y_score=probs,
         **kwargs,
     )
 

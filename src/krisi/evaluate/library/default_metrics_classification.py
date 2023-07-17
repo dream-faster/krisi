@@ -22,6 +22,7 @@ from krisi.evaluate.library.metric_wrappers import (
     bennet_s,
     brier_multi,
     pred_y_imbalance_ratio,
+    wrap_avg_precision,
     wrap_brier_score,
     wrap_roc_auc,
     y_label_imbalance_ratio,
@@ -236,6 +237,24 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
     )
     for mode in ["micro", "macro"]
 ]
+
+avg_precision_micro, avg_precision_macro, avg_precision_weighted = [
+    Metric[float](
+        name=f"Average Precision ({mode}))",
+        key=f"avg_precision_{mode}",
+        category=MetricCategories.class_err,
+        info="Compute average precision (AP) from prediction scores. AP summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold, with the increase in recall from the previous threshold used as the weight. https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score",
+        func=wrap_avg_precision,
+        parameters={"average": mode},
+        plot_funcs=[(display_single_value, dict(width=750.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        accepts_probabilities=True,
+        supports_multiclass=True,
+        purpose=Purpose.objective,
+    )
+    for mode in ["micro", "macro", "weighted"]
+]
+"""~"""
 # """~"""
 # ndcg = Metric[float](
 #     name="NDCG Score",
@@ -308,7 +327,7 @@ binary_classification_imbalanced_metrics = [
     brier_score,
     calibration,
     roc_auc_binary_macro,
-    cross_entropy,
+    avg_precision_macro,
     imbalance_ratio_y,
     imbalance_ratio_pred_y,
 ]
