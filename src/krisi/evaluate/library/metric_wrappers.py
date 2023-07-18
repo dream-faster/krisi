@@ -96,10 +96,10 @@ def y_label_imbalance_ratio(
     **kwargs,
 ) -> float:
     label_frequencies = y.value_counts(normalize=True).dropna()
+    perfect_balance = 0.5
     if len(label_frequencies) == 2:
-        return min(
-            label_frequencies[pos_label], 1 - label_frequencies[pos_label]
-        )  # always returns the smaller of the two
+        return abs(label_frequencies[pos_label] - perfect_balance)
+
     elif len(label_frequencies) == 1:
         logger.warning("Only one class in target, returning 0")
         return 0.0
@@ -116,6 +116,7 @@ def pred_y_imbalance_ratio(
     pos_label: int = 1,
     **kwargs,
 ) -> float:
+    perfect_balance = 0.5
     prediction_frequencies = preds.value_counts(normalize=True).dropna()
     target_frequencies = y.value_counts(normalize=True).dropna()
     if len(prediction_frequencies) == 1 or len(target_frequencies) == 1:
@@ -127,6 +128,6 @@ def pred_y_imbalance_ratio(
         )
 
     return abs(
-        min(target_frequencies[pos_label], 1 - target_frequencies[pos_label])
-        - min(prediction_frequencies[pos_label], 1 - prediction_frequencies[pos_label])
+        abs(target_frequencies[pos_label] - perfect_balance)
+        - abs(prediction_frequencies[pos_label] - perfect_balance)
     )
