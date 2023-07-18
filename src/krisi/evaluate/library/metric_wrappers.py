@@ -9,7 +9,6 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_auc_score,
 )
-from statsmodels.stats.diagnostic import acorr_ljungbox
 
 from krisi.evaluate.type import (
     Predictions,
@@ -25,6 +24,8 @@ logger = logging.getLogger("krisi")
 def ljung_box(
     y: TargetsDS, predictions: Predictions, **kwargs
 ) -> Union[pd.DataFrame, Tuple[Any, Any], Tuple[Any, Any, Any, Any]]:
+    from statsmodels.stats.diagnostic import acorr_ljungbox
+
     return acorr_ljungbox(predictions)
 
 

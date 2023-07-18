@@ -38,7 +38,6 @@ dependencies = [
   "plotext",
 
   #TS and Modeling libraries
-  "statsmodels >=0.12.1",
   "scikit-learn"
 ]
 
@@ -83,10 +82,12 @@ plotting = [
   "weasyprint",
   "kaleido",
   "pangocffi",
+  "statsmodels >=0.12.1",
 ]
 analysis=[
   "matplotlib",
-  "networkx"
+  "networkx",
+  "statsmodels >=0.12.1",
 ]
 
 [tool.hatch.envs.quality]
