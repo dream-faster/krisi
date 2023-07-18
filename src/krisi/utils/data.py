@@ -2,7 +2,6 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.arima_process import ArmaProcess
 
 from krisi.sharedtypes import Task
 
@@ -19,6 +18,8 @@ def generating_arima_synthetic_data(
     ar: List[float] = [1.0, -0.9],
     ma: List[float] = [1.0],
 ) -> pd.Series:
+    from statsmodels.tsa.arima_process import ArmaProcess
+
     """Generate Synthetic data with ARIMA process."""
     print(f"Generating Synthetic ARIMA process with nsamples:{nsample}")
 

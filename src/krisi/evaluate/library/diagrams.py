@@ -7,8 +7,6 @@ from sklearn.calibration import calibration_curve
 if TYPE_CHECKING:
     import plotly.graph_objects as go
 
-from statsmodels.tsa.stattools import acf, pacf
-
 from krisi.evaluate.type import MetricResult
 
 
@@ -47,6 +45,7 @@ def display_acf_plot(
     data: MetricResult, plot_pacf: bool = False, **kwargs
 ) -> "go.Figure":
     import plotly.graph_objects as go
+    from statsmodels.tsa.stattools import acf, pacf
 
     title = "Partial Autocorrelation (PACF)" if plot_pacf else "Autocorrelation (ACF)"
 

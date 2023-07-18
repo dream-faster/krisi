@@ -17,14 +17,12 @@ from krisi.evaluate.library.diagrams import (
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.library.metric_wrappers import ljung_box
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     Calculation,
     ComputationalComplexity,
     MetricCategories,
     Purpose,
-    SampleTypes,
 )
 
 mae = Metric[float](
@@ -150,17 +148,17 @@ residuals_std = Metric[float](
 )
 """ ~ """
 
-ljung_box_statistics = Metric[pd.DataFrame](
-    name="Ljung Box Statistics",
-    key="ljung_box_statistics",
-    category=MetricCategories.residual,
-    func=lambda y, pred, **kwargs: ljung_box(y, pred, **kwargs),
-    info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
-    restrict_to_sample=SampleTypes.insample,
-    comp_complexity=ComputationalComplexity.high,
-    calculation=Calculation.single,
-    purpose=Purpose.diagram,
-)
+# ljung_box_statistics = Metric[pd.DataFrame](
+#     name="Ljung Box Statistics",
+#     key="ljung_box_statistics",
+#     category=MetricCategories.residual,
+#     func=lambda y, pred, **kwargs: ljung_box(y, pred, **kwargs),
+#     info="If p is larger than our significance level then we cannot dismiss the null-hypothesis that the residuals are a random walk.",
+#     restrict_to_sample=SampleTypes.insample,
+#     comp_complexity=ComputationalComplexity.high,
+#     calculation=Calculation.single,
+#     purpose=Purpose.diagram,
+# )
 """ ~ """
 
 residual_group = Group[pd.Series](
@@ -182,7 +180,7 @@ all_regression_metrics = [
     r_two,
     residuals,
     residual_group,
-    ljung_box_statistics,
+    # ljung_box_statistics,
 ]
 """ ~ """
 

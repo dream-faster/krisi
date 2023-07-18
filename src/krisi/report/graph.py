@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import List
 
-import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -65,6 +64,8 @@ def __create_corr_network(
     file_name: str,
     save_or_display: List[Literal["save", "display"]],
 ):
+    import matplotlib.pyplot as plt
+
     # Creates a copy of the graph
     H = G.copy()
 
