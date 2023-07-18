@@ -29,5 +29,5 @@ def test_benchmarking_random_all_metrics():
     )
     sc.print()
 
-    assert sc["imbalance_ratio_y"].result == 0.5
-    assert np.isclose(sc["imbalance_ratio_pred_y"].result, 1.0, atol=0.1)
+    assert sc["imbalance_ratio_y"].result == 0.0
+    assert np.isclose(sc["imbalance_ratio_pred_y"].result, 0.0, atol=0.1)

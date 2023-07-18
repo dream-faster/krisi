@@ -205,7 +205,7 @@ cross_entropy = Metric[float](
 roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
-        key=f"roc_auc_binary_{mode}",
+        key=f"roc_auc_{mode}",
         category=MetricCategories.class_err,
         info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
         func=wrap_roc_auc,
@@ -281,6 +281,7 @@ imbalance_ratio_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
+    calculation=Calculation.single,
 )
 imbalance_ratio_pred_y = Metric[float](
     name="Imbalance Ratio: y vs pred",
@@ -294,6 +295,7 @@ imbalance_ratio_pred_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
+    calculation=Calculation.single,
 )
 
 
