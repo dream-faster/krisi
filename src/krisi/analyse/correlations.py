@@ -2,7 +2,6 @@ from functools import reduce
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from typing_extensions import Literal
 
@@ -65,6 +64,8 @@ def __create_summary(
     save_location: str,
     top_k: int,
 ) -> None:
+    import matplotlib.pyplot as plt
+
     fig, ax = plt.subplots(2, 1)
     title = f"Summary of {name} | window - {window} ~ step - {step}"
     fig.suptitle(title)
