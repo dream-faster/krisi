@@ -141,9 +141,9 @@ def model_benchmarking(model: Model) -> Callable:
             )
             if benchmark_result is not None and model_result is not None:
                 if metric.purpose == Purpose.objective:
-                    comparison_result = benchmark_result - model_result
-                elif metric.purpose == Purpose.loss:
                     comparison_result = model_result - benchmark_result
+                elif metric.purpose == Purpose.loss:
+                    comparison_result = benchmark_result - model_result
             else:
                 comparison_result = "Either benchmark or model result is None."
             metric.comparison_result = pd.concat(
