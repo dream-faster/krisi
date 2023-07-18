@@ -101,7 +101,6 @@ def y_label_imbalance_ratio(
         return abs(label_frequencies[pos_label] - perfect_balance)
 
     elif len(label_frequencies) == 1:
-        logger.warning("Only one class in target, returning 0")
         return 0.0
     else:
         raise ValueError(
@@ -120,7 +119,6 @@ def pred_y_imbalance_ratio(
     prediction_frequencies = preds.value_counts(normalize=True).dropna()
     target_frequencies = y.value_counts(normalize=True).dropna()
     if len(prediction_frequencies) == 1 or len(target_frequencies) == 1:
-        logger.warning("Only one class in either predictions or target, returning 0")
         return 0.0
     elif len(prediction_frequencies) != 2 or len(target_frequencies) != 2:
         raise ValueError(
