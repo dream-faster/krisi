@@ -3,6 +3,7 @@ from typing import List
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import DatasetType
 
+from .default_metrics_classification import *
 from .default_metrics_classification import (
     binary_classification_balanced_metrics,
     binary_classification_imbalanced_metrics,
@@ -12,6 +13,7 @@ from .default_metrics_classification import (
     minimal_multiclass_classification_metrics,
     multiclass_classification_metrics,
 )
+from .default_metrics_regression import *
 from .default_metrics_regression import (
     all_regression_metrics,
     low_computation_regression_metrics,
