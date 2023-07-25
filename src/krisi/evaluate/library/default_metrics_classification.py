@@ -215,6 +215,7 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
         accepts_probabilities=True,
         supports_multiclass=True,
         purpose=Purpose.objective,
+        calculation=Calculation.single,
     )
     for mode in ["micro", "macro", "weighted"]
 ]
@@ -234,6 +235,7 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
         purpose=Purpose.objective,
+        calculation=Calculation.single,
     )
     for mode in ["micro", "macro"]
 ]
