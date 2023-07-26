@@ -210,7 +210,7 @@ def generate_synthetic_predictions_binary(
 def shuffle_df_in_chunks(
     df: pd.DataFrame, chunk_size: Union[int, float]
 ) -> pd.DataFrame:
-    """_summary_
+    """Shuffles a dataframe by rows in chunks.
 
     Parameters
     ----------
