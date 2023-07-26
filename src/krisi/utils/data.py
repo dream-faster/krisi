@@ -207,7 +207,26 @@ def generate_synthetic_predictions_binary(
     )
 
 
-def shuffle_df_in_chunks(df: pd.DataFrame, chunk_size: int) -> pd.DataFrame:
+def shuffle_df_in_chunks(
+    df: pd.DataFrame, chunk_size: Union[int, float]
+) -> pd.DataFrame:
+    """_summary_
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Data, whose rows should be shuffled in chunks
+    chunk_size : Union[int, float]
+        Either a fixed chunk size or a fraction of the total number of rows
+
+    Returns
+    -------
+    pd.DataFrame
+        Shuffled DataFrame by rows in chunks.
+    """
+    chunk_size = (
+        int(chunk_size * len(df)) if isinstance(chunk_size, float) else chunk_size
+    )
     df_copy = df.values
 
     undividable = len(df_copy) % chunk_size != 0
