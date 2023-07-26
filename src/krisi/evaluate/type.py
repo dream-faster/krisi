@@ -51,6 +51,7 @@ class MetricCategories(Enum):
 
 class SampleTypes(Enum):
     insample = "insample"
+    validation = "validation"
     outofsample = "outofsample"
 
 
