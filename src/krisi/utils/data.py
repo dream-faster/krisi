@@ -227,26 +227,23 @@ def shuffle_df_in_chunks(
     chunk_size = (
         int(chunk_size * len(df)) if isinstance(chunk_size, float) else chunk_size
     )
-    df_copy = df.values
+    num_rows = df.shape[0]
+    num_chunks = num_rows // chunk_size
 
-    undividable = len(df_copy) % chunk_size != 0
-    if undividable:
-        df_copy = df_copy[: -(len(df_copy) % chunk_size)]
+    shuffled_chunks = []
 
-    np.random.shuffle(df_copy.reshape(-1, chunk_size, len(df.columns)))
-    df_copy = pd.DataFrame(df_copy, columns=df.columns)
-    if undividable:
-        insert_remained_at_index = (
-            np.random.randint(low=0, high=len(df) // chunk_size) * chunk_size
-        )
-        df_copy = pd.concat(
-            [
-                df_copy[:insert_remained_at_index],
-                df[-(len(df) % chunk_size) :],
-                df_copy[insert_remained_at_index:],
-            ],
-            axis=0,
-        )
-    df_copy.index = df.index
+    for i in range(num_chunks):
+        start_idx = i * chunk_size
+        end_idx = (i + 1) * chunk_size
 
-    return df_copy
+        # Sample rows within the chunk and append to the list
+        shuffled_chunks.append(df.iloc[start_idx:end_idx])
+
+    # If there are any remaining rows, shuffle and append them as well
+    if num_rows % chunk_size != 0:
+        shuffled_chunks.append(df.iloc[num_chunks * chunk_size :])
+
+    # Concatenate the shuffled chunks to form the final DataFrame
+    shuffled_df = pd.concat(shuffled_chunks, ignore_index=True)
+
+    return shuffled_df
