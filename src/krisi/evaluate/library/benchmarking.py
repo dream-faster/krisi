@@ -1,6 +1,6 @@
 import math
 from copy import deepcopy
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -65,8 +65,8 @@ class RandomClassifierSmoothed(Model):
 
 
 class RandomClassifierChunked(Model):
-    def __init__(self, chunk_size: int) -> None:
-        self.name = "NS-Smooth"
+    def __init__(self, chunk_size: Union[float, int]) -> None:
+        self.name = "NS-ChunkShuffle"
         self.chunk_size = chunk_size
 
     def predict(
