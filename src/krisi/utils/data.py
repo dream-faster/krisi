@@ -1,3 +1,4 @@
+import itertools
 from random import sample
 from typing import List, Optional, Tuple, Union
 
@@ -247,4 +248,28 @@ def shuffle_df_in_chunks(
     df.sort_index(inplace=True)
     df.index = original_index
 
+    return df
+
+
+def combinatorial_shuffling(
+    df: pd.DataFrame, chunk_size: int, select_index: int
+) -> pd.DataFrame:
+    original_index = df.index
+    df.reset_index(drop=True, inplace=True)
+    chunks = [(i, i + chunk_size) for i in range(0, len(df), chunk_size)]
+    if chunks[-1][1] > len(df):
+        chunks[-2] = (chunks[-2][0], len(df))
+        chunks = chunks[:-1]
+
+    premuted_chunks = list(itertools.permutations(chunks))[
+        1:
+    ]  # skip the first one, which is the original order
+
+    flatten_ranges = [
+        id for start, stop in premuted_chunks[select_index] for id in range(start, stop)
+    ]
+    df = df.copy()
+    df.index = df.index[flatten_ranges]
+    df.sort_index(inplace=True)
+    df.index = original_index
     return df
