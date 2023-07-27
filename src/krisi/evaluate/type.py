@@ -49,7 +49,7 @@ class MetricCategories(Enum):
     unknown = "Unknown"
 
 
-class SampleTypes(Enum):
+class SampleTypes(ParsableEnum):
     insample = "insample"
     validation = "validation"
     outofsample = "outofsample"
