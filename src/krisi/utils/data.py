@@ -255,7 +255,7 @@ def combinatorial_shuffling_in_chunks(
     df: pd.DataFrame, chunk_size: int, select_index: int
 ) -> pd.DataFrame:
     original_index = df.index
-    df.reset_index(drop=True, inplace=True)
+    df = df.reset_index(drop=True)
     chunks = [(i, i + chunk_size) for i in range(0, len(df), chunk_size)]
     if chunks[-1][1] > len(df):
         chunks[-2] = (chunks[-2][0], len(df))
