@@ -65,7 +65,7 @@ def generate_synthetic_data(
     num_features_correlated_noise: int = 1,  # component, static importance, added to `y`
     num_features_uncorrelated_noise: int = 1,  # pure noise, added as features ONLY to `X`
     num_features_oscillates_importance: int = 1,  # component, oscilating importance, added to `y`
-    num_obs: int = 1000,
+    num_obs: int = 200,
     index: Optional[pd.Index] = None,
     task: Union[str, Task] = Task.regression,
 ):
