@@ -225,6 +225,8 @@ def shuffle_df_in_chunks(
     pd.DataFrame
         Shuffled DataFrame by rows in chunks.
     """
+    original_index = df.index
+    df = df.reset_index(drop=True)
     chunk_size = (
         int(chunk_size * len(df)) if isinstance(chunk_size, float) else chunk_size
     )
@@ -243,5 +245,6 @@ def shuffle_df_in_chunks(
     df = df.copy()
     df.index = df.index[np.concatenate(shuffled_idx)]
     df.sort_index(inplace=True)
+    df.index = original_index
 
     return df

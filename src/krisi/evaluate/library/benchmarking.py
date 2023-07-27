@@ -17,6 +17,8 @@ from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_i
 
 
 class Model:
+    requires_preds_probs: bool
+
     def predict(
         self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
@@ -24,6 +26,8 @@ class Model:
 
 
 class RandomClassifier(Model):
+    requires_preds_probs: bool = False
+
     def __init__(self) -> None:
         self.name = "NS"
 
@@ -37,6 +41,8 @@ class RandomClassifier(Model):
 
 
 class RandomClassifierSmoothed(Model):
+    requires_preds_probs: bool = False
+
     def __init__(self, smoothing_window: Optional[int] = None) -> None:
         self.name = "NS-Smooth"
         self.smoothing_window = smoothing_window
@@ -65,6 +71,8 @@ class RandomClassifierSmoothed(Model):
 
 
 class RandomClassifierChunked(Model):
+    requires_preds_probs: bool = True
+
     def __init__(self, chunk_size: Union[float, int]) -> None:
         self.name = "NS-ChunkShuffle"
         self.chunk_size = chunk_size
