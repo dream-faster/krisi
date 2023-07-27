@@ -229,6 +229,7 @@ def shuffle_df_in_chunks(
     )
     num_rows = df.shape[0]
     num_chunks = num_rows // chunk_size
+    index = df.index.copy()
 
     shuffled_chunks = []
 
@@ -245,5 +246,6 @@ def shuffle_df_in_chunks(
 
     # Concatenate the shuffled chunks to form the final DataFrame
     shuffled_df = pd.concat(shuffled_chunks, ignore_index=True)
+    shuffled_df.index = index
 
     return shuffled_df
