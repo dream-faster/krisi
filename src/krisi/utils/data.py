@@ -251,7 +251,7 @@ def shuffle_df_in_chunks(
     return df
 
 
-def combinatorial_shuffling(
+def combinatorial_shuffling_in_chunks(
     df: pd.DataFrame, chunk_size: int, select_index: int
 ) -> pd.DataFrame:
     original_index = df.index
