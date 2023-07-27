@@ -17,7 +17,7 @@ from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_i
 
 
 class Model:
-    requires_preds_probs: bool
+    requires_preds_probs: bool = False
 
     def predict(
         self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
