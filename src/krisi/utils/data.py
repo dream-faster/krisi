@@ -1,3 +1,4 @@
+from random import sample
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -229,23 +230,18 @@ def shuffle_df_in_chunks(
     )
     num_rows = df.shape[0]
     num_chunks = num_rows // chunk_size
-    index = df.index.copy()
-
-    shuffled_chunks = []
-
-    for i in range(num_chunks):
+    shuffled_idx = []
+    for i in sample(list(range(num_chunks)), num_chunks):
         start_idx = i * chunk_size
         end_idx = (i + 1) * chunk_size
-
-        # Sample rows within the chunk and append to the list
-        shuffled_chunks.append(df.iloc[start_idx:end_idx])
+        shuffled_idx.append(df.index[start_idx:end_idx])
 
     # If there are any remaining rows, shuffle and append them as well
     if num_rows % chunk_size != 0:
-        shuffled_chunks.append(df.iloc[num_chunks * chunk_size :])
+        shuffled_idx.append(df.index[num_chunks * chunk_size :])
 
-    # Concatenate the shuffled chunks to form the final DataFrame
-    shuffled_df = pd.concat(shuffled_chunks, ignore_index=True)
-    shuffled_df.index = index
+    df = df.copy()
+    df.index = df.index[np.concatenate(shuffled_idx)]
+    df.sort_index(inplace=True)
 
-    return shuffled_df
+    return df
