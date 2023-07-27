@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, List, Tuple, TypeVar, Union
 
@@ -40,7 +39,7 @@ MetricFunction = Union[
 ]
 
 
-class MetricCategories(Enum):
+class MetricCategories(ParsableEnum):
     residual = "Residual Diagnostics"
     entropy = "Information Entropy"
     class_err = "Forecast Errors - Classification"
@@ -49,7 +48,7 @@ class MetricCategories(Enum):
     unknown = "Unknown"
 
 
-class SampleTypes(Enum):
+class SampleTypes(ParsableEnum):
     insample = "insample"
     validation = "validation"
     outofsample = "outofsample"
@@ -61,7 +60,7 @@ class Calculation(ParsableEnum):
     both = "both"
 
 
-class SaveModes(Enum):
+class SaveModes(ParsableEnum):
     svg = "svg"
     html = "html"
     text = "text"
@@ -77,7 +76,7 @@ class PathConst:
     css_report_template_url: Path = Path("library/pdf_layouts/scorecard/report.css")
 
 
-class ComputationalComplexity(Enum):
+class ComputationalComplexity(ParsableEnum):
     low = "low"
     medium = "medium"
     high = "high"
