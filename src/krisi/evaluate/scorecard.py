@@ -329,7 +329,7 @@ class ScoreCard:
                 metric["result"] = item
                 self.__dict__[key] = metric
 
-    def get_ds(self) -> pd.Series:
+    def get_ds(self, name_as_index: bool = False) -> pd.Series:
         """
         Returns a `pd.Series` where each index is the name of a `Metric` and
         the value is the corresponding `result`
@@ -346,7 +346,7 @@ class ScoreCard:
 
         return pd.Series(
             [metric["result"] for metric in metrics],
-            index=[metric["name"] for metric in metrics],
+            index=[metric.name if name_as_index else metric.key for metric in metrics],
         )
 
     def get_default_metrics(self) -> List[Metric]:
