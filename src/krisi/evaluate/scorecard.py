@@ -250,14 +250,6 @@ class ScoreCard:
     def __delitem__(self, key: str) -> None:
         del self[key]
 
-    # def __repr__(self) -> str:
-    #     self.print(mode=PrintMode.minimal)
-    #     return super().__repr__()
-
-    # def __str__(self) -> str:
-    #     self.print(mode=PrintMode.minimal)
-    #     return ""
-
     def __setattr__(self, key: str, item: Any) -> None:
         """
         Defines Dictionary like behaviour and ensures that a Metric can be
