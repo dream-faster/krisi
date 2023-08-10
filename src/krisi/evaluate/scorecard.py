@@ -143,7 +143,7 @@ class ScoreCard:
         project_name: Optional[str] = None,
         project_description: str = "",
         dataset_type: Optional[Union[DatasetType, str]] = None,
-        sample_type: SampleTypes = SampleTypes.outofsample,
+        sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
         default_metrics: Optional[Union[List[Metric], Metric]] = None,
         custom_metrics: Optional[Union[List[Metric], Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
@@ -154,6 +154,7 @@ class ScoreCard:
             state.run_type = RunType.test
             set_global_state(state)
 
+        sample_type = SampleTypes.from_str(sample_type)
         dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
         check_valid_pred_target(y, predictions, sample_weight)
         default_metrics = (

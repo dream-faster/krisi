@@ -24,7 +24,7 @@ def score(
     default_metrics: Optional[Union[List[Metric], Metric]] = None,
     custom_metrics: Optional[Union[List[Metric], Metric]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
-    sample_type: SampleTypes = SampleTypes.outofsample,
+    sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
