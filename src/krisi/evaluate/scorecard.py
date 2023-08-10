@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import datetime
 import logging
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 
 import pandas as pd
 from rich import print
@@ -143,7 +145,7 @@ class ScoreCard:
         project_name: Optional[str] = None,
         project_description: str = "",
         dataset_type: Optional[Union[DatasetType, str]] = None,
-        sample_type: SampleTypes = SampleTypes.outofsample,
+        sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
         default_metrics: Optional[Union[List[Metric], Metric]] = None,
         custom_metrics: Optional[Union[List[Metric], Metric]] = None,
         rolling_args: Optional[Dict[str, Any]] = None,
@@ -154,6 +156,7 @@ class ScoreCard:
             state.run_type = RunType.test
             set_global_state(state)
 
+        sample_type = SampleTypes.from_str(sample_type)
         dataset_type = DatasetType.from_str(dataset_type) if dataset_type else None
         check_valid_pred_target(y, predictions, sample_weight)
         default_metrics = (
@@ -234,7 +237,7 @@ class ScoreCard:
     def __setitem__(self, key: str, item: Any) -> None:
         self.__setattr__(key, item)
 
-    def __getitem__(self, key: Union[str, List[str]]) -> Union["ScoreCard", Metric]:
+    def __getitem__(self, key: Union[str, List[str]]) -> Union[ScoreCard, Metric]:
         if isinstance(key, List):
             scorecard_copy = deepcopy(self)
             all_keys = list(scorecard_copy.__dict__.keys())
@@ -559,7 +562,7 @@ class ScoreCard:
         ],
         override_base_path: Optional[Path] = None,
         timestamp_no_overwrite: bool = False,
-    ) -> "ScoreCard":
+    ) -> ScoreCard:
         if override_base_path is None:
             if timestamp_no_overwrite is False:
                 dir_model_name = self.metadata.model_name
@@ -637,8 +640,43 @@ class ScoreCard:
             + f"\n{md.model_name:>40s} | {md.dataset_name} \n{md.project_name:>40s} | {self.dataset_type.value}\n\n{get_minimal_summary(self, dataframe=False)}>"
         )
 
+    def __union(
+        self,
+        other: ScoreCard,
+        function: Callable,
+    ) -> ScoreCard:
+        copied_scorecard = deepcopy(self)
 
-def get_rolling_diagrams(obj: "ScoreCard") -> List[List[InteractiveFigure]]:
+        for key, value in copied_scorecard.__dict__.items():
+            if isinstance(value, Metric) and key in other.__dict__.keys():
+                if value.result is not None and other[key].result is not None:
+                    copied_scorecard.__dict__[key].__dict__["result"] = function(
+                        value.result, other[key].result
+                    )
+                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+                else:
+                    copied_scorecard.__dict__[key].__dict__["result"] = None
+                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+
+        return copied_scorecard
+
+    def subtract(self, other: ScoreCard) -> ScoreCard:
+        return self.__union(other, lambda x, y: x - y)
+
+    def subtract_abs(self, other: ScoreCard) -> ScoreCard:
+        return self.__union(other, lambda x, y: abs(x - y))
+
+    def add(self, other: ScoreCard) -> ScoreCard:
+        return self.__union(other, lambda x, y: x + y)
+
+    def multiply(self, other: ScoreCard) -> ScoreCard:
+        return self.__union(other, lambda x, y: x * y)
+
+    def divide(self, other: ScoreCard) -> ScoreCard:
+        return self.__union(other, lambda x, y: x / y)
+
+
+def get_rolling_diagrams(obj: ScoreCard) -> List[List[InteractiveFigure]]:
     return [
         diagram
         for diagram in [
