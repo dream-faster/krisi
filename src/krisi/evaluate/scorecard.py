@@ -630,6 +630,13 @@ class ScoreCard:
         )
         report.generate_launch()
 
+    def __repr__(self):
+        md = self.__dict__["metadata"]
+        return (
+            super().__repr__()[:-1]
+            + f"\n{md.model_name:>40s} | {md.dataset_name} \n{md.project_name:>40s} | {self.dataset_type.value}\n\n{get_minimal_summary(self, dataframe=False)}>"
+        )
+
 
 def get_rolling_diagrams(obj: "ScoreCard") -> List[List[InteractiveFigure]]:
     return [
