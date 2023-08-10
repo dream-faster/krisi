@@ -198,7 +198,4 @@ class Group(Metric, Generic[MetricResult]):
         )
 
     def __str__(self) -> str:
-        return "\n".join([metric.__str__() for metric in self.metrics])
-
-    def __repr__(self) -> str:
-        return "\n".join([metric.__repr__() for metric in self.metrics])
+        return " - ".join([metric.key for metric in self.metrics])

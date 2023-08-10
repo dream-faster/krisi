@@ -20,7 +20,7 @@ from krisi.evaluate.type import (
     TargetsDS,
     WeightsDS,
 )
-from krisi.report.console import print_metric
+from krisi.report.console import get_metric_string
 from krisi.report.type import InteractiveFigure, PlotDefinition, plotly_interactive
 from krisi.utils.iterable_helpers import (
     check_iterable_with_number,
@@ -112,12 +112,11 @@ class Metric(Generic[MetricResult]):
     def __getitem__(self, key: str) -> Any:
         return getattr(self, key, "Unknown Field")
 
-    def __str__(self) -> str:
-        return print_metric(self)
+    def __str__(self, repr: bool = False) -> str:
+        return get_metric_string(self, repr=repr)
 
     def __repr__(self) -> str:
-        print(print_metric(self, repr=True))
-        return super().__repr__()
+        return super().__repr__()[:-1] + f" - {self.__str__(True)}>"
 
     def _evaluation(self, *args, **kwargs) -> Metric:
         if self.calculation == Calculation.rolling:
