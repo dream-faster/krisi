@@ -322,17 +322,15 @@ binary_classification_balanced_metrics = [
 ]
 
 binary_classification_imbalanced_metrics = [
+    avg_precision_macro,
     accuracy_binary_balanced,
-    recall_macro,
-    precision_macro,
+    recall_binary,
+    precision_binary,
     f_one_score_binary,
-    f_one_score_macro,
     kappa,
-    matthew_corr,
-    brier_score,
     calibration,
     roc_auc_binary_macro,
-    avg_precision_macro,
+    cross_entropy,
     imbalance_ratio_y,
     imbalance_ratio_pred_y,
 ]
