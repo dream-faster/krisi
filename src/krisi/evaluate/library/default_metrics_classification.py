@@ -303,22 +303,17 @@ imbalance_ratio_pred_y = Metric[float](
 
 
 binary_classification_balanced_metrics = [
+    avg_precision_macro,
     accuracy_binary,
     recall_binary,
     precision_binary,
     f_one_score_binary,
-    f_one_score_macro,
-    f_one_score_micro,
-    f_one_score_weighted,
     kappa,
-    matthew_corr,
     brier_score,
     calibration,
     roc_auc_binary_macro,
-    roc_auc_binary_micro,
-    roc_auc_binary_weighted,
-    cross_entropy,
-    s_score,
+    imbalance_ratio_y,
+    imbalance_ratio_pred_y,
 ]
 
 binary_classification_imbalanced_metrics = [
@@ -330,7 +325,6 @@ binary_classification_imbalanced_metrics = [
     kappa,
     calibration,
     roc_auc_binary_macro,
-    cross_entropy,
     imbalance_ratio_y,
     imbalance_ratio_pred_y,
 ]
