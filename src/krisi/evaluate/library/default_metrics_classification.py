@@ -206,7 +206,7 @@ cross_entropy = Metric[float](
 roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
-        key=f"roc_auc_{mode}",
+        key=f"roc_auc_binary_{mode}",
         category=MetricCategories.class_err,
         info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
         func=wrap_roc_auc,
@@ -226,7 +226,7 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
 roc_auc_multi_micro, roc_auc_multi_macro = [
     Metric[float](
         name=f"ROC AUC ({mode}))",
-        key=f"roc_auc_{mode}",
+        key=f"roc_auc_multi_{mode}",
         category=MetricCategories.class_err,
         info="Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores. Note: this implementation can be used with binary, multiclass and multilabel classification, but some restrictions apply (see Parameters). https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html",
         func=wrap_roc_auc,
