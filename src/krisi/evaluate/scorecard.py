@@ -339,9 +339,27 @@ class ScoreCard:
             if not isinstance(metric.result, Iterable)
         ]
 
-        return pd.Series(
-            [metric["result"] for metric in metrics],
-            index=[metric.name if name_as_index else metric.key for metric in metrics],
+        comparison_results = [
+            metric["comparison_result"].add_prefix(f"{metric.key}-")
+            for metric in metrics
+            if isinstance(metric["comparison_result"], pd.Series)
+        ]
+        if len(comparison_results) == 0:
+            comparison_results = pd.Series([])
+        else:
+            comparison_results = pd.concat(comparison_results, axis=0)
+
+        return pd.concat(
+            [
+                pd.Series(
+                    [metric["result"] for metric in metrics],
+                    index=[
+                        metric.name if name_as_index else metric.key
+                        for metric in metrics
+                    ],
+                ),
+                comparison_results,
+            ]
         )
 
     def get_default_metrics(self) -> List[Metric]:
