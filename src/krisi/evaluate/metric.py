@@ -131,7 +131,7 @@ class Metric(Generic[MetricResult]):
             result = e
             if get_global_state().run_type == RunType.test:
                 raise e
-        self.__safe_set(result, key="result")
+        self.__safe_set(result, key="value")
         return self
 
     def evaluate(
@@ -152,7 +152,7 @@ class Metric(Generic[MetricResult]):
                     ValueError(
                         "Metric requires probabilities, but None were provided."
                     ),
-                    key="result",
+                    key="value",
                 )
         else:
             self._evaluation(y, predictions, sample_weight=sample_weight)
@@ -242,7 +242,7 @@ class Metric(Generic[MetricResult]):
                 result_rolling = e
                 if get_global_state().run_type == RunType.test:
                     raise e
-            self.__safe_set(result_rolling, key="result_rolling")
+            self.__safe_set(result_rolling, key="value_rolling")
 
         return self
 
@@ -288,7 +288,7 @@ class Metric(Generic[MetricResult]):
         if rolling:
             return self.result_rolling is not None
         else:
-            return self.result is not None
+            return self.value is not None
 
     def get_diagram_over_time(self) -> Optional[List[InteractiveFigure]]:
         return create_diagram_rolling(self)
@@ -318,7 +318,7 @@ class Metric(Generic[MetricResult]):
             self.__dict__[key] = result
 
     def reset_metric(self) -> Metric:
-        self.result = None
+        self.value = None
         self.result_rolling = None
         self.rolling_properties = None
         self.diagnostics = None
@@ -366,13 +366,13 @@ def create_diagram(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_funcs is None:
         logging.info("No plot_func (Plotting Function) specified")
         return None
-    elif isinstance(obj.result, Exception) or obj.result is None:
+    elif isinstance(obj.value, Exception) or obj.value is None:
         return None
     else:
         return [
             InteractiveFigure(
                 f"{obj.key}_{plot_func.__name__}",
-                get_figure=plotly_interactive(plot_func, obj.result, title=obj.name),
+                get_figure=plotly_interactive(plot_func, obj.value, title=obj.name),
                 title=f"{obj.name} - {plot_func.__name__}",
                 category=obj.category,
                 plot_args=merge_default_dict(plot_args),

@@ -27,7 +27,7 @@ def handle_empty_metrics_to_display(
         metric_keys = [
             metric.key
             for metric in scorecard.get_all_metrics(only_evaluated=True)
-            if isinstance(metric.result, (float, int))
+            if isinstance(metric.value, (float, int))
         ]
 
     if sort_by is not None:

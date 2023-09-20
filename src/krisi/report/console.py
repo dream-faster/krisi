@@ -23,26 +23,26 @@ from krisi.utils.printing import bold
 
 def get_metric_string(obj: "Metric", repr: bool = False) -> str:
     if repr:
-        return f"{obj.result} | {obj.name}"
+        return f"{obj.value} | {obj.name}"
     hyperparams = ""
     if obj.parameters is not None:
         hyperparams += "".join(
             [f"{key} - {value}" for key, value in obj.parameters.items()]
         )
     if (
-        obj.result is None
+        obj.value is None
         and obj.result_rolling is not None
         and isinstance(obj.result_rolling, Iterable)
     ):
         result_ = (
             "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
         )
-    elif obj.result is None:
+    elif obj.value is None:
         result_ = ""
-    elif isinstance(obj.result, Iterable) and not isinstance(obj.result, str):
-        result_ = obj.result
+    elif isinstance(obj.value, Iterable) and not isinstance(obj.value, str):
+        result_ = obj.value
     else:
-        result_ = f"{obj.result:<15.5}"
+        result_ = f"{obj.value:<15.5}"
 
     return f"{obj.name:>40s} ({obj.key}): {result_}{hyperparams:>15s}"
 
@@ -52,19 +52,19 @@ def get_minimal_summary(obj: "ScoreCard", dataframe: bool) -> Union[pd.DataFrame
         all_metrics = [
             metric
             for metric in obj.get_all_metrics()
-            if isinstance(metric.result, (float, int))
+            if isinstance(metric.value, (float, int))
         ]
         return pd.Series(
-            [metric.result for metric in all_metrics],
+            [metric.value for metric in all_metrics],
             name=obj.metadata.model_name,
             index=[f"{metric.name:>40s}" for metric in all_metrics],
         ).to_frame()
 
     return "\n".join(
         [
-            f"{metric.name:>40s} - {metric.result:<15.5}"
+            f"{metric.name:>40s} - {metric.value:<15.5}"
             for metric in obj.get_all_metrics()
-            if isinstance(metric.result, (float, int))
+            if isinstance(metric.value, (float, int))
         ]
     )
 

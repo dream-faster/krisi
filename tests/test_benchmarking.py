@@ -87,5 +87,5 @@ def test_perfect_to_best():
     sc.print()
 
     for metric in sc.get_all_metrics():
-        if metric.result is not None and metric.comparison_result is not None:
+        if metric.value is not None and metric.comparison_result is not None:
             assert metric.comparison_result["Δ PM"] < metric.comparison_result["Δ WM"]

@@ -321,7 +321,7 @@ class ScoreCard:
                 )
                 self.__dict__[key] = Metric(**metric_dict)
             else:
-                metric["result"] = item
+                metric["value"] = item
                 self.__dict__[key] = metric
 
     def get_ds(self, name_as_index: bool = False) -> pd.Series:
@@ -336,7 +336,7 @@ class ScoreCard:
         metrics = [
             metric
             for metric in self.get_all_metrics()
-            if not isinstance(metric.result, Iterable)
+            if not isinstance(metric.value, Iterable)
         ]
 
         comparison_results = [
@@ -352,7 +352,7 @@ class ScoreCard:
         return pd.concat(
             [
                 pd.Series(
-                    [metric["result"] for metric in metrics],
+                    [metric["value"] for metric in metrics],
                     index=[
                         metric.name if name_as_index else metric.key
                         for metric in metrics
@@ -430,7 +430,7 @@ class ScoreCard:
     def __evaluate(
         self,
         func_key_evaluate: Literal["evaluate", "evaluate_over_time"],
-        result_key: Literal["result", "result_rolling"],
+        result_key: Literal["value", "value_rolling"],
         defaults: bool = True,
         rolling_args: Optional[Dict[str, Any]] = dict(),
     ):
@@ -461,7 +461,7 @@ class ScoreCard:
         -------
         None
         """
-        self.__evaluate("evaluate", "result", defaults=defaults)
+        self.__evaluate("evaluate", "value", defaults=defaults)
 
     def evaluate_over_time(self, defaults: bool = True) -> None:
         """
@@ -486,7 +486,7 @@ class ScoreCard:
         """
         self.__evaluate(
             "evaluate_over_time",
-            "result_rolling",
+            "value_rolling",
             defaults=defaults,
             rolling_args={"rolling_args": self.rolling_args},
         )
@@ -561,9 +561,9 @@ class ScoreCard:
                         self[metric_in_group.key] = metric_in_group
                     else:
                         self[metric_in_group.key] = {
-                            f"result_{group.key}": metric_in_group.__dict__["result"],
+                            f"result_{group.key}": metric_in_group.__dict__["value"],
                             f"result_rolling_{group.key}": metric_in_group.__dict__[
-                                "result_rolling"
+                                "value_rolling"
                             ],
                             "_from_group": True,
                         }
@@ -667,14 +667,14 @@ class ScoreCard:
 
         for key, value in copied_scorecard.__dict__.items():
             if isinstance(value, Metric) and key in other.__dict__.keys():
-                if value.result is not None and other[key].result is not None:
-                    copied_scorecard.__dict__[key].__dict__["result"] = function(
-                        value.result, other[key].result
+                if value.value is not None and other[key].value is not None:
+                    copied_scorecard.__dict__[key].__dict__["value"] = function(
+                        value.value, other[key].value
                     )
-                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+                    copied_scorecard.__dict__[key].__dict__["value_rolling"] = None
                 else:
-                    copied_scorecard.__dict__[key].__dict__["result"] = None
-                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+                    copied_scorecard.__dict__[key].__dict__["value"] = None
+                    copied_scorecard.__dict__[key].__dict__["value_rolling"] = None
 
         return copied_scorecard
 

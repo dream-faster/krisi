@@ -20,12 +20,12 @@ def example_postporcess_func(
 ) -> List[Metric]:
     metric = all_metrics[0]
     if not rolling:
-        if isinstance(metric.result, Exception) or metric.result is None:
+        if isinstance(metric.value, Exception) or metric.value is None:
             return metric
-        if isinstance(metric.result, List):
-            metric.result = pd.Series(metric.result) + 1
+        if isinstance(metric.value, List):
+            metric.value = pd.Series(metric.value) + 1
         else:
-            metric.result = metric.result + 1
+            metric.value = metric.value + 1
     return all_metrics
 
 

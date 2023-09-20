@@ -127,7 +127,7 @@ def model_benchmarking(model: Model) -> Callable:
             if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
                 continue
             benchmark_metric = deepcopy(metric)
-            benchmark_metric.result = None
+            benchmark_metric.value = None
             benchmark_metric.result_rolling = None
 
             if benchmark_metric.accepts_probabilities:
@@ -140,12 +140,12 @@ def model_benchmarking(model: Model) -> Callable:
                 )
 
             benchmark_result = (
-                benchmark_metric.result
-                if isinstance(benchmark_metric.result, (float, int))
+                benchmark_metric.value
+                if isinstance(benchmark_metric.value, (float, int))
                 else None
             )
             model_result = (
-                metric.result if isinstance(metric.result, (float, int)) else None
+                metric.value if isinstance(metric.value, (float, int)) else None
             )
             if benchmark_result is not None and model_result is not None:
                 if metric.purpose == Purpose.objective:

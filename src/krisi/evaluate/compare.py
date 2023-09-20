@@ -41,12 +41,12 @@ def compare(
         scorecards[0], sort_by, metric_keys
     )
 
-    scorecards.sort(reverse=True, key=lambda x: x[sort_by].result)
+    scorecards.sort(reverse=True, key=lambda x: x[sort_by].value)
     if dataframe:
         return pd.concat(
             [
                 pd.Series(
-                    [scorecard[metric_key].result for scorecard in scorecards],
+                    [scorecard[metric_key].value for scorecard in scorecards],
                     name=metric_key,
                     index=[scorecard.metadata.model_name for scorecard in scorecards],
                 )
@@ -62,9 +62,9 @@ def compare(
 
         for scorecard in scorecards:
             metrics = "".join(
-                [f"{scorecard[metric].result:<10.5}" for metric in metric_keys]
+                [f"{scorecard[metric].value:<10.5}" for metric in metric_keys]
             )
 
-            string_to_return += f"\n{scorecard.metadata.model_name:>30s}    {bold(f'{scorecard[sort_by].result:<10.5}', rich=False)} {metrics}"
+            string_to_return += f"\n{scorecard.metadata.model_name:>30s}    {bold(f'{scorecard[sort_by].value:<10.5}', rich=False)} {metrics}"
 
         return string_to_return

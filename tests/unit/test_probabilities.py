@@ -22,4 +22,4 @@ def test_probabilities():
         # default_metrics=default_metrics,
     )
 
-    assert np.isclose(sc["brier_score"].result, 0.37293859755314235, atol=0.1)
+    assert np.isclose(sc["brier_score"].value, 0.37293859755314235, atol=0.1)
