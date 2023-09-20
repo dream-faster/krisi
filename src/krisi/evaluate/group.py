@@ -106,13 +106,13 @@ class Group(Metric, Generic[MetricResult]):
 
     def __handle_args_to_pass_in(
         self,
-        result: Any,
+        value: Any,
         y: TargetsDS,
         predictions: PredictionsDS,
         probabilities: ProbabilitiesDF,
         accept_probabilities: bool,
     ):
-        if result is None:
+        if value is None:
             if accept_probabilities:
                 if probabilities is None:
                     return None
@@ -121,7 +121,7 @@ class Group(Metric, Generic[MetricResult]):
             else:
                 return [y, predictions]
         else:
-            return result
+            return value
 
     def evaluate_rolling_properties(self):
         for metric in self.metrics:

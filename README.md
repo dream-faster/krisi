@@ -532,7 +532,7 @@ sc.another_metric_barebones = calculated_metric_example * 2.0
 sc["metric_with_metadata"] = Metric(
     name="A new, own Metric",
     category=MetricCategories.residual,
-    result=calculated_metric_example * 3.0,
+    value=calculated_metric_example * 3.0,
     parameters={"hyper_1": 5.0},
 )
 

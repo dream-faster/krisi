@@ -44,10 +44,10 @@ class Metric(Generic[MetricResult]):
         The key used to reference the metric.
     category: MetricCategories
         The category of the metric.
-    result: Optional[Union[Exception, MetricResult, List[MetricResult]]]
-        The result of the evaluated `Metric`, by default None
+    value: Optional[Union[Exception, MetricResult, List[MetricResult]]]
+        The value of the evaluated `Metric`, by default None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]]
-        The result of the evaluated `Metric` over time, by default None
+        The value of the evaluated `Metric` over time, by default None
     parameters: dict
         The paramaters that are passed into the evaluation function (param: `func`), by default field(default_factory=dict)
     func: Callable
@@ -73,7 +73,7 @@ class Metric(Generic[MetricResult]):
     name: str
     key: str = ""
     category: Optional[MetricCategories] = None
-    result: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
+    value: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     result_rolling: Optional[Union[Exception, MetricResult, List[MetricResult]]] = None
     rolling_properties: Optional[pd.Series] = None
     parameters: dict = field(default_factory=dict)
@@ -124,14 +124,14 @@ class Metric(Generic[MetricResult]):
         if self._from_group:
             return self
         if self.func is None:
-            raise ValueError("`func` has to be set on Metric to calculate result.")
+            raise ValueError("`func` has to be set on Metric to calculate value.")
         try:
-            result = self.func(*args, **kwargs, **self.parameters)
+            value = self.func(*args, **kwargs, **self.parameters)
         except Exception as e:
-            result = e
+            value = e
             if get_global_state().run_type == RunType.test:
                 raise e
-        self.__safe_set(result, key="value")
+        self.__safe_set(value, key="value")
         return self
 
     def evaluate(
@@ -182,12 +182,12 @@ class Metric(Generic[MetricResult]):
         parameters: dict,
         accepts_probabilities: bool,
     ):
-        result, sample_weight = Metric.__handle_window(window)
+        value, sample_weight = Metric.__handle_window(window)
 
-        if isinstance(result, dict):
-            y = result["y"]
-            pred = result["pred"]
-            prob = result["prob"]
+        if isinstance(value, dict):
+            y = value["y"]
+            pred = value["pred"]
+            prob = value["prob"]
 
             if accepts_probabilities:
                 if prob is not None:
@@ -200,7 +200,7 @@ class Metric(Generic[MetricResult]):
                 return func(y, pred, sample_weight=sample_weight, **parameters)
         else:
             return func(
-                *(list(result)),
+                *(list(value)),
                 sample_weight=sample_weight,
                 **parameters,
             )

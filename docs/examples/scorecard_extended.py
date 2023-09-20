@@ -31,7 +31,7 @@ sc.another_metric = calculated_metric_example * 2.0
 sc["yet_another_metric"] = Metric(
     name="A new, own Metric",
     category=MetricCategories.residual,
-    result=calculated_metric_example * 3.0,
+    value=calculated_metric_example * 3.0,
     parameters={"hyper_1": 5.0},
 )
 
