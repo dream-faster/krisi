@@ -31,11 +31,11 @@ def get_metric_string(obj: "Metric", repr: bool = False) -> str:
         )
     if (
         obj.value is None
-        and obj.result_rolling is not None
-        and isinstance(obj.result_rolling, Iterable)
+        and obj.value_rolling is not None
+        and isinstance(obj.value_rolling, Iterable)
     ):
         result_ = (
-            "[" + ", ".join([f"{result:<0.5}" for result in obj.result_rolling]) + "]"
+            "[" + ", ".join([f"{result:<0.5}" for result in obj.value_rolling]) + "]"
         )
     elif obj.value is None:
         result_ = ""

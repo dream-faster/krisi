@@ -21,7 +21,7 @@ def deepcopy_and_evaluate(
 ) -> Metric:
     postprocess_metric = deepcopy(postprocess_func)
     postprocess_metric._evaluation(
-        metric.result_rolling if rolling else metric.value, sample_weight=sample_weight
+        metric.value_rolling if rolling else metric.value, sample_weight=sample_weight
     )
     return postprocess_metric
 

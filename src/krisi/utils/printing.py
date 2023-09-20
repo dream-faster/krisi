@@ -102,7 +102,7 @@ def __display_result(metric: "Metric") -> List[Union[str, Pretty, plotextMixin]]
         __convert_result(res, title=metric.name)
         for res in [
             (metric.value, metric.comparison_result),
-            metric.result_rolling,
+            metric.value_rolling,
             metric.rolling_properties,
         ]
     ]
@@ -159,7 +159,7 @@ def create_metric_table(
         table.add_column("Diagnostics", width=3)
 
     for metric in metrics:
-        if metric.value is None and metric.result_rolling is None:
+        if metric.value is None and metric.value_rolling is None:
             continue
         metric_summarized = __create_metric(
             metric, with_info, with_parameters, with_diagnostics
@@ -175,7 +175,7 @@ def metrics_empty_in_category(metrics: List["Metric"]) -> bool:
         or len(metrics) < 1
         or (
             all([metric.value is None for metric in metrics])
-            and all([metric.result_rolling is None for metric in metrics])
+            and all([metric.value_rolling is None for metric in metrics])
         )
     )
 

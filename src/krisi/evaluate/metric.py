@@ -271,14 +271,14 @@ class Metric(Generic[MetricResult]):
             )
 
     def evaluate_rolling_properties(self):
-        if check_iterable_with_number(self.result_rolling):
+        if check_iterable_with_number(self.value_rolling):
             self.__safe_set(
                 pd.Series(
                     data=dict(
-                        mean=np.mean(self.result_rolling),
-                        std=np.std(self.result_rolling),
-                        min=np.min(self.result_rolling),
-                        max=np.max(self.result_rolling),
+                        mean=np.mean(self.value_rolling),
+                        std=np.std(self.value_rolling),
+                        min=np.min(self.value_rolling),
+                        max=np.max(self.value_rolling),
                     )
                 ),
                 key="rolling_properties",
@@ -286,7 +286,7 @@ class Metric(Generic[MetricResult]):
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:
-            return self.result_rolling is not None
+            return self.value_rolling is not None
         else:
             return self.value is not None
 
@@ -319,7 +319,7 @@ class Metric(Generic[MetricResult]):
 
     def reset_metric(self) -> Metric:
         self.value = None
-        self.result_rolling = None
+        self.value_rolling = None
         self.rolling_properties = None
         self.diagnostics = None
         self._from_group = False
@@ -331,16 +331,16 @@ def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
     if obj.plot_funcs_rolling is None:
         logging.info("No plot_funcs_rolling (Plotting Function Rolling) specified")
         return None
-    elif isinstance(obj.result_rolling, Exception) or obj.result_rolling is None:
+    elif isinstance(obj.value_rolling, Exception) or obj.value_rolling is None:
         return None
-    elif isiterable(obj.result_rolling) and len(obj.result_rolling) > 0:
-        if isinstance(obj.result_rolling[0], (pd.DataFrame, pd.Series)):
+    elif isiterable(obj.value_rolling) and len(obj.value_rolling) > 0:
+        if isinstance(obj.value_rolling[0], (pd.DataFrame, pd.Series)):
             return None
         return [
             InteractiveFigure(
                 f"{obj.key}_{plot_funcs_rolling.__name__}",
                 get_figure=plotly_interactive(
-                    plot_funcs_rolling, obj.result_rolling, title=obj.name
+                    plot_funcs_rolling, obj.value_rolling, title=obj.name
                 ),
                 title=f"{obj.name} - {plot_funcs_rolling.__name__}",
                 category=obj.category,

@@ -128,7 +128,7 @@ def model_benchmarking(model: Model) -> Callable:
                 continue
             benchmark_metric = deepcopy(metric)
             benchmark_metric.value = None
-            benchmark_metric.result_rolling = None
+            benchmark_metric.value_rolling = None
 
             if benchmark_metric.accepts_probabilities:
                 benchmark_metric._evaluation(
