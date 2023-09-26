@@ -336,7 +336,7 @@ class ScoreCard:
         metrics = [
             metric
             for metric in self.get_all_metrics()
-            if not isinstance(metric.result, Iterable)
+            if not isinstance(metric.result, Iterable) and not isinstance(metric, Group)
         ]
 
         comparison_results = [
