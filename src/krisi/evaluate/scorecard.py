@@ -667,7 +667,9 @@ class ScoreCard:
 
         for key, value in copied_scorecard.__dict__.items():
             if isinstance(value, Metric) and key in other.__dict__.keys():
-                if value.result is not None and other[key].result is not None:
+                if isinstance(value.result, (int, float)) and isinstance(
+                    other[key].result, (int, float)
+                ):
                     copied_scorecard.__dict__[key].__dict__["result"] = function(
                         value.result, other[key].result
                     )
