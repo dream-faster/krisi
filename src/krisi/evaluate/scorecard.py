@@ -249,7 +249,30 @@ class ScoreCard:
 
             return scorecard_copy
         elif isinstance(key, str):
-            return deepcopy(getattr(self, key, Metric("Unknown Metric")))
+            if "-" in key:
+                # We'd like to get a comparison result
+                splitted_key = key.split("-")
+                assert len(splitted_key) == 2, f"Key {key} is not valid"
+                metric_key, comparison_key = splitted_key
+
+                metric = deepcopy(getattr(self, metric_key))
+
+                assert isinstance(
+                    metric.comparison_result, pd.Series
+                ), f"Metric {metric_key} does not have comparison results"
+                return Metric(
+                    **{
+                        **asdict(deepcopy(metric).reset()),
+                        **dict(
+                            name=f"{metric.name}-{comparison_key}",
+                            key=f"{metric.key}-{comparison_key}",
+                            result=metric.comparison_result[comparison_key],
+                        ),
+                    },
+                )
+
+            else:
+                return deepcopy(getattr(self, key, Metric("Unknown Metric")))
 
     def __delitem__(self, key: str) -> None:
         del self[key]
