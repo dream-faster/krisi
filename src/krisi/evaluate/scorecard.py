@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 from copy import deepcopy
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 
@@ -401,7 +402,10 @@ class ScoreCard:
         return predifined_custom_metrics + modified_custom_metrics
 
     def get_all_metrics(
-        self, defaults: bool = True, only_evaluated: bool = False
+        self,
+        defaults: bool = True,
+        only_evaluated: bool = False,
+        spread_comparisons: bool = False,
     ) -> List[Metric]:
         """
         Helper function that returns both `default_metrics` and `custom_metrics`.
@@ -421,6 +425,23 @@ class ScoreCard:
             metrics = self.get_default_metrics() + self.get_custom_metrics()
         else:
             metrics = self.get_custom_metrics()
+
+        if spread_comparisons:
+            metrics += [
+                Metric(
+                    **{
+                        **asdict(deepcopy(metric).reset()),
+                        **dict(
+                            name=f"{metric.name}-{index}",
+                            key=f"{metric.key}-{index}",
+                            result=result,
+                        ),
+                    },
+                )
+                for metric in metrics
+                if isinstance(metric["comparison_result"], pd.Series)
+                for index, result in metric["comparison_result"].items()
+            ]
 
         if only_evaluated:
             return [metric for metric in metrics if metric.is_evaluated()]

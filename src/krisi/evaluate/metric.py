@@ -317,7 +317,7 @@ class Metric(Generic[MetricResult]):
         else:
             self.__dict__[key] = result
 
-    def reset_metric(self) -> Metric:
+    def reset(self) -> Metric:
         self.result = None
         self.result_rolling = None
         self.rolling_properties = None
