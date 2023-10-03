@@ -20,6 +20,6 @@ def test_spreading_comparions_results():
         default_metrics=groupped_metric,
     )
     sc.evaluate()
-    metrics = sc.get_all_metrics(spread_comparions=True)
+    metrics = sc.get_all_metrics(spread_comparisons=True)
 
     assert "f_one_score_macro_benchmarking-Δ NS" in [metric.key for metric in metrics]

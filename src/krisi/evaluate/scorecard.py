@@ -405,7 +405,7 @@ class ScoreCard:
         self,
         defaults: bool = True,
         only_evaluated: bool = False,
-        spread_comparions: bool = False,
+        spread_comparisons: bool = False,
     ) -> List[Metric]:
         """
         Helper function that returns both `default_metrics` and `custom_metrics`.
@@ -426,7 +426,7 @@ class ScoreCard:
         else:
             metrics = self.get_custom_metrics()
 
-        if spread_comparions:
+        if spread_comparisons:
             metrics += [
                 Metric(
                     **{
