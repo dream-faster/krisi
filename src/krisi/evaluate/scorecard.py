@@ -714,22 +714,16 @@ class ScoreCard:
                 if isinstance(value.result, (int, float)) and isinstance(
                     other[key].result, (int, float)
                 ):
-                    copied_scorecard.__dict__[key] = {
-                        **asdict(value.reset()),
-                        **{"result": function(value.result, other[key].result)}.update(
-                            {
-                                "comparison_result": function(
-                                    value.comparison_result,
-                                    other[key].comparison_result,
-                                )
-                            }
-                            if (
-                                isinstance(value.comparison_result, pd.Series)
-                                and isinstance(other[key].comparison_result, pd.Series)
-                            )
-                            else {}
-                        ),
-                    }
+                    new_metric = value.reset()
+                    new_metric.result = function(value.result, other[key].result)
+                    if isinstance(value.comparison_result, pd.Series) and isinstance(
+                        other[key].comparison_result, pd.Series
+                    ):
+                        new_metric.comparison_result = function(
+                            value.comparison_result,
+                            other[key].comparison_result,
+                        )
+                    copied_scorecard.__dict__[key] = new_metric
                 else:
                     copied_scorecard.__dict__[key] = copied_scorecard.__dict__[
                         key
