@@ -716,12 +716,19 @@ class ScoreCard:
                 ):
                     copied_scorecard.__dict__[key] = {
                         **asdict(value.reset()),
-                        **{
-                            "result": function(value.result, other[key].result),
-                            "comparison_result": function(
-                                value.comparison_result, other[key].comparison_result
-                            ),
-                        },
+                        **{"result": function(value.result, other[key].result)}.update(
+                            {
+                                "comparison_result": function(
+                                    value.comparison_result,
+                                    other[key].comparison_result,
+                                )
+                            }
+                            if (
+                                isinstance(value.comparison_result, pd.Series)
+                                and isinstance(other[key].comparison_result, pd.Series)
+                            )
+                            else {}
+                        ),
                     }
                 else:
                     copied_scorecard.__dict__[key] = copied_scorecard.__dict__[
