@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 
@@ -317,14 +318,17 @@ class Metric(Generic[MetricResult]):
         else:
             self.__dict__[key] = result
 
-    def reset(self) -> Metric:
-        self.result = None
-        self.result_rolling = None
-        self.rolling_properties = None
-        self.diagnostics = None
-        self._from_group = False
-        self.comparison_result = None
-        return self
+    def reset(self, inplace: bool = False) -> Metric:
+        if inplace:
+            self.result = None
+            self.result_rolling = None
+            self.rolling_properties = None
+            self.diagnostics = None
+            self._from_group = False
+            self.comparison_result = None
+            return self
+        else:
+            return deepcopy(self).reset(inplace=True)
 
 
 def create_diagram_rolling(obj: Metric) -> Optional[List[InteractiveFigure]]:
