@@ -262,7 +262,7 @@ class ScoreCard:
                 ), f"Metric {metric_key} does not have comparison results"
                 return Metric(
                     **{
-                        **asdict(deepcopy(metric).reset()),
+                        **asdict(metric.reset()),
                         **dict(
                             name=f"{metric.name}-{comparison_key}",
                             key=f"{metric.key}-{comparison_key}",
@@ -453,7 +453,7 @@ class ScoreCard:
             metrics += [
                 Metric(
                     **{
-                        **asdict(deepcopy(metric).reset()),
+                        **asdict(metric.reset()),
                         **dict(
                             name=f"{metric.name}-{index}",
                             key=f"{metric.key}-{index}",
@@ -714,13 +714,19 @@ class ScoreCard:
                 if isinstance(value.result, (int, float)) and isinstance(
                     other[key].result, (int, float)
                 ):
-                    copied_scorecard.__dict__[key].__dict__["result"] = function(
-                        value.result, other[key].result
-                    )
-                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+                    copied_scorecard.__dict__[key] = {
+                        **asdict(value.reset()),
+                        **{
+                            "result": function(value.result, other[key].result),
+                            "comparison_result": function(
+                                value.comparison_result, other[key].comparison_result
+                            ),
+                        },
+                    }
                 else:
-                    copied_scorecard.__dict__[key].__dict__["result"] = None
-                    copied_scorecard.__dict__[key].__dict__["result_rolling"] = None
+                    copied_scorecard.__dict__[key] = copied_scorecard.__dict__[
+                        key
+                    ].reset()
 
         return copied_scorecard
 
