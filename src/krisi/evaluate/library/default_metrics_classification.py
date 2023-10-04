@@ -323,7 +323,7 @@ binary_classification_imbalanced_metrics = [
     precision_binary,
     f_one_score_binary,
     kappa,
-    calibration,
+    brier_score,
     roc_auc_binary_macro,
     imbalance_ratio_y,
     imbalance_ratio_pred_y,
