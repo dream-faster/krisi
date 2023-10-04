@@ -272,7 +272,7 @@ class ScoreCard:
                 )
 
             else:
-                return deepcopy(getattr(self, key, Metric("Unknown Metric")))
+                return deepcopy(getattr(self, key))
 
     def __delitem__(self, key: str) -> None:
         del self[key]
