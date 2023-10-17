@@ -50,24 +50,31 @@ def test_benchmarking_random_chunked():
     sample_weight = pd.Series([1.0] * len(y))
     X = generate_synthetic_predictions_binary(y, sample_weight)
 
-    predictions = pd.concat(
-        RandomClassifierChunked(5).predict(X, y, sample_weight=sample_weight),
-        axis="columns",
-        copy=False,
+    chunk_size = 2
+    preds_probs = RandomClassifierChunked(chunk_size).predict(
+        X, y, sample_weight=sample_weight
     )
 
     original_rolling = (
-        (X.iloc[:, 0].rolling(window=5, step=5, min_periods=5).mean())
+        (
+            X.iloc[:, 0]
+            .rolling(window=chunk_size, step=chunk_size, min_periods=chunk_size)
+            .mean()
+        )
         .sort_values()
         .reset_index(drop=True)
     )
     predictions_rolling = (
-        (predictions.iloc[:, 0].rolling(window=5, step=5, min_periods=5).mean())
+        (
+            preds_probs[0]
+            .rolling(window=chunk_size, step=chunk_size, min_periods=chunk_size)
+            .mean()
+        )
         .sort_values()
         .reset_index(drop=True)
     )
 
-    assert (original_rolling == predictions_rolling).sum() > len(y) / 5 * 0.9
+    assert (original_rolling == predictions_rolling).sum() > (len(y) / chunk_size) * 0.9
 
 
 def test_benchmarking_random_all_metrics():
