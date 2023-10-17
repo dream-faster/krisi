@@ -17,22 +17,18 @@ from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_i
 
 
 class Model:
-    requires_preds_probs: bool = False
-
     def predict(
-        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         raise NotImplementedError
 
 
 class RandomClassifier(Model):
-    requires_preds_probs: bool = False
-
     def __init__(self) -> None:
         self.name = "NS"
 
     def predict(
-        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
         predictions = preds_probs.iloc[:, 0]
@@ -41,14 +37,12 @@ class RandomClassifier(Model):
 
 
 class RandomClassifierSmoothed(Model):
-    requires_preds_probs: bool = False
-
     def __init__(self, smoothing_window: Optional[int] = None) -> None:
         self.name = "NS-Smooth"
         self.smoothing_window = smoothing_window
 
     def predict(
-        self, y: pd.Series, sample_weight: Optional[WeightsDS] = None
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: Optional[WeightsDS] = None
     ) -> Tuple[pd.Series, pd.DataFrame]:
         def get_avarage_change_length(ds: pd.Series) -> float:
             # This only works for binary classification
@@ -71,18 +65,19 @@ class RandomClassifierSmoothed(Model):
 
 
 class RandomClassifierChunked(Model):
-    requires_preds_probs: bool = True
-
     def __init__(self, chunk_size: Union[float, int]) -> None:
         self.name = "NS-ChunkShuffle"
         self.chunk_size = chunk_size
 
     def predict(
-        self, preds_probs: pd.DataFrame, sample_weight: Optional[WeightsDS] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        sample_weight: Optional[WeightsDS] = None,
     ) -> Tuple[pd.Series, pd.DataFrame]:
-        preds_probs = shuffle_df_in_chunks(preds_probs, self.chunk_size)
-        predictions = preds_probs.iloc[:, 0]
-        probabilities = preds_probs.iloc[:, 1:3]
+        X = shuffle_df_in_chunks(X, self.chunk_size)
+        predictions = X.iloc[:, 0]
+        probabilities = X.iloc[:, 1:3]
         return predictions, probabilities
 
 
@@ -91,7 +86,7 @@ class PerfectModel(Model):
         self.name = "PM"
 
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: WeightsDS
     ) -> Tuple[pd.Series, pd.DataFrame]:
         predictions = y
         probabilities = pd.get_dummies(y, dtype=float)
@@ -103,7 +98,7 @@ class WorstModel(Model):
         self.name = "WM"
 
     def predict(
-        self, y: pd.Series, sample_weight: WeightsDS
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: WeightsDS
     ) -> Tuple[pd.Series, pd.DataFrame]:
         predictions = np.logical_xor(y, 1).astype(int)
         probabilities = pd.get_dummies(predictions, dtype=float)
@@ -121,7 +116,11 @@ def model_benchmarking(model: Model) -> Callable:
     ) -> List[Metric]:
         if rolling:
             return all_metrics
-        benchmark_predictions, benchmark_probabilities = model.predict(y, sample_weight)
+        benchmark_predictions, benchmark_probabilities = model.predict(
+            pd.concat([predictions, probabilities], axis="columns", copy=False),
+            y,
+            sample_weight,
+        )
 
         for metric in all_metrics:
             if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:

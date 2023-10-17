@@ -5,6 +5,7 @@ from krisi.evaluate.group import Group
 from krisi.evaluate.library.benchmarking import (
     PerfectModel,
     RandomClassifier,
+    RandomClassifierChunked,
     WorstModel,
     model_benchmarking,
 )
@@ -41,6 +42,39 @@ def test_benchmarking_random():
         default_metrics=[groupped_metric],
     )
     sc.print()
+
+
+def test_benchmarking_random_chunked():
+    X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
+
+    sample_weight = pd.Series([1.0] * len(y))
+    X = generate_synthetic_predictions_binary(y, sample_weight)
+
+    chunk_size = 2
+    preds_probs = RandomClassifierChunked(chunk_size).predict(
+        X, y, sample_weight=sample_weight
+    )
+
+    original_rolling = (
+        (
+            X.iloc[:, 0]
+            .rolling(window=chunk_size, step=chunk_size, min_periods=chunk_size)
+            .mean()
+        )
+        .sort_values()
+        .reset_index(drop=True)
+    )
+    predictions_rolling = (
+        (
+            preds_probs[0]
+            .rolling(window=chunk_size, step=chunk_size, min_periods=chunk_size)
+            .mean()
+        )
+        .sort_values()
+        .reset_index(drop=True)
+    )
+
+    assert (original_rolling == predictions_rolling).sum() > (len(y) / chunk_size) * 0.9
 
 
 def test_benchmarking_random_all_metrics():
