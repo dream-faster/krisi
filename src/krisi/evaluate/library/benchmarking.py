@@ -66,7 +66,7 @@ class RandomClassifierSmoothed(Model):
 
 class RandomClassifierChunked(Model):
     def __init__(self, chunk_size: Union[float, int]) -> None:
-        self.name = "NS-ChunkShuffle"
+        self.name = "NS"
         self.chunk_size = chunk_size
 
     def predict(
