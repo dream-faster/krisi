@@ -45,26 +45,29 @@ def test_benchmarking_random():
 
 
 def test_benchmarking_random_chunked():
-    groupped_metric = Group[pd.Series](
-        name="benchmarking",
-        key="benchmarking",
-        metrics=[f_one_score_macro],
-        postprocess_funcs=[model_benchmarking(RandomClassifierChunked(5))],
-    )
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
-    sample_weight = pd.Series([1.0] * len(y))
-    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
-    predictions = preds_probs.iloc[:, 0]
-    probabilities = preds_probs.iloc[:, 1:3]
 
-    sc = score(
-        y,
-        predictions,
-        probabilities,
-        sample_weight=sample_weight,
-        default_metrics=[groupped_metric],
+    sample_weight = pd.Series([1.0] * len(y))
+    X = generate_synthetic_predictions_binary(y, sample_weight)
+
+    predictions = pd.concat(
+        RandomClassifierChunked(5).predict(X, y, sample_weight=sample_weight),
+        axis="columns",
+        copy=False,
     )
-    sc.print()
+
+    original_rolling = (
+        (X.iloc[:, 0].rolling(window=5, step=5, min_periods=5).mean())
+        .sort_values()
+        .reset_index(drop=True)
+    )
+    predictions_rolling = (
+        (predictions.iloc[:, 0].rolling(window=5, step=5, min_periods=5).mean())
+        .sort_values()
+        .reset_index(drop=True)
+    )
+
+    assert (original_rolling == predictions_rolling).sum() > len(y) / 5 * 0.9
 
 
 def test_benchmarking_random_all_metrics():
