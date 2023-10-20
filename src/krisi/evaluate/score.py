@@ -23,7 +23,7 @@ def score(
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
     default_metrics: Optional[Union[List[Metric], Metric, Group, List[Group]]] = None,
-    custom_metrics: Optional[Union[List[Metric], Metric], Group, List[Group]] = None,
+    custom_metrics: Optional[Union[List[Metric], Metric, Group, List[Group]]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,
