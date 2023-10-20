@@ -16,8 +16,8 @@ def test_spreading_comparions_results():
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     sc = score(
-        pd.Series(np.random.randint(100)),
-        pd.Series(np.random.randint(100)),
+        pd.Series(np.random.randint(100, size=100)),
+        pd.Series(np.random.randint(100, size=100)),
         default_metrics=groupped_metric,
     )
     sc.evaluate()
