@@ -101,3 +101,18 @@ def test_args_rolling():
         calculation=Calculation.rolling,
         rolling_args={"window": window_size, "min_periods": min_periods},
     )
+
+
+def test_copying():
+    data_len = 100
+    accuracy = library.accuracy_binary
+
+    result_metric = accuracy(
+        pd.Series(np.random.randint(100, size=data_len)),
+        pd.Series(np.random.randint(100, size=data_len)),
+    )
+    result_metric_2 = accuracy(
+        pd.Series(np.random.randint(100, size=data_len)),
+        pd.Series(np.random.randint(100, size=data_len)),
+    )
+    assert result_metric != result_metric_2

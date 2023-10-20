@@ -119,6 +119,23 @@ class Metric(Generic[MetricResult]):
     def __repr__(self) -> str:
         return super().__repr__()[:-1] + f" - {self.__str__(True)}>"
 
+    def __call__(
+        self,
+        y: TargetsDS,
+        predictions: Optional[PredictionsDS] = None,
+        probabilities: Optional[ProbabilitiesDF] = None,
+        sample_weight: Optional[WeightsDS] = None,
+    ) -> Metric:
+        new_metric = deepcopy(self)
+        if new_metric.calculation == Calculation.both:
+            new_metric.evaluate_over_time(y, predictions, probabilities, sample_weight)
+            new_metric.evaluate(y, predictions, probabilities, sample_weight)
+        elif new_metric.calculation == Calculation.rolling:
+            new_metric.evaluate_over_time(y, predictions, probabilities, sample_weight)
+        elif new_metric.calculation == Calculation.single:
+            new_metric.evaluate(y, predictions, probabilities, sample_weight)
+        return new_metric
+
     def _evaluation(self, *args, **kwargs) -> Metric:
         if self.calculation == Calculation.rolling:
             return self
@@ -138,10 +155,13 @@ class Metric(Generic[MetricResult]):
     def evaluate(
         self,
         y: TargetsDS,
-        predictions: PredictionsDS,
+        predictions: Optional[PredictionsDS] = None,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
     ) -> None:
+        assert (
+            predictions is not None or probabilities is not None
+        ), "predictions and probabilities cannot be both None"
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
@@ -259,11 +279,19 @@ class Metric(Generic[MetricResult]):
     def evaluate_over_time(
         self,
         y: TargetsDS,
-        predictions: PredictionsDS,
+        predictions: Optional[PredictionsDS] = None,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
-        rolling_args: dict = dict(),
+        rolling_args: Optional[dict] = None,
     ) -> None:
+        if rolling_args is None:
+            window_size = len(y) // 20  # 5% of the data
+            rolling_args = dict(
+                window=window_size,
+                step=window_size,
+                min_periods=window_size,
+                closed="left",
+            )
         if self.accepts_probabilities and probabilities is not None:
             self._rolling_evaluation(
                 y=y,
