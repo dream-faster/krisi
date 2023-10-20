@@ -20,7 +20,6 @@ from krisi.evaluate.library.diagrams import (
 )
 from krisi.evaluate.library.metric_wrappers import (
     bennet_s,
-    brier_multi,
     pred_y_imbalance_ratio,
     wrap_avg_precision,
     wrap_brier_score,
@@ -150,19 +149,6 @@ calibration = Metric[float](
     supports_multiclass=True,
     calculation=Calculation.single,
     purpose=Purpose.diagram,
-)
-"""~"""
-brier_score_multi = Metric[float](
-    name="Brier Score Multilabel",
-    key="brier_score_multi",
-    category=MetricCategories.class_err,
-    info="Multilabel calculation of the Brier score loss. The smaller the Brier score loss, the better, hence the naming with “loss”. The Brier score measures the mean squared difference between the predicted probability and the actual outcome. The Brier score always takes on a value between zero and one, since this is the largest possible difference between a predicted probability (which must be between zero and one) and the actual outcome (which can take on values of only 0 and 1). It can be decomposed as the sum of refinement loss and calibration loss.",
-    func=lambda y, prob, **kwargs: brier_multi(y, prob, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=750.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    accepts_probabilities=True,
-    supports_multiclass=True,
-    purpose=Purpose.loss,
 )
 """~"""
 s_score = Metric[float](
@@ -357,7 +343,6 @@ multiclass_classification_metrics = [
     precision_macro,
     f_one_score_weighted,
     f_one_score_micro,
-    brier_score_multi,
     roc_auc_multi_macro,
     # roc_auc_multi_weighted,
     matthew_corr,

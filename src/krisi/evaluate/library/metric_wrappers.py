@@ -21,32 +21,13 @@ from krisi.evaluate.type import (
 logger = logging.getLogger("krisi")
 
 
-def ljung_box(
-    y: TargetsDS, predictions: Predictions, **kwargs
-) -> Union[pd.DataFrame, Tuple[Any, Any], Tuple[Any, Any, Any, Any]]:
-    from statsmodels.stats.diagnostic import acorr_ljungbox
-
-    return acorr_ljungbox(predictions)
-
-
-def create_one_hot(ds: Union[TargetsDS, ProbabilitiesDF]) -> pd.DataFrame:
-    return pd.get_dummies(ds)
-
-
-def brier_multi(targets: TargetsDS, probs: ProbabilitiesDF, **kwargs):
-    # See https://stats.stackexchange.com/questions/403544/how-to-compute-the-brier-score-for-more-than-two-classes
-    return np.mean(
-        np.sum(
-            (probs - create_one_hot(targets)) ** 2,
-            axis=1,
-        )
-    )
-
-
-def wrap_brier_score(y: TargetsDS, probs: ProbabilitiesDF, **kwargs) -> float:
+def wrap_brier_score(
+    y: TargetsDS, probs: ProbabilitiesDF, sample_weight: Optional[WeightsDS], **kwargs
+) -> float:
     return brier_score_loss(
         y_true=y,
         y_prob=probs.iloc[:, 1],
+        sample_weight=sample_weight,
         **kwargs,
     )
 
@@ -54,7 +35,7 @@ def wrap_brier_score(y: TargetsDS, probs: ProbabilitiesDF, **kwargs) -> float:
 def wrap_roc_auc(
     y: TargetsDS,
     probs: ProbabilitiesDF,
-    sample_weight: Optional[None] = None,
+    sample_weight: Optional[WeightsDS],
     **kwargs,
 ) -> float:
     probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
@@ -68,6 +49,7 @@ def wrap_roc_auc(
         y_true=y,
         y_score=probs,
         labels=prob_columns,
+        sample_weight=sample_weight,
         **kwargs,
     )
 
@@ -75,7 +57,7 @@ def wrap_roc_auc(
 def wrap_avg_precision(
     y: TargetsDS,
     probs: ProbabilitiesDF,
-    sample_weight: Optional[None] = None,
+    sample_weight: Optional[WeightsDS],
     **kwargs,
 ) -> float:
     probs = probs.rename(columns={col: i for i, col in enumerate(probs.columns)})
@@ -86,6 +68,7 @@ def wrap_avg_precision(
     return average_precision_score(
         y_true=y,
         y_score=probs,
+        sample_weight=sample_weight,
         **kwargs,
     )
 
@@ -93,7 +76,7 @@ def wrap_avg_precision(
 def bennet_s(
     y: TargetsDS,
     preds: PredictionsDS,
-    sample_weight: WeightsDS,
+    sample_weight: Optional[WeightsDS],
     **kwargs,
 ) -> float:
     """Bennett, Alpert, & Goldstein S score.
@@ -114,10 +97,13 @@ def bennet_s(
     return S_Score
 
 
+""" v Diagnostics Wrappers v """
+
+
 def y_label_imbalance_ratio(
     y: TargetsDS,
     preds: PredictionsDS,
-    sample_weight: Optional[WeightsDS] = None,
+    sample_weight: Optional[WeightsDS],
     pos_label: int = 1,
     **kwargs,
 ) -> float:
@@ -137,7 +123,7 @@ def y_label_imbalance_ratio(
 def pred_y_imbalance_ratio(
     y: TargetsDS,
     preds: PredictionsDS,
-    sample_weight: Optional[WeightsDS] = None,
+    sample_weight: Optional[WeightsDS],
     pos_label: int = 1,
     **kwargs,
 ) -> float:
@@ -155,3 +141,11 @@ def pred_y_imbalance_ratio(
         abs(target_frequencies[pos_label] - perfect_balance)
         - abs(prediction_frequencies[pos_label] - perfect_balance)
     )
+
+
+def ljung_box(
+    y: TargetsDS, predictions: Predictions, sample_weight: Optional[WeightsDS], **kwargs
+) -> Union[pd.DataFrame, Tuple[Any, Any], Tuple[Any, Any, Any, Any]]:
+    from statsmodels.stats.diagnostic import acorr_ljungbox
+
+    return acorr_ljungbox(predictions, **kwargs)
