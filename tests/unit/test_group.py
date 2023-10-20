@@ -33,7 +33,7 @@ def test_group_preprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[residuals_mean],
+        metrics=[residuals_mean()],
         preprocess_func=lambda y, pred, probs, **kwargs: y - pred,
     )
 
@@ -53,7 +53,7 @@ def test_group_postprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[f_one_score_macro],
+        metrics=[f_one_score_macro()],
         postprocess_funcs=example_postporcess_func,
     )
 

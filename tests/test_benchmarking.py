@@ -25,7 +25,7 @@ def test_benchmarking_random():
     groupped_metric = Group[pd.Series](
         name="benchmarking",
         key="benchmarking",
-        metrics=[f_one_score_macro],
+        metrics=[f_one_score_macro()],
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
@@ -78,7 +78,7 @@ def test_benchmarking_random_chunked():
 
 
 def test_benchmarking_random_all_metrics():
-    groupped_metric = binary_classification_metrics_balanced_benchmarking
+    groupped_metric = binary_classification_metrics_balanced_benchmarking()
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
@@ -99,7 +99,7 @@ def test_perfect_to_best():
     benchmark = Group[pd.Series](
         name="benchmarking",
         key="benchmarking",
-        metrics=binary_classification_balanced_metrics,
+        metrics=binary_classification_balanced_metrics(),
         postprocess_funcs=[
             model_benchmarking(PerfectModel()),
             model_benchmarking(WorstModel()),

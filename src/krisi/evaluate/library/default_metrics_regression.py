@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 import numpy as np
@@ -25,126 +26,148 @@ from krisi.evaluate.type import (
     Purpose,
 )
 
-mae = Metric[float](
-    name="Mean Absolute Error",
-    key="mae",
-    category=MetricCategories.reg_err,
-    info="(Mean absolute error) represents the difference between the original and predicted values extracted by averaged the absolute difference over the data set.",
-    func=lambda y, pred, **kwargs: mean_absolute_error(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+mae = lambda: deepcopy(
+    Metric[float](
+        name="Mean Absolute Error",
+        key="mae",
+        category=MetricCategories.reg_err,
+        info="(Mean absolute error) represents the difference between the original and predicted values extracted by averaged the absolute difference over the data set.",
+        func=lambda y, pred, **kwargs: mean_absolute_error(y, pred, **kwargs),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-mape = Metric[float](
-    name="Mean Absolute Percentage Error",
-    key="mape",
-    category=MetricCategories.reg_err,
-    func=lambda y, pred, **kwargs: mean_absolute_percentage_error(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+mape = lambda: deepcopy(
+    Metric[float](
+        name="Mean Absolute Percentage Error",
+        key="mape",
+        category=MetricCategories.reg_err,
+        func=lambda y, pred, **kwargs: mean_absolute_percentage_error(
+            y, pred, **kwargs
+        ),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-smape = Metric[float](
-    name="Symmetric Mean Absolute Percentage Error",
-    key="smape",
-    category=MetricCategories.reg_err,
-    func=lambda y_true, y_pred, **kwargs: np.mean(
-        np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0
-    ),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+smape = lambda: deepcopy(
+    Metric[float](
+        name="Symmetric Mean Absolute Percentage Error",
+        key="smape",
+        category=MetricCategories.reg_err,
+        func=lambda y_true, y_pred, **kwargs: np.mean(
+            np.abs(y_pred - y_true) / (np.abs(y_true) + np.abs(y_pred)), axis=0
+        ),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-mse = Metric[float](
-    name="Mean Squared Error",
-    key="mse",
-    category=MetricCategories.reg_err,
-    info="(Mean Squared Error) represents the difference between the original and predicted values extracted by squared the average difference over the data set.",
-    parameters={"squared": True},
-    func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+mse = lambda: deepcopy(
+    Metric[float](
+        name="Mean Squared Error",
+        key="mse",
+        category=MetricCategories.reg_err,
+        info="(Mean Squared Error) represents the difference between the original and predicted values extracted by squared the average difference over the data set.",
+        parameters={"squared": True},
+        func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-rmse = Metric[float](
-    name="Root Mean Squared Error",
-    key="rmse",
-    category=MetricCategories.reg_err,
-    info="(Root Mean Squared Error) is the error rate by the square root of Mean Squared Error.",
-    parameters={"squared": False},
-    func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+rmse = lambda: deepcopy(
+    Metric[float](
+        name="Root Mean Squared Error",
+        key="rmse",
+        category=MetricCategories.reg_err,
+        info="(Root Mean Squared Error) is the error rate by the square root of Mean Squared Error.",
+        parameters={"squared": False},
+        func=lambda y, pred, **kwargs: mean_squared_error(y, pred, **kwargs),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-rmsle = Metric[float](
-    name="Root Mean Squared Log Error",
-    key="rmsle",
-    category=MetricCategories.reg_err,
-    parameters={"squared": False},
-    func=lambda y, pred, **kwargs: mean_squared_log_error(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.loss,
+rmsle = lambda: deepcopy(
+    Metric[float](
+        name="Root Mean Squared Log Error",
+        key="rmsle",
+        category=MetricCategories.reg_err,
+        parameters={"squared": False},
+        func=lambda y, pred, **kwargs: mean_squared_log_error(y, pred, **kwargs),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.loss,
+    )
 )
 """ ~ """
 
-r_two = Metric[float](
-    name="R-squared",
-    key="r_two",
-    category=MetricCategories.reg_err,
-    info="(Coefficient of determination) represents the coefficient of how well the values fit compared to the original values. The value from 0 to 1 interpreted as percentages. The higher the value is, the better the model is.",
-    func=lambda y, pred, **kwargs: r2_score(y, pred, **kwargs),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.objective,
+r_two = lambda: deepcopy(
+    Metric[float](
+        name="R-squared",
+        key="r_two",
+        category=MetricCategories.reg_err,
+        info="(Coefficient of determination) represents the coefficient of how well the values fit compared to the original values. The value from 0 to 1 interpreted as percentages. The higher the value is, the better the model is.",
+        func=lambda y, pred, **kwargs: r2_score(y, pred, **kwargs),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.objective,
+    )
 )
 """ ~ """
 
-residuals = Metric[List[float]](
-    name="Residuals",
-    key="residuals",
-    category=MetricCategories.residual,
-    func=lambda y, pred, **kwargs: y - pred,
-    plot_funcs=[
-        (display_acf_plot, dict(width=1500.0)),
-        (display_density_plot, dict(width=1500.0)),
-        (display_time_series, dict(width=1500.0)),
-    ],
-    calculation=Calculation.single,
-    purpose=Purpose.diagram,
+residuals = lambda: deepcopy(
+    Metric[List[float]](
+        name="Residuals",
+        key="residuals",
+        category=MetricCategories.residual,
+        func=lambda y, pred, **kwargs: y - pred,
+        plot_funcs=[
+            (display_acf_plot, dict(width=1500.0)),
+            (display_density_plot, dict(width=1500.0)),
+            (display_time_series, dict(width=1500.0)),
+        ],
+        calculation=Calculation.single,
+        purpose=Purpose.diagram,
+    )
 )
 """ ~ """
 
-residuals_mean = Metric[float](
-    name="Mean of the Residuals",
-    key="residuals_mean",
-    category=MetricCategories.residual,
-    func=lambda res, *args, **kwargs: res.mean(),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.diagram,
+residuals_mean = lambda: deepcopy(
+    Metric[float](
+        name="Mean of the Residuals",
+        key="residuals_mean",
+        category=MetricCategories.residual,
+        func=lambda res, *args, **kwargs: res.mean(),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.diagram,
+    )
 )
 """ ~ """
 
-residuals_std = Metric[float](
-    name="Standard Deviation of the Residuals",
-    key="residuals_std",
-    category=MetricCategories.residual,
-    func=lambda res, **kwargs: res.std(),
-    plot_funcs=[(display_single_value, dict(width=900.0))],
-    plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
-    purpose=Purpose.diagram,
+residuals_std = lambda: deepcopy(
+    Metric[float](
+        name="Standard Deviation of the Residuals",
+        key="residuals_std",
+        category=MetricCategories.residual,
+        func=lambda res, **kwargs: res.std(),
+        plot_funcs=[(display_single_value, dict(width=900.0))],
+        plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
+        purpose=Purpose.diagram,
+    )
 )
 """ ~ """
 
@@ -161,42 +184,50 @@ residuals_std = Metric[float](
 # )
 """ ~ """
 
-residual_group = Group[pd.Series](
-    name="residual_group",
-    key="residual_group",
-    metrics=[residuals_mean, residuals_std],
-    preprocess_func=lambda y, pred, prob, **kwargs: y - pred,
-    purpose=Purpose.group,
+residual_group = lambda: deepcopy(
+    Group[pd.Series](
+        name="residual_group",
+        key="residual_group",
+        metrics=[residuals_mean(), residuals_std()],
+        preprocess_func=lambda y, pred, prob, **kwargs: y - pred,
+        purpose=Purpose.group,
+    )
 )
 """ ~ """
 
-all_regression_metrics = [
-    mae,
-    mape,
-    smape,
-    mse,
-    rmse,
-    # rmsle,
-    r_two,
-    residuals,
-    residual_group,
-    # ljung_box_statistics,
-]
+all_regression_metrics = lambda: deepcopy(
+    [
+        mae(),
+        mape(),
+        smape(),
+        mse(),
+        rmse(),
+        # rmsle(),
+        r_two(),
+        residuals(),
+        residual_group(),
+        # ljung_box_statistics(),
+    ]
+)
 """ ~ """
 
-minimal_regression_metrics = [
-    mae,
-    mape,
-    mse,
-    rmse,
-    rmsle,
-    r_two,
-]
+minimal_regression_metrics = lambda: deepcopy(
+    [
+        mae(),
+        mape(),
+        mse(),
+        rmse(),
+        rmsle(),
+        r_two(),
+    ]
+)
 """ ~ """
 
-low_computation_regression_metrics = [
-    metric
-    for metric in all_regression_metrics
-    if metric.comp_complexity is not ComputationalComplexity.high
-]
+low_computation_regression_metrics = lambda: deepcopy(
+    [
+        metric()
+        for metric in all_regression_metrics()
+        if metric.comp_complexity is not ComputationalComplexity.high
+    ]
+)
 """ ~ """

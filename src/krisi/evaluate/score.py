@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
+from krisi.evaluate.group import Group
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import (
@@ -21,8 +22,8 @@ def score(
     model_name: Optional[str] = None,
     dataset_name: Optional[str] = None,
     project_name: Optional[str] = None,
-    default_metrics: Optional[Union[List[Metric], Metric]] = None,
-    custom_metrics: Optional[Union[List[Metric], Metric]] = None,
+    default_metrics: Optional[Union[List[Metric], Metric, Group, List[Group]]] = None,
+    custom_metrics: Optional[Union[List[Metric], Metric], Group, List[Group]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
     calculation: Union[Calculation, str] = Calculation.single,

@@ -11,7 +11,7 @@ def get_metric_dict(metrics: List[Metric]) -> dict:
 
 
 def test_probabilities():
-    # default_metrics = get_metric_dict(library.all_classification_metrics)["brier_score"]
+    # default_metrics = get_metric_dict(library.all_classification_metrics())["brier_score"]
     df = pd.read_csv("tests/sample_predictions_binary.csv", index_col=0)
     y = pd.read_csv("tests/sample_y_classification.csv", index_col=0).squeeze()
 

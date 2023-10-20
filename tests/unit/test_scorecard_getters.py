@@ -12,7 +12,7 @@ def test_spreading_comparions_results():
     groupped_metric = Group[pd.Series](
         name="benchmarking",
         key="benchmarking",
-        metrics=[f_one_score_macro],
+        metrics=[f_one_score_macro()],
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     sc = score(
@@ -30,7 +30,7 @@ def test_getting_no_skill_metric():
     groupped_metric = Group[pd.Series](
         name="benchmarking",
         key="benchmarking",
-        metrics=[f_one_score_macro],
+        metrics=[f_one_score_macro()],
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     sc = score(

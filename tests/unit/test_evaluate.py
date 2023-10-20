@@ -14,7 +14,7 @@ def test_sample_weights():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        # default_metrics=[cross_entropy],
+        # default_metrics=[cross_entropy()],
     )
     sc.evaluate()
     sc.evaluate_over_time()

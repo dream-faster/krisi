@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import DatasetType
@@ -21,14 +21,16 @@ from .default_metrics_regression import (
 )
 
 
-def get_default_metrics_for_dataset_type(type: DatasetType) -> List[Metric]:
+def get_default_metrics_for_dataset_type(
+    type: DatasetType,
+) -> List[Metric]:
     if type == DatasetType.classification_binary_balanced:
-        return binary_classification_metrics_balanced_benchmarking
+        return binary_classification_metrics_balanced_benchmarking()
     elif type == DatasetType.classification_binary_imbalanced:
-        return binary_classification_metrics_imbalanced_benchmarking
+        return binary_classification_metrics_imbalanced_benchmarking()
     elif type == DatasetType.classification_multiclass:
-        return multiclass_classification_metrics
+        return multiclass_classification_metrics()
     elif type == DatasetType.regression:
-        return all_regression_metrics
+        return all_regression_metrics()
     else:
         raise ValueError(f"Unknown dataset type {type}")
