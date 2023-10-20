@@ -219,8 +219,10 @@ class Metric(Generic[MetricResult]):
                 axis="columns",
             )
 
-            if "sample_weight" in _df:
+            if kwargs["sample_weight"] is not None:
+                _df["sample_weight"] = kwargs["sample_weight"]
                 self.__dict__["diagnostics"] = dict(used_sample_weight=True)
+
             try:
                 df_rolled = (
                     _df.expanding()
@@ -237,6 +239,13 @@ class Metric(Generic[MetricResult]):
                     )
                     for single_window in df_rolled
                     if len(single_window) > 0
+                    and (
+                        ("min_periods" not in rolling_args)
+                        or (
+                            "min_periods" in rolling_args
+                            and len(single_window) >= rolling_args["min_periods"]
+                        )
+                    )
                 ]
 
             except Exception as e:
