@@ -33,6 +33,7 @@ def test_getting_no_skill_metric():
         key="benchmarking",
         metrics=[f_one_score_macro],
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
+        append_key=True,
     )
     sc = score(
         pd.Series(np.random.randint(2, size=100)),
