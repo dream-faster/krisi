@@ -125,7 +125,7 @@ class Group(Metric, Generic[MetricResult]):
 
     def evaluate_rolling_properties(self):
         for metric in self.metrics:
-            metric.evaluate_rolling_properties()
+            metric = metric.evaluate_rolling_properties()
 
     def evaluate(
         self,
@@ -147,7 +147,7 @@ class Group(Metric, Generic[MetricResult]):
                 metric.accepts_probabilities,
             )
             if args_to_pass is not None:
-                metric._evaluation(
+                metric = metric._evaluation(
                     *args_to_pass,
                     sample_weight=sample_weight,
                 )
@@ -182,7 +182,7 @@ class Group(Metric, Generic[MetricResult]):
                 metric.accepts_probabilities,
             )
             if args_to_pass is not None:
-                metric._rolling_evaluation(
+                metric = metric._rolling_evaluation(
                     *args_to_pass,
                     sample_weight=sample_weight,
                     rolling_args=rolling_args,
