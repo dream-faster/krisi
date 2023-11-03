@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Any, Dict, Generic, List, Optional, Tuple, Union
 
@@ -14,6 +16,10 @@ from .type import (
     TargetsDS,
     WeightsDS,
 )
+
+
+def filter_base_properties(dict: dict) -> dict:
+    return {key: value for key, value in dict.items() if not key[:2] == "__"}
 
 
 def deepcopy_and_evaluate(
@@ -40,7 +46,7 @@ class Group(Metric, Generic[MetricResult]):
             Union[List[PostProcessFunction], PostProcessFunction]
         ] = None,
         purpose: Purpose = Purpose.group,
-        append_key: bool = True,
+        append_key: bool = False,
     ) -> None:
         self.calculation = Calculation.from_str(calculation)
         self.preprocess_func = preprocess_func
@@ -97,9 +103,8 @@ class Group(Metric, Generic[MetricResult]):
                 )
 
             all_metrics = all_metrics_
-        self.metrics = all_metrics
 
-        return self.metrics
+        return all_metrics
 
     def get_all_metrics(self) -> List[Metric]:
         return self.metrics
@@ -123,9 +128,15 @@ class Group(Metric, Generic[MetricResult]):
         else:
             return result
 
-    def evaluate_rolling_properties(self):
-        for metric in self.metrics:
-            metric.evaluate_rolling_properties()
+    def evaluate_rolling_properties(self) -> Group:
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": [
+                    metric.evaluate_rolling_properties() for metric in self.metrics
+                ]
+            }
+        )
 
     def evaluate(
         self,
@@ -133,12 +144,12 @@ class Group(Metric, Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: ProbabilitiesDF,
         sample_weight: WeightsDS,
-    ) -> List[Metric]:
+    ) -> Group:
         if self.calculation == Calculation.rolling:
-            return []
+            return deepcopy(self)
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        for metric in self.metrics:
+        def pass_in_args(metric: Metric) -> Metric:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
                 y,
@@ -147,18 +158,24 @@ class Group(Metric, Generic[MetricResult]):
                 metric.accepts_probabilities,
             )
             if args_to_pass is not None:
-                metric._evaluation(
+                metric = metric._evaluation(
                     *args_to_pass,
                     sample_weight=sample_weight,
                 )
+            return metric
 
-        return self._postprocess(
-            self.metrics,
-            y,
-            predictions,
-            probabilities,
-            sample_weight=sample_weight,
-            rolling=False,
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": self._postprocess(
+                    [pass_in_args(metric) for metric in self.metrics],
+                    y,
+                    predictions,
+                    probabilities,
+                    sample_weight=sample_weight,
+                    rolling=False,
+                )
+            }
         )
 
     def evaluate_over_time(
@@ -168,12 +185,14 @@ class Group(Metric, Generic[MetricResult]):
         probabilities: ProbabilitiesDF,
         sample_weight: WeightsDS,
         rolling_args: Dict[str, Any],
-    ) -> List[Metric]:
+    ) -> Group:
         if self.calculation == Calculation.single:
-            return []
+            return Group(
+                **filter_base_properties(self.__dict__) | {"metrics": self.metrics}
+            )
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        for metric in self.metrics:
+        def pass_in_args(metric: Metric) -> Metric:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
                 y,
@@ -182,19 +201,25 @@ class Group(Metric, Generic[MetricResult]):
                 metric.accepts_probabilities,
             )
             if args_to_pass is not None:
-                metric._rolling_evaluation(
+                metric = metric._rolling_evaluation(
                     *args_to_pass,
                     sample_weight=sample_weight,
                     rolling_args=rolling_args,
                 )
+            return metric
 
-        return self._postprocess(
-            self.metrics,
-            y,
-            predictions,
-            probabilities,
-            sample_weight=sample_weight,
-            rolling=True,
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": self._postprocess(
+                    [pass_in_args(metric) for metric in self.metrics],
+                    y,
+                    predictions,
+                    probabilities,
+                    sample_weight=sample_weight,
+                    rolling=True,
+                )
+            }
         )
 
     def __str__(self) -> str:

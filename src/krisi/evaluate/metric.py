@@ -132,8 +132,8 @@ class Metric(Generic[MetricResult]):
             result = e
             if get_global_state().run_type == RunType.test:
                 raise e
-        self.__safe_set(result, key="result")
-        return self
+
+        return self.__safe_set(result, key="result")
 
     def evaluate(
         self,
@@ -141,24 +141,24 @@ class Metric(Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
-    ) -> None:
+    ) -> Metric:
         assert (
             self.func is not None
         ), "`func` has to be set on Metric to calculate result."
         if self.accepts_probabilities:
             if probabilities is not None:
-                self._evaluation(y, probabilities, sample_weight=sample_weight)
+                result = self._evaluation(y, probabilities, sample_weight=sample_weight)
             else:
-                self.__safe_set(
+                result = self.__safe_set(
                     ValueError(
                         "Metric requires probabilities, but None were provided."
                     ),
                     key="result",
                 )
         else:
-            self._evaluation(y, predictions, sample_weight=sample_weight)
-        if sample_weight is not None:
-            self.__dict__["diagnostics"] = dict(used_sample_weight=True)
+            result = self._evaluation(y, predictions, sample_weight=sample_weight)
+
+        return result
 
     @staticmethod
     def __handle_window(
@@ -221,7 +221,6 @@ class Metric(Generic[MetricResult]):
 
             if kwargs["sample_weight"] is not None:
                 _df["sample_weight"] = kwargs["sample_weight"]
-                self.__dict__["diagnostics"] = dict(used_sample_weight=True)
 
             try:
                 df_rolled = (
@@ -252,9 +251,7 @@ class Metric(Generic[MetricResult]):
                 result_rolling = e
                 if get_global_state().run_type == RunType.test:
                     raise e
-            self.__safe_set(result_rolling, key="result_rolling")
-
-        return self
+            return self.__safe_set(result_rolling, key="result_rolling")
 
     def evaluate_over_time(
         self,
@@ -263,9 +260,9 @@ class Metric(Generic[MetricResult]):
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
         rolling_args: dict = dict(),
-    ) -> None:
+    ) -> Metric:
         if self.accepts_probabilities and probabilities is not None:
-            self._rolling_evaluation(
+            return self._rolling_evaluation(
                 y=y,
                 predictions=predictions,
                 probabilities=probabilities,
@@ -273,16 +270,16 @@ class Metric(Generic[MetricResult]):
                 rolling_args=rolling_args,
             )
         else:
-            self._rolling_evaluation(
+            return self._rolling_evaluation(
                 y=y,
                 predictions=predictions,
                 sample_weight=sample_weight,
                 rolling_args=rolling_args,
             )
 
-    def evaluate_rolling_properties(self):
+    def evaluate_rolling_properties(self) -> Metric:
         if check_iterable_with_number(self.result_rolling):
-            self.__safe_set(
+            return self.__safe_set(
                 pd.Series(
                     data=dict(
                         mean=np.mean(self.result_rolling),
@@ -293,6 +290,7 @@ class Metric(Generic[MetricResult]):
                 ),
                 key="rolling_properties",
             )
+        return self
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:
@@ -321,11 +319,14 @@ class Metric(Generic[MetricResult]):
         self,
         result: Union[Exception, MetricResult, List[MetricResult], pd.Series],
         key: str,
-    ):
-        if self.__dict__[key] is not None:
+    ) -> Metric:
+        copied_self = deepcopy(self)
+
+        if copied_self.__dict__[key] is not None:
             raise ValueError("This metric already contains a result.")
         else:
-            self.__dict__[key] = result
+            copied_self.__dict__[key] = result
+        return copied_self
 
     def reset(self, inplace: bool = False) -> Metric:
         if inplace:

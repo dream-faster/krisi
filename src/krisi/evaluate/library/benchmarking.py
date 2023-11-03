@@ -130,11 +130,11 @@ def model_benchmarking(model: Model) -> Callable:
             benchmark_metric.result_rolling = None
 
             if benchmark_metric.accepts_probabilities:
-                benchmark_metric._evaluation(
+                benchmark_metric = benchmark_metric._evaluation(
                     y, benchmark_probabilities, sample_weight=sample_weight
                 )
             else:
-                benchmark_metric._evaluation(
+                benchmark_metric = benchmark_metric._evaluation(
                     y, benchmark_predictions, sample_weight=sample_weight
                 )
 
