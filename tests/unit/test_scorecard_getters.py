@@ -14,10 +14,11 @@ def test_spreading_comparions_results():
         key="benchmarking",
         metrics=[f_one_score_macro],
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
+        append_key=True,
     )
     sc = score(
-        pd.Series(np.random.randint(100, size=100)),
-        pd.Series(np.random.randint(100, size=100)),
+        pd.Series(np.random.randint(2, size=100)),
+        pd.Series(np.random.randint(2, size=100)),
         default_metrics=groupped_metric,
     )
     sc.evaluate()
@@ -34,8 +35,8 @@ def test_getting_no_skill_metric():
         postprocess_funcs=[model_benchmarking(RandomClassifier())],
     )
     sc = score(
-        pd.Series(np.random.randint(100)),
-        pd.Series(np.random.randint(100)),
+        pd.Series(np.random.randint(2, size=100)),
+        pd.Series(np.random.randint(2, size=100)),
         default_metrics=groupped_metric,
     )
     sc.evaluate()
