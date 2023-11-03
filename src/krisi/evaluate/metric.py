@@ -221,7 +221,6 @@ class Metric(Generic[MetricResult]):
 
             if kwargs["sample_weight"] is not None:
                 _df["sample_weight"] = kwargs["sample_weight"]
-                self.__dict__["diagnostics"] = dict(used_sample_weight=True)
 
             try:
                 df_rolled = (

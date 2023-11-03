@@ -504,7 +504,7 @@ class ScoreCard:
         -------
         None
         """
-        self.__evaluate("evaluate", "result", defaults=defaults)
+        self.__evaluate("evaluate", defaults=defaults)
 
     def evaluate_over_time(self, defaults: bool = True) -> None:
         """
@@ -529,7 +529,6 @@ class ScoreCard:
         """
         self.__evaluate(
             "evaluate_over_time",
-            "result_rolling",
             defaults=defaults,
             rolling_args={"rolling_args": self.rolling_args},
         )

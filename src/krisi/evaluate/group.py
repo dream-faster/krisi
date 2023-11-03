@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Any, Dict, Generic, List, Optional, Tuple, Union
 
@@ -14,6 +16,10 @@ from .type import (
     TargetsDS,
     WeightsDS,
 )
+
+
+def filter_base_properties(dict: dict) -> dict:
+    return {key: value for key, value in dict.items() if not key[:2] == "__"}
 
 
 def deepcopy_and_evaluate(
@@ -133,9 +139,11 @@ class Group(Metric, Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: ProbabilitiesDF,
         sample_weight: WeightsDS,
-    ) -> List[Metric]:
+    ) -> Group:
         if self.calculation == Calculation.rolling:
-            return []
+            return Group(
+                **filter_base_properties(self.__dict__) | {"metrics": self.metrics}
+            )
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
         for metric in self.metrics:
@@ -152,13 +160,18 @@ class Group(Metric, Generic[MetricResult]):
                     sample_weight=sample_weight,
                 )
 
-        return self._postprocess(
-            self.metrics,
-            y,
-            predictions,
-            probabilities,
-            sample_weight=sample_weight,
-            rolling=False,
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": self._postprocess(
+                    self.metrics,
+                    y,
+                    predictions,
+                    probabilities,
+                    sample_weight=sample_weight,
+                    rolling=False,
+                )
+            }
         )
 
     def evaluate_over_time(
@@ -168,9 +181,11 @@ class Group(Metric, Generic[MetricResult]):
         probabilities: ProbabilitiesDF,
         sample_weight: WeightsDS,
         rolling_args: Dict[str, Any],
-    ) -> List[Metric]:
+    ) -> Group:
         if self.calculation == Calculation.single:
-            return []
+            return Group(
+                **filter_base_properties(self.__dict__) | {"metrics": self.metrics}
+            )
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
         for metric in self.metrics:
@@ -188,13 +203,18 @@ class Group(Metric, Generic[MetricResult]):
                     rolling_args=rolling_args,
                 )
 
-        return self._postprocess(
-            self.metrics,
-            y,
-            predictions,
-            probabilities,
-            sample_weight=sample_weight,
-            rolling=True,
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": self._postprocess(
+                    self.metrics,
+                    y,
+                    predictions,
+                    probabilities,
+                    sample_weight=sample_weight,
+                    rolling=True,
+                )
+            }
         )
 
     def __str__(self) -> str:
