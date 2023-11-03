@@ -46,7 +46,7 @@ class Group(Metric, Generic[MetricResult]):
             Union[List[PostProcessFunction], PostProcessFunction]
         ] = None,
         purpose: Purpose = Purpose.group,
-        append_key: bool = True,
+        append_key: bool = False,
     ) -> None:
         self.calculation = Calculation.from_str(calculation)
         self.preprocess_func = preprocess_func
@@ -103,9 +103,8 @@ class Group(Metric, Generic[MetricResult]):
                 )
 
             all_metrics = all_metrics_
-        self.metrics = all_metrics
 
-        return self.metrics
+        return all_metrics
 
     def get_all_metrics(self) -> List[Metric]:
         return self.metrics
@@ -129,9 +128,15 @@ class Group(Metric, Generic[MetricResult]):
         else:
             return result
 
-    def evaluate_rolling_properties(self):
-        for metric in self.metrics:
-            metric = metric.evaluate_rolling_properties()
+    def evaluate_rolling_properties(self) -> Group:
+        return Group(
+            **filter_base_properties(self.__dict__)
+            | {
+                "metrics": [
+                    metric.evaluate_rolling_properties() for metric in self.metrics
+                ]
+            }
+        )
 
     def evaluate(
         self,
@@ -141,12 +146,10 @@ class Group(Metric, Generic[MetricResult]):
         sample_weight: WeightsDS,
     ) -> Group:
         if self.calculation == Calculation.rolling:
-            return Group(
-                **filter_base_properties(self.__dict__) | {"metrics": self.metrics}
-            )
+            return deepcopy(self)
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        for metric in self.metrics:
+        def pass_in_args(metric: Metric) -> Metric:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
                 y,
@@ -159,12 +162,13 @@ class Group(Metric, Generic[MetricResult]):
                     *args_to_pass,
                     sample_weight=sample_weight,
                 )
+            return metric
 
         return Group(
             **filter_base_properties(self.__dict__)
             | {
                 "metrics": self._postprocess(
-                    self.metrics,
+                    [pass_in_args(metric) for metric in self.metrics],
                     y,
                     predictions,
                     probabilities,
@@ -188,7 +192,7 @@ class Group(Metric, Generic[MetricResult]):
             )
         results = self._preprocess(y, predictions, probabilities, sample_weight)
 
-        for metric in self.metrics:
+        def pass_in_args(metric: Metric) -> Metric:
             args_to_pass = self.__handle_args_to_pass_in(
                 results,
                 y,
@@ -202,12 +206,13 @@ class Group(Metric, Generic[MetricResult]):
                     sample_weight=sample_weight,
                     rolling_args=rolling_args,
                 )
+            return metric
 
         return Group(
             **filter_base_properties(self.__dict__)
             | {
                 "metrics": self._postprocess(
-                    self.metrics,
+                    [pass_in_args(metric) for metric in self.metrics],
                     y,
                     predictions,
                     probabilities,
