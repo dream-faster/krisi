@@ -474,13 +474,12 @@ class ScoreCard:
     def __evaluate(
         self,
         func_key_evaluate: Literal["evaluate", "evaluate_over_time"],
-        result_key: Literal["result", "result_rolling"],
         defaults: bool = True,
         rolling_args: Optional[Dict[str, Any]] = dict(),
     ):
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
-                getattr(metric, func_key_evaluate)(
+                self.__dict__[metric.key] = getattr(metric, func_key_evaluate)(
                     self.y,
                     self.predictions,
                     self.probabilities,
@@ -490,7 +489,7 @@ class ScoreCard:
 
     def evaluate_rolling_properties(self):
         for metric in self.get_all_metrics(defaults=True):
-            metric.evaluate_rolling_properties()
+            self.__dict__[metric.key] = metric.evaluate_rolling_properties()
 
     def evaluate(self, defaults: bool = True) -> None:
         """
