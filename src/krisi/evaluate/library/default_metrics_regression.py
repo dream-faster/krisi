@@ -18,12 +18,7 @@ from krisi.evaluate.library.diagrams import (
     display_time_series,
 )
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import (
-    Calculation,
-    ComputationalComplexity,
-    MetricCategories,
-    Purpose,
-)
+from krisi.evaluate.type import ComputationalComplexity, MetricCategories, Purpose
 
 mae = Metric[float](
     name="Mean Absolute Error",
@@ -121,7 +116,7 @@ residuals = Metric[List[float]](
         (display_density_plot, dict(width=1500.0)),
         (display_time_series, dict(width=1500.0)),
     ],
-    calculation=Calculation.single,
+    supports_rolling=False,
     purpose=Purpose.diagram,
 )
 """ ~ """

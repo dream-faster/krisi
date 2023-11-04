@@ -40,7 +40,7 @@ class Group(Metric, Generic[MetricResult]):
         name: str,
         key: str,
         metrics: List[Metric],
-        calculation: Union[str, Calculation] = Calculation.both,
+        calculation: Union[str, Calculation] = Calculation.single,
         preprocess_func: Optional[MetricFunction] = None,
         postprocess_funcs: Optional[
             Union[List[PostProcessFunction], PostProcessFunction]

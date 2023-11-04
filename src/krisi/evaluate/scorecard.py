@@ -19,6 +19,7 @@ from krisi.evaluate.assertions import (
 )
 from krisi.evaluate.group import Group
 from krisi.evaluate.library import get_default_metrics_for_dataset_type
+from krisi.evaluate.library.benchmarking import Model
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     DatasetType,
@@ -477,7 +478,7 @@ class ScoreCard:
             "evaluate", "evaluate_over_time", "evaluate_benchmark"
         ],
         defaults: bool = True,
-        rolling_args: Optional[Dict[str, Any]] = dict(),
+        extra_args: Optional[Dict[str, Any]] = dict(),
     ):
         for metric in self.get_all_metrics(defaults=defaults):
             if metric.restrict_to_sample is not self.sample_type:
@@ -486,7 +487,7 @@ class ScoreCard:
                     self.predictions,
                     self.probabilities,
                     self.sample_weight,
-                    **rolling_args,
+                    **extra_args,
                 )
 
     def evaluate_rolling_properties(self):
@@ -508,7 +509,7 @@ class ScoreCard:
         """
         self.__evaluate("evaluate", defaults=defaults)
 
-    def evaluate_benchmark(self, defaults: bool = True) -> None:
+    def evaluate_benchmark(self, benchmark_model: Model, defaults: bool = True) -> None:
         """
         Evaluates `Metric`s to a benchmark on the `ScoreCard`
 
@@ -521,7 +522,11 @@ class ScoreCard:
         -------
         None
         """
-        self.__evaluate("evaluate_benchmark", defaults=defaults)
+        self.__evaluate(
+            "evaluate_benchmark",
+            defaults=defaults,
+            extra_args={"benchmark_model": benchmark_model},
+        )
 
     def evaluate_over_time(self, defaults: bool = True) -> None:
         """
@@ -547,7 +552,7 @@ class ScoreCard:
         self.__evaluate(
             "evaluate_over_time",
             defaults=defaults,
-            rolling_args={"rolling_args": self.rolling_args},
+            extra_args={"rolling_args": self.rolling_args},
         )
         self.evaluate_rolling_properties()
 

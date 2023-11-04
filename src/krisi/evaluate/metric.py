@@ -10,7 +10,6 @@ import pandas as pd
 
 from krisi.evaluate.library.benchmarking import Model, calculate_benchmark
 from krisi.evaluate.type import (
-    Calculation,
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
@@ -85,7 +84,7 @@ class Metric(Generic[MetricResult]):
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
-    calculation: Union[str, Calculation] = Calculation.both
+    supports_rolling: bool = True
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
     diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
@@ -103,7 +102,7 @@ class Metric(Generic[MetricResult]):
             and self.plot_funcs_rolling is not None
         ):
             self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
-        self.calculation = Calculation.from_str(self.calculation)
+
         self.purpose = (
             Purpose.from_str(self.purpose) if self.purpose is not None else None
         )
@@ -130,8 +129,6 @@ class Metric(Generic[MetricResult]):
         return self.evaluate(y, predictions, probabilities, sample_weight)
 
     def _evaluation(self, *args, **kwargs) -> Metric:
-        if self.calculation == Calculation.rolling:
-            return self
         if self._from_group:
             return self
         if self.func is None:
@@ -219,7 +216,7 @@ class Metric(Generic[MetricResult]):
     def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> Metric:
         if self._from_group:
             return self
-        if self.calculation == Calculation.single:
+        if not self.supports_rolling:
             return self
         if self.func is None:
             raise ValueError("`func` has to be set on Metric to calculate result.")
@@ -304,15 +301,16 @@ class Metric(Generic[MetricResult]):
 
     def evaluate_benchmark(
         self,
-        model: Model,
         y: TargetsDS,
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
+        benchmark_model: Optional[Model] = None,
     ) -> Metric:
+        assert benchmark_model is not None
         return calculate_benchmark(
             self,
-            model,
+            benchmark_model,
             y,
             predictions,
             probabilities,

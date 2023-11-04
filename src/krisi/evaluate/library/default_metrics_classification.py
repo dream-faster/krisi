@@ -27,7 +27,7 @@ from krisi.evaluate.library.metric_wrappers import (
     y_label_imbalance_ratio,
 )
 from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import Calculation, MetricCategories, Purpose
+from krisi.evaluate.type import MetricCategories, Purpose
 
 accuracy_binary = Metric[float](
     name="Accuracy",
@@ -147,8 +147,8 @@ calibration = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=True,
     supports_multiclass=True,
-    calculation=Calculation.single,
     purpose=Purpose.diagram,
+    supports_rolling=False,
 )
 """~"""
 s_score = Metric[float](
@@ -161,8 +161,8 @@ s_score = Metric[float](
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     accepts_probabilities=False,
     supports_multiclass=False,
-    calculation=Calculation.single,
     purpose=Purpose.objective,
+    supports_rolling=False,
 )
 """~"""
 
@@ -202,7 +202,6 @@ roc_auc_binary_micro, roc_auc_binary_macro, roc_auc_binary_weighted = [
         accepts_probabilities=True,
         supports_multiclass=True,
         purpose=Purpose.objective,
-        calculation=Calculation.single,
     )
     for mode in ["micro", "macro", "weighted"]
 ]
@@ -222,7 +221,6 @@ roc_auc_multi_micro, roc_auc_multi_macro = [
         accepts_probabilities=True,
         supports_multiclass=True,
         purpose=Purpose.objective,
-        calculation=Calculation.single,
     )
     for mode in ["micro", "macro"]
 ]
@@ -270,7 +268,7 @@ imbalance_ratio_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
-    calculation=Calculation.single,
+    supports_rolling=False,
 )
 imbalance_ratio_pred_y = Metric[float](
     name="Imbalance Ratio: y vs pred",
@@ -284,7 +282,7 @@ imbalance_ratio_pred_y = Metric[float](
     accepts_probabilities=False,
     supports_multiclass=False,
     purpose=Purpose.diagram,
-    calculation=Calculation.single,
+    supports_rolling=False,
 )
 
 

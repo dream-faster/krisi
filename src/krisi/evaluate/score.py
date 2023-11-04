@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional, Union
 
+from krisi.evaluate.library.benchmarking import Model
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import (
@@ -31,6 +32,7 @@ def score(
     ] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
+    benchmark_model: Optional[Model] = None,
     **kwargs,
 ) -> ScoreCard:
     """
@@ -66,7 +68,6 @@ def score(
             - `Calculation.single`
             - `Calculation.rolling`
             - `Calculation.benchmark`
-            - `Calculation.both`
     rolling_args : Dict[str, Any], optional
         Arguments to be passed onto `pd.DataFrame.rolling`.
         Default:
@@ -106,18 +107,25 @@ def score(
         **kwargs,
     )
 
-    assert calculation in [
-        Calculation.single,
-        Calculation.benchmark,
-        Calculation.rolling,
-    ], f"Calculation type {calculation} not recognized."
+    assert any(
+        [
+            calc
+            in [
+                Calculation.single,
+                Calculation.benchmark,
+                Calculation.rolling,
+            ]
+            for calc in calculation
+        ]
+    ), f"Calculation type {calculation} not recognized."
 
     if Calculation.single in calculations:
         sc.evaluate()
     if Calculation.rolling in calculations:
         sc.evaluate_over_time()
     if Calculation.benchmark in calculations:
-        sc.evaluate_benchmark()
+        assert benchmark_model is not None, "You need to define a benchmark model!"
+        sc.evaluate_benchmark(benchmark_model)
 
     sc.cleanup_group()
     return sc

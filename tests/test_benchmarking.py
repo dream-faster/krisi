@@ -14,6 +14,7 @@ from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_metrics_balanced_benchmarking,
     f_one_score_macro,
 )
+from krisi.evaluate.type import Calculation
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -22,12 +23,6 @@ from krisi.utils.data import (
 
 
 def test_benchmarking_random():
-    groupped_metric = Group[pd.Series](
-        name="benchmarking",
-        key="benchmarking",
-        metrics=[f_one_score_macro],
-        postprocess_funcs=[model_benchmarking(RandomClassifier())],
-    )
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
@@ -39,7 +34,9 @@ def test_benchmarking_random():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[groupped_metric],
+        default_metrics=[f_one_score_macro],
+        calculation=[Calculation.single, Calculation.benchmark],
+        benchmark_model=RandomClassifier(),
     )
     sc.print()
 

@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import math
 from copy import deepcopy
-from typing import Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     PredictionsDS,
     ProbabilitiesDF,
@@ -14,6 +15,9 @@ from krisi.evaluate.type import (
     WeightsDS,
 )
 from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_in_chunks
+
+if TYPE_CHECKING:
+    from krisi.evaluate.metric import Metric
 
 
 class Model:
@@ -113,9 +117,9 @@ def calculate_benchmark(
     probabilities: Optional[ProbabilitiesDF],
     sample_weight: Optional[WeightsDS],
 ) -> Metric:
-    metric = deepcopy(metric)
     if metric.result is None:
         metric = metric.evaluate(y, predictions, probabilities, sample_weight)
+    benchmark_metric = deepcopy(metric.reset())
     if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
         return metric
 
@@ -129,7 +133,7 @@ def calculate_benchmark(
         benchmark_probs if metric.accepts_probabilities else benchmark_preds
     )
 
-    benchmark_metric = metric._evaluation(
+    benchmark_metric = benchmark_metric._evaluation(
         y, preds_or_probs, sample_weight=sample_weight
     )
 
