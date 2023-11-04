@@ -288,7 +288,7 @@ The most important feature of `krisi` is that you can evaluate metrics over time
 
 
 ```python
-scorecard_rolling = score(y, predictions, calculation='rolling') # calculation can be 'rolling', 'single' or 'both'
+scorecard_rolling = score(y, predictions, calculation='rolling') # calculation can be 'rolling', 'single' or 'benchmark'
 ```
 
     /Users/daniel/mambaforge/envs/krisitest/lib/python3.10/site-packages/sklearn/metrics/_regression.py:918: UndefinedMetricWarning:
@@ -585,7 +585,7 @@ For saved files look in `output/<project_name>` for saved plots look in `output/
 
 
 ```python
-scorecard_rolling = score(np.random.random(1000), np.random.random(1000), calculation='both')
+scorecard_rolling = score(np.random.random(1000), np.random.random(1000), calculation='single')
 ```
 
     /Users/daniel/mambaforge/envs/krisitest/lib/python3.10/site-packages/sklearn/metrics/_regression.py:918: UndefinedMetricWarning:

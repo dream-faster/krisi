@@ -63,7 +63,7 @@ def score(
             - `SampleTypes.outofsample`
             - `SampleTypes.insample`
     calculation: Union[ List[Union[Calculation, str]], Union[Calculation, str] ], optional
-        Whether it should evaluate `Metrics` on a rolling basis or on the whole prediction or both, by default Calculation.single
+        Whether it should evaluate `Metrics` on a rolling basis or on the whole prediction or benchmark, by default Calculation.single
 
             - `Calculation.single`
             - `Calculation.rolling`

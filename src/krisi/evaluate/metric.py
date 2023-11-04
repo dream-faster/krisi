@@ -63,8 +63,6 @@ class Metric(Generic[MetricResult]):
         Weather the `Metric` should only be evaluated on insample or out of sample data, by default None
     comp_complexity: Optional[ComputationalComplexity]
         How resource intensive the calculation is, by default None
-    calculation: Calculation
-        Whether the metric should be evaluated only when calculating rolling, single or both, by default both
     accepts_probabilities: bool
         Whether the metric accepts probabilities as input, by default False
     supports_multiclass: bool
