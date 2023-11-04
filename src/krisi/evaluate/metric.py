@@ -305,12 +305,12 @@ class Metric(Generic[MetricResult]):
         predictions: PredictionsDS,
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
-        benchmark_model: Optional[Model] = None,
+        benchmark_models: Optional[List[Model]] = None,
     ) -> Metric:
-        assert benchmark_model is not None
+        assert benchmark_models is not None
         return calculate_benchmark(
             self,
-            benchmark_model,
+            benchmark_models,
             y,
             predictions,
             probabilities,

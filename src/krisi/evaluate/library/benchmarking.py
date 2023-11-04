@@ -111,7 +111,7 @@ class WorstModel(Model):
 
 def calculate_benchmark(
     metric: Metric,
-    model: Model,
+    models: List[Model],
     y: TargetsDS,
     predictions: PredictionsDS,
     probabilities: Optional[ProbabilitiesDF],
@@ -119,39 +119,41 @@ def calculate_benchmark(
 ) -> Metric:
     if metric.result is None:
         metric = metric.evaluate(y, predictions, probabilities, sample_weight)
-    benchmark_metric = deepcopy(metric.reset())
-    if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
-        return metric
 
-    if probabilities is not None:
-        X = pd.concat([predictions, probabilities], axis="columns", copy=False)
-    else:
-        X = predictions.to_frame()
-    benchmark_preds, benchmark_probs = model.predict(X, y, sample_weight)
+    for model in models:
+        benchmark_metric = deepcopy(metric.reset())
+        if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
+            return metric
 
-    preds_or_probs = (
-        benchmark_probs if metric.accepts_probabilities else benchmark_preds
-    )
+        if probabilities is not None:
+            X = pd.concat([predictions, probabilities], axis="columns", copy=False)
+        else:
+            X = predictions.to_frame()
+        benchmark_preds, benchmark_probs = model.predict(X, y, sample_weight)
 
-    benchmark_metric = benchmark_metric._evaluation(
-        y, preds_or_probs, sample_weight=sample_weight
-    )
+        preds_or_probs = (
+            benchmark_probs if metric.accepts_probabilities else benchmark_preds
+        )
 
-    assert isinstance(benchmark_metric.result, (float, int))
-    assert isinstance(metric.result, (float, int))
+        benchmark_metric = benchmark_metric._evaluation(
+            y, preds_or_probs, sample_weight=sample_weight
+        )
 
-    if metric.purpose == Purpose.objective:
-        comparison_result = metric.result - benchmark_metric.result
-    elif metric.purpose == Purpose.loss:
-        comparison_result = benchmark_metric.result - metric.result
+        assert isinstance(benchmark_metric.result, (float, int))
+        assert isinstance(metric.result, (float, int))
 
-    metric.comparison_result = pd.concat(
-        [
-            metric.comparison_result,
-            pd.Series([comparison_result], index=[f"Δ {model.name}"]),
-        ],
-        axis=0,
-    )
+        if metric.purpose == Purpose.objective:
+            comparison_result = metric.result - benchmark_metric.result
+        elif metric.purpose == Purpose.loss:
+            comparison_result = benchmark_metric.result - metric.result
+
+        metric.comparison_result = pd.concat(
+            [
+                metric.comparison_result,
+                pd.Series([comparison_result], index=[f"Δ {model.name}"]),
+            ],
+            axis=0,
+        )
 
     return metric
 

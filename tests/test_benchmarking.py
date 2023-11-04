@@ -1,17 +1,14 @@
 import pandas as pd
 
 from krisi.evaluate import score
-from krisi.evaluate.group import Group
 from krisi.evaluate.library.benchmarking import (
     PerfectModel,
     RandomClassifier,
     RandomClassifierChunked,
     WorstModel,
-    model_benchmarking,
 )
 from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_balanced_metrics,
-    binary_classification_metrics_balanced_benchmarking,
     f_one_score_macro,
 )
 from krisi.evaluate.type import Calculation
@@ -36,7 +33,7 @@ def test_benchmarking_random():
         sample_weight=sample_weight,
         default_metrics=[f_one_score_macro],
         calculation=[Calculation.single, Calculation.benchmark],
-        benchmark_model=RandomClassifier(),
+        benchmark_models=RandomClassifier(),
     )
     sc.print()
 
@@ -75,7 +72,6 @@ def test_benchmarking_random_chunked():
 
 
 def test_benchmarking_random_all_metrics():
-    groupped_metric = binary_classification_metrics_balanced_benchmarking
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
@@ -87,21 +83,14 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=groupped_metric,
+        default_metrics=binary_classification_balanced_metrics,
+        calculation=[Calculation.benchmark],
+        benchmark_models=RandomClassifierChunked(2),
     )
     sc.print()
 
 
 def test_perfect_to_best():
-    benchmark = Group[pd.Series](
-        name="benchmarking",
-        key="benchmarking",
-        metrics=binary_classification_balanced_metrics,
-        postprocess_funcs=[
-            model_benchmarking(PerfectModel()),
-            model_benchmarking(WorstModel()),
-        ],
-    )
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
@@ -113,7 +102,9 @@ def test_perfect_to_best():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[benchmark],
+        default_metrics=binary_classification_balanced_metrics,
+        calculation=Calculation.benchmark,
+        benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()
 

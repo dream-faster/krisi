@@ -32,7 +32,7 @@ def score(
     ] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
-    benchmark_model: Optional[Model] = None,
+    benchmark_models: Optional[Union[Model, List[Model]]] = None,
     **kwargs,
 ) -> ScoreCard:
     """
@@ -89,6 +89,9 @@ def score(
     calculations = [
         Calculation.from_str(calculation) for calculation in wrap_in_list(calculation)
     ]
+    benchmark_models = (
+        wrap_in_list(benchmark_models) if benchmark_models is not None else None
+    )
 
     sc = ScoreCard(
         y=y,
@@ -115,7 +118,7 @@ def score(
                 Calculation.benchmark,
                 Calculation.rolling,
             ]
-            for calc in calculation
+            for calc in calculations
         ]
     ), f"Calculation type {calculation} not recognized."
 
@@ -124,8 +127,8 @@ def score(
     if Calculation.rolling in calculations:
         sc.evaluate_over_time()
     if Calculation.benchmark in calculations:
-        assert benchmark_model is not None, "You need to define a benchmark model!"
-        sc.evaluate_benchmark(benchmark_model)
+        assert benchmark_models is not None, "You need to define a benchmark model!"
+        sc.evaluate_benchmark(benchmark_models)
 
     sc.cleanup_group()
     return sc
