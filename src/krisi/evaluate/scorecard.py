@@ -473,7 +473,9 @@ class ScoreCard:
 
     def __evaluate(
         self,
-        func_key_evaluate: Literal["evaluate", "evaluate_over_time"],
+        func_key_evaluate: Literal[
+            "evaluate", "evaluate_over_time", "evaluate_benchmark"
+        ],
         defaults: bool = True,
         rolling_args: Optional[Dict[str, Any]] = dict(),
     ):
@@ -505,6 +507,21 @@ class ScoreCard:
         None
         """
         self.__evaluate("evaluate", defaults=defaults)
+
+    def evaluate_benchmark(self, defaults: bool = True) -> None:
+        """
+        Evaluates `Metric`s to a benchmark on the `ScoreCard`
+
+        Parameters
+        ----------
+        defaults: boolean
+            Wether the default `Metric`s should be evaluated or not.
+
+        Returns
+        -------
+        None
+        """
+        self.__evaluate("evaluate_benchmark", defaults=defaults)
 
     def evaluate_over_time(self, defaults: bool = True) -> None:
         """

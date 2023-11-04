@@ -11,6 +11,7 @@ from krisi.evaluate.type import (
     Targets,
     Weights,
 )
+from krisi.utils.iterable_helpers import wrap_in_list
 
 
 def score(
@@ -25,7 +26,9 @@ def score(
     custom_metrics: Optional[Union[List[Metric], Metric]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
-    calculation: Union[Calculation, str] = Calculation.single,
+    calculation: Union[
+        List[Union[Calculation, str]], Union[Calculation, str]
+    ] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
     **kwargs,
@@ -57,11 +60,12 @@ def score(
 
             - `SampleTypes.outofsample`
             - `SampleTypes.insample`
-    calculation : Union[Calculation, str], optional
+    calculation: Union[ List[Union[Calculation, str]], Union[Calculation, str] ], optional
         Whether it should evaluate `Metrics` on a rolling basis or on the whole prediction or both, by default Calculation.single
 
             - `Calculation.single`
             - `Calculation.rolling`
+            - `Calculation.benchmark`
             - `Calculation.both`
     rolling_args : Dict[str, Any], optional
         Arguments to be passed onto `pd.DataFrame.rolling`.
@@ -81,7 +85,9 @@ def score(
         If Calculation type is incorrectly specified.
     """
 
-    calculation = Calculation.from_str(calculation)
+    calculations = [
+        Calculation.from_str(calculation) for calculation in wrap_in_list(calculation)
+    ]
 
     sc = ScoreCard(
         y=y,
@@ -100,16 +106,18 @@ def score(
         **kwargs,
     )
 
-    if calculation == Calculation.single:
-        sc.evaluate()
-    elif calculation == Calculation.rolling:
-        sc.evaluate_over_time()
-    elif calculation == Calculation.both:
-        sc.evaluate()
-        sc.evaluate_over_time()
+    assert calculation in [
+        Calculation.single,
+        Calculation.benchmark,
+        Calculation.rolling,
+    ], f"Calculation type {calculation} not recognized."
 
-    else:
-        raise ValueError(f"Calculation type {calculation} not recognized.")
+    if Calculation.single in calculations:
+        sc.evaluate()
+    if Calculation.rolling in calculations:
+        sc.evaluate_over_time()
+    if Calculation.benchmark in calculations:
+        sc.evaluate_benchmark()
 
     sc.cleanup_group()
     return sc
