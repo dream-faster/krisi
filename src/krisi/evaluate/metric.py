@@ -8,8 +8,8 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
+from krisi.evaluate.library.benchmarking import Model, calculate_benchmark
 from krisi.evaluate.type import (
-    Calculation,
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
@@ -63,8 +63,6 @@ class Metric(Generic[MetricResult]):
         Weather the `Metric` should only be evaluated on insample or out of sample data, by default None
     comp_complexity: Optional[ComputationalComplexity]
         How resource intensive the calculation is, by default None
-    calculation: Calculation
-        Whether the metric should be evaluated only when calculating rolling, single or both, by default both
     accepts_probabilities: bool
         Whether the metric accepts probabilities as input, by default False
     supports_multiclass: bool
@@ -84,7 +82,7 @@ class Metric(Generic[MetricResult]):
     info: str = ""
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
-    calculation: Union[str, Calculation] = Calculation.both
+    supports_rolling: bool = True
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
     diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
@@ -102,7 +100,7 @@ class Metric(Generic[MetricResult]):
             and self.plot_funcs_rolling is not None
         ):
             self.plot_funcs_rolling = wrap_in_list(self.plot_funcs_rolling)
-        self.calculation = Calculation.from_str(self.calculation)
+
         self.purpose = (
             Purpose.from_str(self.purpose) if self.purpose is not None else None
         )
@@ -119,9 +117,16 @@ class Metric(Generic[MetricResult]):
     def __repr__(self) -> str:
         return super().__repr__()[:-1] + f" - {self.__str__(True)}>"
 
+    def __call__(
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: Optional[ProbabilitiesDF] = None,
+        sample_weight: Optional[WeightsDS] = None,
+    ) -> Metric:
+        return self.evaluate(y, predictions, probabilities, sample_weight)
+
     def _evaluation(self, *args, **kwargs) -> Metric:
-        if self.calculation == Calculation.rolling:
-            return self
         if self._from_group:
             return self
         if self.func is None:
@@ -209,7 +214,7 @@ class Metric(Generic[MetricResult]):
     def _rolling_evaluation(self, *args, rolling_args: dict, **kwargs) -> Metric:
         if self._from_group:
             return self
-        if self.calculation == Calculation.single:
+        if not self.supports_rolling:
             return self
         if self.func is None:
             raise ValueError("`func` has to be set on Metric to calculate result.")
@@ -291,6 +296,24 @@ class Metric(Generic[MetricResult]):
                 key="rolling_properties",
             )
         return self
+
+    def evaluate_benchmark(
+        self,
+        y: TargetsDS,
+        predictions: PredictionsDS,
+        probabilities: Optional[ProbabilitiesDF] = None,
+        sample_weight: Optional[WeightsDS] = None,
+        benchmark_models: Optional[List[Model]] = None,
+    ) -> Metric:
+        assert benchmark_models is not None
+        return calculate_benchmark(
+            self,
+            benchmark_models,
+            y,
+            predictions,
+            probabilities,
+            sample_weight,
+        )
 
     def is_evaluated(self, rolling: bool = False):
         if rolling:

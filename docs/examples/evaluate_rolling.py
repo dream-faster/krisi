@@ -20,5 +20,5 @@ score(
 score(
     y=np.random.rand(datasize),
     predictions=np.random.rand(datasize),
-    calculation=Calculation.both,
+    calculation=Calculation.rolling,
 )

@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import math
 from copy import deepcopy
-from typing import Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     PredictionsDS,
     ProbabilitiesDF,
@@ -14,6 +15,9 @@ from krisi.evaluate.type import (
     WeightsDS,
 )
 from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_in_chunks
+
+if TYPE_CHECKING:
+    from krisi.evaluate.metric import Metric
 
 
 class Model:
@@ -105,6 +109,55 @@ class WorstModel(Model):
         return predictions, probabilities
 
 
+def calculate_benchmark(
+    metric: Metric,
+    models: List[Model],
+    y: TargetsDS,
+    predictions: PredictionsDS,
+    probabilities: Optional[ProbabilitiesDF],
+    sample_weight: Optional[WeightsDS],
+) -> Metric:
+    if metric.result is None:
+        metric = metric.evaluate(y, predictions, probabilities, sample_weight)
+
+    for model in models:
+        benchmark_metric = deepcopy(metric.reset())
+        if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
+            return metric
+
+        if probabilities is not None:
+            X = pd.concat([predictions, probabilities], axis="columns", copy=False)
+        else:
+            X = predictions.to_frame()
+        benchmark_preds, benchmark_probs = model.predict(X, y, sample_weight)
+
+        preds_or_probs = (
+            benchmark_probs if metric.accepts_probabilities else benchmark_preds
+        )
+
+        benchmark_metric = benchmark_metric._evaluation(
+            y, preds_or_probs, sample_weight=sample_weight
+        )
+
+        assert isinstance(benchmark_metric.result, (float, int))
+        assert isinstance(metric.result, (float, int))
+
+        if metric.purpose == Purpose.objective:
+            comparison_result = metric.result - benchmark_metric.result
+        elif metric.purpose == Purpose.loss:
+            comparison_result = benchmark_metric.result - metric.result
+
+        metric.comparison_result = pd.concat(
+            [
+                metric.comparison_result,
+                pd.Series([comparison_result], index=[f"Δ {model.name}"]),
+            ],
+            axis=0,
+        )
+
+    return metric
+
+
 def model_benchmarking(model: Model) -> Callable:
     def postporcess_func(
         all_metrics: List[Metric],
@@ -116,7 +169,7 @@ def model_benchmarking(model: Model) -> Callable:
     ) -> List[Metric]:
         if rolling:
             return all_metrics
-        benchmark_predictions, benchmark_probabilities = model.predict(
+        benchmark_preds, benchmark_probs = model.predict(
             pd.concat([predictions, probabilities], axis="columns", copy=False),
             y,
             sample_weight,
@@ -131,11 +184,11 @@ def model_benchmarking(model: Model) -> Callable:
 
             if benchmark_metric.accepts_probabilities:
                 benchmark_metric = benchmark_metric._evaluation(
-                    y, benchmark_probabilities, sample_weight=sample_weight
+                    y, benchmark_probs, sample_weight=sample_weight
                 )
             else:
                 benchmark_metric = benchmark_metric._evaluation(
-                    y, benchmark_predictions, sample_weight=sample_weight
+                    y, benchmark_preds, sample_weight=sample_weight
                 )
 
             benchmark_result = (
