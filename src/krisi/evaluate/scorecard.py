@@ -510,7 +510,10 @@ class ScoreCard:
         self.__evaluate("evaluate", defaults=defaults)
 
     def evaluate_benchmark(
-        self, benchmark_models: List[Model], defaults: bool = True
+        self,
+        benchmark_models: List[Model],
+        num_benchmark_iter: int,
+        defaults: bool = True,
     ) -> None:
         """
         Evaluates `Metric`s to a benchmark on the `ScoreCard`
@@ -527,7 +530,10 @@ class ScoreCard:
         self.__evaluate(
             "evaluate_benchmark",
             defaults=defaults,
-            extra_args={"benchmark_models": benchmark_models},
+            extra_args={
+                "benchmark_models": benchmark_models,
+                "num_benchmark_iter": num_benchmark_iter,
+            },
         )
 
     def evaluate_over_time(self, defaults: bool = True) -> None:

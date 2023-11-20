@@ -31,6 +31,7 @@ def score(
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
     benchmark_models: Optional[Union[Model, List[Model]]] = None,
+    num_benchmark_iter: int = 100,
     **kwargs,
 ) -> ScoreCard:
     """
@@ -121,7 +122,7 @@ def score(
         sc.evaluate()
         sc.evaluate_over_time()
     if benchmark_models is not None:
-        sc.evaluate_benchmark(benchmark_models)
+        sc.evaluate_benchmark(benchmark_models, num_benchmark_iter)
 
     sc.cleanup_group()
     return sc

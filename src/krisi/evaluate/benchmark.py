@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import TYPE_CHECKING, List, Optional
 
 import numpy as np
@@ -32,13 +31,15 @@ def calculate_benchmark(
     predictions: PredictionsDS,
     probabilities: Optional[ProbabilitiesDF],
     sample_weight: Optional[WeightsDS],
-    num_benchmarking_iterations: int = 100,
+    num_benchmark_iter: Optional[int],
 ) -> Metric:
-    if metric.result is None:
-        metric = metric.evaluate(y, predictions, probabilities, sample_weight)
+    metric_result = (
+        metric.evaluate(y, predictions, probabilities, sample_weight).result
+        if metric.result is None
+        else metric.result
+    )
 
     for model in models:
-        benchmark_metric = deepcopy(metric.reset())
         if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
             return metric
 
@@ -53,23 +54,21 @@ def calculate_benchmark(
         )
 
         benchmark_metrics = [
-            benchmark_metric._evaluation(
-                y, preds_or_probs, sample_weight=sample_weight
-            ).result
-            for _ in range(num_benchmarking_iterations)
+            metric._evaluation(y, preds_or_probs, sample_weight=sample_weight).result
+            for _ in range(num_benchmark_iter)
         ]
 
         mean_benchmark_metric = np.mean(benchmark_metrics)
 
         assert isinstance(mean_benchmark_metric, (float, int))
-        assert isinstance(metric.result, (float, int))
+        assert isinstance(metric_result, (float, int))
 
         if metric.purpose == Purpose.objective:
-            comparison_result = metric.result - mean_benchmark_metric
+            comparison_result = metric_result - mean_benchmark_metric
         elif metric.purpose == Purpose.loss:
-            comparison_result = mean_benchmark_metric - metric.result
+            comparison_result = mean_benchmark_metric - metric_result
 
-        benchmark_zscores = zscore(np.array(benchmark_metrics + [metric.result]))
+        benchmark_zscores = zscore(np.array(benchmark_metrics + [metric_result]))
         metric_zscore = benchmark_zscores[-1]
 
         metric.comparison_result = pd.concat(

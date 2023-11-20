@@ -305,6 +305,7 @@ class Metric(Generic[MetricResult]):
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
         benchmark_models: Optional[List[Model]] = None,
+        num_benchmark_iter: Optional[int] = None,
     ) -> Metric:
         assert benchmark_models is not None
         return calculate_benchmark(
@@ -314,6 +315,7 @@ class Metric(Generic[MetricResult]):
             predictions,
             probabilities,
             sample_weight,
+            num_benchmark_iter,
         )
 
     def is_evaluated(self, rolling: bool = False):
