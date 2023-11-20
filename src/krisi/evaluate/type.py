@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, List, Tuple, TypeVar, Union
+from typing import Any, Callable, List, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -57,7 +57,7 @@ class SampleTypes(ParsableEnum):
 class Calculation(ParsableEnum):
     single = "single"
     rolling = "rolling"
-    benchmark = "benchmark"
+    both = "both"
 
 
 class SaveModes(ParsableEnum):
@@ -132,3 +132,10 @@ class Purpose(ParsableEnum):
     loss = "loss"
     diagram = "diagram"
     group = "group"
+
+
+class Model:
+    def predict(
+        self, X: pd.DataFrame, y: pd.Series, sample_weight: Optional[WeightsDS] = None
+    ) -> Tuple[pd.Series, pd.DataFrame]:
+        raise NotImplementedError

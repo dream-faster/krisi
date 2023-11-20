@@ -8,7 +8,6 @@ Quick Classification to Console
 import numpy as np
 
 from krisi import score
-from krisi.evaluate.type import Calculation
 from krisi.utils.data import create_probabilities
 
 num_labels = 3
@@ -19,7 +18,7 @@ sc = score(
     y=np.random.randint(0, num_labels, num_samples),
     predictions=np.random.randint(0, num_labels, num_samples),
     probabilities=probabilities,
-    calculation=[Calculation.single, Calculation.rolling]
+    calculation="both"
     # dataset_type="classification_multilabel", # if automatic inference of dataset type fails
 )
 sc.print()

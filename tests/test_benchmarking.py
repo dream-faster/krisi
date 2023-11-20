@@ -1,17 +1,9 @@
+import numpy as np
 import pandas as pd
 
+from krisi import library
 from krisi.evaluate import score
-from krisi.evaluate.library.benchmarking import (
-    PerfectModel,
-    RandomClassifier,
-    RandomClassifierChunked,
-    WorstModel,
-)
-from krisi.evaluate.library.default_metrics_classification import (
-    binary_classification_balanced_metrics,
-    f_one_score_macro,
-)
-from krisi.evaluate.type import Calculation
+from krisi.evaluate.benchmark import zscore
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -31,9 +23,8 @@ def test_benchmarking_random():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[f_one_score_macro],
-        calculation=[Calculation.single, Calculation.benchmark],
-        benchmark_models=RandomClassifier(),
+        default_metrics=[library.ClassificationRegistry().f_one_score_macro],
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     sc.print()
 
@@ -45,7 +36,7 @@ def test_benchmarking_random_chunked():
     X = generate_synthetic_predictions_binary(y, sample_weight)
 
     chunk_size = 2
-    preds_probs = RandomClassifierChunked(chunk_size).predict(
+    preds_probs = library.ModelRegistry.RandomClassifierChunked(chunk_size).predict(
         X, y, sample_weight=sample_weight
     )
 
@@ -83,9 +74,8 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=binary_classification_balanced_metrics,
-        calculation=[Calculation.benchmark],
-        benchmark_models=RandomClassifierChunked(2),
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
+        benchmark_models=library.ModelRegistry.RandomClassifierChunked(2),
     )
     sc.print()
 
@@ -102,9 +92,42 @@ def test_perfect_to_best():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=binary_classification_balanced_metrics,
-        calculation=Calculation.benchmark,
-        benchmark_models=[PerfectModel(), WorstModel()],
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
+        benchmark_models=[
+            library.ModelRegistry.PerfectModel(),
+            library.ModelRegistry.WorstModel(),
+        ],
+    )
+    sc.print()
+
+    for metric in sc.get_all_metrics():
+        if metric.result is not None and metric.comparison_result is not None:
+            assert metric.comparison_result["Δ PM"] < metric.comparison_result["Δ WM"]
+
+
+def test_zscore_function():
+    scores = zscore(np.array([1, 2, 3, 4, 5]))
+
+    assert scores[0] == -1.414213562373095
+
+
+def test_benchmark_zscore():
+    X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
+    sample_weight = pd.Series([1.0] * len(y))
+    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+    predictions = preds_probs.iloc[:, 0]
+    probabilities = preds_probs.iloc[:, 1:3]
+
+    sc = score(
+        y,
+        predictions,
+        probabilities,
+        sample_weight=sample_weight,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
+        benchmark_models=[
+            library.ModelRegistry.PerfectModel(),
+            library.ModelRegistry.WorstModel(),
+        ],
     )
     sc.print()
 

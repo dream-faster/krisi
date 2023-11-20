@@ -10,13 +10,7 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 
-from krisi.evaluate.type import (
-    Predictions,
-    PredictionsDS,
-    ProbabilitiesDF,
-    TargetsDS,
-    WeightsDS,
-)
+from ..type import Predictions, PredictionsDS, ProbabilitiesDF, TargetsDS, WeightsDS
 
 logger = logging.getLogger("krisi")
 

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 import numpy as np
@@ -10,15 +11,15 @@ from sklearn.metrics import (
     r2_score,
 )
 
-from krisi.evaluate.group import Group
-from krisi.evaluate.library.diagrams import (
+from ..group import Group
+from ..metric import Metric
+from ..type import ComputationalComplexity, MetricCategories, Purpose
+from .diagrams import (
     display_acf_plot,
     display_density_plot,
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import ComputationalComplexity, MetricCategories, Purpose
 
 mae = Metric[float](
     name="Mean Absolute Error",
@@ -195,3 +196,24 @@ low_computation_regression_metrics = [
     if metric.comp_complexity is not ComputationalComplexity.high
 ]
 """ ~ """
+
+
+class RegressionRegistry:
+    def __init__(self) -> None:
+        self.mae = mae
+        self.mape = mape
+        self.smape = smape
+        self.mse = mse
+        self.rmse = rmse
+        self.rmsle = rmsle
+        self.r_two = r_two
+        self.residuals = residuals
+        self.residuals_mean = residuals_mean
+        self.residuals_std = residuals_std
+        self.residual_group = residual_group
+
+        self.all_regression_metrics = deepcopy(all_regression_metrics)
+        self.minimal_regression_metrics = deepcopy(minimal_regression_metrics)
+        self.low_computation_regression_metrics = deepcopy(
+            low_computation_regression_metrics
+        )

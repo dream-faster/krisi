@@ -8,12 +8,13 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.library.benchmarking import Model, calculate_benchmark
+from krisi.evaluate.benchmark import calculate_benchmark
 from krisi.evaluate.type import (
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
     MetricResult,
+    Model,
     PredictionsDS,
     ProbabilitiesDF,
     Purpose,
@@ -304,6 +305,7 @@ class Metric(Generic[MetricResult]):
         probabilities: Optional[ProbabilitiesDF] = None,
         sample_weight: Optional[WeightsDS] = None,
         benchmark_models: Optional[List[Model]] = None,
+        num_benchmark_iter: Optional[int] = None,
     ) -> Metric:
         assert benchmark_models is not None
         return calculate_benchmark(
@@ -313,6 +315,7 @@ class Metric(Generic[MetricResult]):
             predictions,
             probabilities,
             sample_weight,
+            num_benchmark_iter,
         )
 
     def is_evaluated(self, rolling: bool = False):

@@ -17,5 +17,5 @@ score(
     probabilities=probs,
     # dataset_type="classification_multilabel", # if automatic inference of dataset type fails
     calculation="single",
-    default_metrics=library.multiclass_classification_metrics,
+    default_metrics=library.ClassificationRegistry().multiclass_classification_metrics,
 ).print()

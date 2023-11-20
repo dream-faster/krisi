@@ -7,18 +7,20 @@ def test_scorecard_union():
         num_labels=2, num_samples=1000
     )
     sc_1 = score(
-        y,
-        predictions,
-        probabilities,
+        y=y,
+        predictions=predictions,
+        probabilities=probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.binary_classification_metrics_balanced_benchmarking,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     sc_2 = score(
-        y,
-        predictions,
-        probabilities,
+        y=y,
+        predictions=predictions,
+        probabilities=probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.binary_classification_metrics_balanced_benchmarking,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     metric_key = "precision_binary"
     sc_substracted = sc_1.subtract(sc_2)

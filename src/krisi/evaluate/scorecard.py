@@ -18,12 +18,12 @@ from krisi.evaluate.assertions import (
     infer_dataset_type,
 )
 from krisi.evaluate.group import Group
-from krisi.evaluate.library import get_default_metrics_for_dataset_type
-from krisi.evaluate.library.benchmarking import Model
+from krisi.evaluate.library_.registry import get_default_metrics_for_dataset_type
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     DatasetType,
     MetricCategories,
+    Model,
     PathConst,
     Predictions,
     PredictionsDS,
@@ -510,7 +510,10 @@ class ScoreCard:
         self.__evaluate("evaluate", defaults=defaults)
 
     def evaluate_benchmark(
-        self, benchmark_models: List[Model], defaults: bool = True
+        self,
+        benchmark_models: List[Model],
+        num_benchmark_iter: int,
+        defaults: bool = True,
     ) -> None:
         """
         Evaluates `Metric`s to a benchmark on the `ScoreCard`
@@ -527,7 +530,10 @@ class ScoreCard:
         self.__evaluate(
             "evaluate_benchmark",
             defaults=defaults,
-            extra_args={"benchmark_models": benchmark_models},
+            extra_args={
+                "benchmark_models": benchmark_models,
+                "num_benchmark_iter": num_benchmark_iter,
+            },
         )
 
     def evaluate_over_time(self, defaults: bool = True) -> None:
