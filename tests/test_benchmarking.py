@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from krisi.evaluate import score
-from krisi.evaluate.library.benchmarking import (
+from krisi.evaluate.library.benchmarking_models import (
     PerfectModel,
     RandomClassifier,
     RandomClassifierChunked,

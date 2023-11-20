@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from krisi.evaluate import score
-from krisi.evaluate.library.benchmarking import RandomClassifierChunked
+from krisi.evaluate.library.benchmarking_models import RandomClassifierChunked
 from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
 
 

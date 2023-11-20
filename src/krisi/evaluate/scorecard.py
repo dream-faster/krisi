@@ -19,7 +19,7 @@ from krisi.evaluate.assertions import (
 )
 from krisi.evaluate.group import Group
 from krisi.evaluate.library import get_default_metrics_for_dataset_type
-from krisi.evaluate.library.benchmarking import Model
+from krisi.evaluate.library.benchmarking_models import Model
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     DatasetType,

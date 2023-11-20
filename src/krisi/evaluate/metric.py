@@ -8,7 +8,8 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.library.benchmarking import Model, calculate_benchmark
+from krisi.evaluate.benchmark import calculate_benchmark
+from krisi.evaluate.library.benchmarking_models import Model
 from krisi.evaluate.type import (
     ComputationalComplexity,
     MetricCategories,
