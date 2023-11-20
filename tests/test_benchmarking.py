@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 
 from krisi.evaluate import score
+from krisi.evaluate.benchmark import zscore
 from krisi.evaluate.library.benchmarking_models import (
     PerfectModel,
     RandomClassifier,
     RandomClassifierChunked,
     WorstModel,
-    zscore,
 )
 from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_balanced_metrics,
