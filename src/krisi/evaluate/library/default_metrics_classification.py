@@ -333,7 +333,7 @@ minimal_multiclass_classification_metrics = [
 ]
 
 
-class MetricRegistryClassification:
+class ClassificationRegistry:
     def __init__(self):
         self.accuracy_binary = deepcopy(accuracy_binary)
         self.accuracy_binary_balanced = deepcopy(accuracy_binary_balanced)

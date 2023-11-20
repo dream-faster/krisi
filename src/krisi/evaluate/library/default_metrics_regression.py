@@ -198,7 +198,20 @@ low_computation_regression_metrics = [
 """ ~ """
 
 
-class MetricRegistryRegression:
-    all_regression_metrics = deepcopy(all_regression_metrics)
-    minimal_regression_metrics = deepcopy(minimal_regression_metrics)
-    low_computation_regression_metrics = deepcopy(low_computation_regression_metrics)
+class RegressionRegistry:
+    def __init__(self) -> None:
+        self.mae = mae
+        self.mape = mape
+        self.smape = smape
+        self.mse = mse
+        self.rmse = rmse
+        self.rmsle = rmsle
+        self.r_two = r_two
+        self.residuals = residuals
+        self.residual_group = residual_group
+
+        self.all_regression_metrics = deepcopy(all_regression_metrics)
+        self.minimal_regression_metrics = deepcopy(minimal_regression_metrics)
+        self.low_computation_regression_metrics = deepcopy(
+            low_computation_regression_metrics
+        )

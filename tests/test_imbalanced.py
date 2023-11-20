@@ -11,7 +11,7 @@ from krisi.utils.data import (
 
 def test_benchmarking_random_all_metrics():
     groupped_metric = (
-        library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+        library.ClassificationRegistry().binary_classification_imbalanced_metrics
     )
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))

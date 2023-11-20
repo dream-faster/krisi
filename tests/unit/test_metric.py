@@ -52,7 +52,7 @@ def test_args():
     modified_metrics = [
         modify_metric(metric, dummy_func_inject_kwags)
         for metric in (
-            library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+            library.ClassificationRegistry().binary_classification_imbalanced_metrics
         )
     ]
     probs_0 = pd.Series(np.random.rand(data_len))
@@ -96,7 +96,7 @@ def test_args_rolling():
     modified_metrics = [
         modify_metric(metric, dummy_func_inject_kwags)
         for metric in (
-            library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+            library.ClassificationRegistry().binary_classification_imbalanced_metrics
         )
     ]
     probs_0 = pd.Series(np.random.rand(data_len))

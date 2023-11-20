@@ -12,7 +12,7 @@ def test_scorecard_union():
         predictions=predictions,
         probabilities=probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
         benchmark_models=RandomClassifier(),
     )
     sc_2 = score(
@@ -20,7 +20,7 @@ def test_scorecard_union():
         predictions=predictions,
         probabilities=probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
         benchmark_models=RandomClassifier(),
     )
     metric_key = "precision_binary"

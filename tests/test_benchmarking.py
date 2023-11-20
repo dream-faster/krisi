@@ -29,7 +29,7 @@ def test_benchmarking_random():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[library.MetricRegistryClassification().f_one_score_macro],
+        default_metrics=[library.ClassificationRegistry().f_one_score_macro],
         benchmark_models=RandomClassifier(),
     )
     sc.print()
@@ -80,7 +80,7 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
         benchmark_models=RandomClassifierChunked(2),
     )
     sc.print()
@@ -98,7 +98,7 @@ def test_perfect_to_best():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()
@@ -126,7 +126,7 @@ def test_benchmark_zscore():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
+        default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()
