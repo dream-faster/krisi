@@ -1,10 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate import score
-from krisi.evaluate.library.default_metrics_classification import (
-    binary_classification_metrics_imbalanced_benchmarking,
-)
+from krisi.evaluate import library, score
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -13,7 +10,7 @@ from krisi.utils.data import (
 
 
 def test_benchmarking_random_all_metrics():
-    groupped_metric = binary_classification_metrics_imbalanced_benchmarking
+    groupped_metric = library.binary_classification_imbalanced_metrics
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)

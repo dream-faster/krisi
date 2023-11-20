@@ -17,6 +17,6 @@ sc = score(
     predictions=preds,
     # dataset_type="classification_multilabel", # if automatic inference of dataset type fails
     calculation=[Calculation.single, Calculation.rolling],
-    default_metrics=library.default_metrics_classification.binary_classification_metrics_balanced_benchmarking,
+    default_metrics=library.default_metrics_classification.binary_classification_balanced_metrics,
 )
 sc.print()

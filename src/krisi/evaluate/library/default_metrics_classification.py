@@ -10,8 +10,6 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from krisi.evaluate.group import Group
-from krisi.evaluate.library.benchmarking import RandomClassifier, model_benchmarking
 from krisi.evaluate.library.diagrams import (
     callibration_plot,
     display_density_plot,
@@ -311,24 +309,6 @@ binary_classification_imbalanced_metrics = [
     roc_auc_binary_macro,
     imbalance_ratio_y,
     imbalance_ratio_pred_y,
-]
-binary_classification_metrics_balanced_benchmarking = [
-    Group[pd.Series](
-        name="benchmark",
-        key="benchmark",
-        metrics=binary_classification_balanced_metrics,
-        postprocess_funcs=[model_benchmarking(RandomClassifier())],
-        append_key=False,
-    )
-]
-binary_classification_metrics_imbalanced_benchmarking = [
-    Group[pd.Series](
-        name="benchmark",
-        key="benchmark",
-        metrics=binary_classification_imbalanced_metrics,
-        postprocess_funcs=[model_benchmarking(RandomClassifier())],
-        append_key=False,
-    )
 ]
 
 

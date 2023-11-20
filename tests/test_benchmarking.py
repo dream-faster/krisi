@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from krisi.evaluate import score
@@ -6,6 +7,7 @@ from krisi.evaluate.library.benchmarking import (
     RandomClassifier,
     RandomClassifierChunked,
     WorstModel,
+    zscore,
 )
 from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_balanced_metrics,
@@ -91,6 +93,35 @@ def test_benchmarking_random_all_metrics():
 
 
 def test_perfect_to_best():
+    X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
+    sample_weight = pd.Series([1.0] * len(y))
+    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+    predictions = preds_probs.iloc[:, 0]
+    probabilities = preds_probs.iloc[:, 1:3]
+
+    sc = score(
+        y,
+        predictions,
+        probabilities,
+        sample_weight=sample_weight,
+        default_metrics=binary_classification_balanced_metrics,
+        calculation=Calculation.benchmark,
+        benchmark_models=[PerfectModel(), WorstModel()],
+    )
+    sc.print()
+
+    for metric in sc.get_all_metrics():
+        if metric.result is not None and metric.comparison_result is not None:
+            assert metric.comparison_result["Δ PM"] < metric.comparison_result["Δ WM"]
+
+
+def test_zscore_function():
+    scores = zscore(np.array([1, 2, 3, 4, 5]))
+
+    assert scores[0] == -1.414213562373095
+
+
+def test_benchmark_zscore():
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
     sample_weight = pd.Series([1.0] * len(y))
     preds_probs = generate_synthetic_predictions_binary(y, sample_weight)

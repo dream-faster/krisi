@@ -109,6 +109,12 @@ class WorstModel(Model):
         return predictions, probabilities
 
 
+def zscore(arr: np.ndarray) -> np.ndarray:
+    m = arr.mean()
+    s = arr.std(ddof=0)
+    return (arr - m) / s
+
+
 def calculate_benchmark(
     metric: Metric,
     models: List[Model],
@@ -116,6 +122,7 @@ def calculate_benchmark(
     predictions: PredictionsDS,
     probabilities: Optional[ProbabilitiesDF],
     sample_weight: Optional[WeightsDS],
+    num_benchmarking_iterations: int = 100,
 ) -> Metric:
     if metric.result is None:
         metric = metric.evaluate(y, predictions, probabilities, sample_weight)
@@ -135,22 +142,31 @@ def calculate_benchmark(
             benchmark_probs if metric.accepts_probabilities else benchmark_preds
         )
 
-        benchmark_metric = benchmark_metric._evaluation(
-            y, preds_or_probs, sample_weight=sample_weight
-        )
+        benchmark_metrics = [
+            benchmark_metric._evaluation(
+                y, preds_or_probs, sample_weight=sample_weight
+            ).result
+            for _ in range(num_benchmarking_iterations)
+        ]
 
-        assert isinstance(benchmark_metric.result, (float, int))
+        mean_benchmark_metric = np.mean(benchmark_metrics)
+
+        assert isinstance(mean_benchmark_metric, (float, int))
         assert isinstance(metric.result, (float, int))
 
         if metric.purpose == Purpose.objective:
-            comparison_result = metric.result - benchmark_metric.result
+            comparison_result = metric.result - mean_benchmark_metric
         elif metric.purpose == Purpose.loss:
-            comparison_result = benchmark_metric.result - metric.result
+            comparison_result = mean_benchmark_metric - metric.result
+
+        benchmark_zscores = zscore(np.array(benchmark_metrics + [metric.result]))
+        metric_zscore = benchmark_zscores[-1]
 
         metric.comparison_result = pd.concat(
             [
                 metric.comparison_result,
                 pd.Series([comparison_result], index=[f"Δ {model.name}"]),
+                pd.Series([metric_zscore], index=[f"Δ {model.name}_zscore"]),
             ],
             axis=0,
         )
@@ -216,9 +232,3 @@ def model_benchmarking(model: Model) -> Callable:
         return all_metrics
 
     return postporcess_func
-
-
-if __name__ == "__main__":
-    RandomClassifierSmoothed().predict(
-        pd.Series([0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1]),
-    )
