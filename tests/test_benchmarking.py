@@ -3,7 +3,7 @@ import pandas as pd
 
 from krisi import library
 from krisi.evaluate import score
-from krisi.evaluate.benchmark import zscore
+from krisi.evaluate.benchmark import calculate_benchmark, zscore
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -134,3 +134,23 @@ def test_benchmark_zscore():
     for metric in sc.get_all_metrics():
         if metric.result is not None and metric.comparison_result is not None:
             assert metric.comparison_result["Δ PM"] < metric.comparison_result["Δ WM"]
+
+
+def test_benchmarking_function():
+    X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
+    sample_weight = pd.Series([1.0] * len(y))
+    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+    predictions = preds_probs.iloc[:, 0]
+    probabilities = preds_probs.iloc[:, 1:3]
+    result_metric = calculate_benchmark(
+        metric=library.ClassificationRegistry().f_one_score_binary,
+        models=[library.ModelRegistry.PerfectModel()],
+        y=y,
+        predictions=predictions,
+        probabilities=probabilities,
+        sample_weight=sample_weight,
+        num_benchmark_iter=10,
+    )
+    assert len(result_metric.comparison_result) == 2
+    assert isinstance(result_metric.comparison_result.iloc[0], float)
+    assert isinstance(result_metric.comparison_result.iloc[-1], float)
