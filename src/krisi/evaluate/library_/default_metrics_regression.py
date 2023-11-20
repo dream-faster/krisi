@@ -208,6 +208,8 @@ class RegressionRegistry:
         self.rmsle = rmsle
         self.r_two = r_two
         self.residuals = residuals
+        self.residuals_mean = residuals_mean
+        self.residuals_std = residuals_std
         self.residual_group = residual_group
 
         self.all_regression_metrics = deepcopy(all_regression_metrics)

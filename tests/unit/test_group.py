@@ -32,7 +32,7 @@ def test_group_preprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[library.RegressionRegistry().residuals],
+        metrics=[library.RegressionRegistry().residuals_mean],
         preprocess_func=lambda y, pred, probs, **kwargs: y - pred,
     )
 
