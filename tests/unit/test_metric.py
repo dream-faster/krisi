@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -12,6 +12,16 @@ from krisi.evaluate.type import (
     Targets,
     WeightsDS,
 )
+
+
+def modify_metric(metric, func_: Callable):
+    if isinstance(metric, Group):
+        for m in metric.metrics:
+            m.func = func_(m.parameters)
+    else:
+        metric.func = func_(metric.parameters)
+
+    return metric
 
 
 def test_args():
@@ -39,24 +49,19 @@ def test_args():
 
         return dummy_func
 
-    for (
-        metric
-    ) in (
-        library.MetricRegistryClassification().binary_classification_imbalanced_metrics
-    ):
-        if isinstance(metric, Group):
-            for m in metric.metrics:
-                m.func = dummy_func_inject_kwags(m.parameters)
-            continue
-        metric.func = dummy_func_inject_kwags(metric.parameters)
-
+    modified_metrics = [
+        modify_metric(metric, dummy_func_inject_kwags)
+        for metric in (
+            library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+        )
+    ]
     probs_0 = pd.Series(np.random.rand(data_len))
     score(
         pd.Series(np.random.randint(100, size=data_len)),
         pd.Series(np.random.randint(100, size=data_len)),
         pd.concat([probs_0, probs_0 - 1], axis="columns", copy=False),
         sample_weight=pd.Series(np.random.rand(data_len)),
-        default_metrics=library.MetricRegistryClassification().binary_classification_imbalanced_metrics,
+        default_metrics=modified_metrics,
         calculation=Calculation.single,
     )
 
@@ -88,24 +93,19 @@ def test_args_rolling():
 
         return dummy_func
 
-    for (
-        metric
-    ) in (
-        library.MetricRegistryClassification().binary_classification_imbalanced_metrics
-    ):
-        if isinstance(metric, Group):
-            for m in metric.metrics:
-                m.func = dummy_func_inject_kwags(m.parameters)
-            continue
-        metric.func = dummy_func_inject_kwags(metric.parameters)
-
+    modified_metrics = [
+        modify_metric(metric, dummy_func_inject_kwags)
+        for metric in (
+            library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+        )
+    ]
     probs_0 = pd.Series(np.random.rand(data_len))
     score(
         pd.Series(np.random.randint(100, size=data_len)),
         pd.Series(np.random.randint(100, size=data_len)),
         pd.concat([probs_0, probs_0 - 1], axis="columns", copy=False),
         sample_weight=pd.Series(np.random.rand(data_len)),
-        default_metrics=library.MetricRegistryClassification().binary_classification_imbalanced_metrics,
+        default_metrics=modified_metrics,
         calculation=Calculation.rolling,
         rolling_args={"window": window_size, "min_periods": min_periods},
     )
