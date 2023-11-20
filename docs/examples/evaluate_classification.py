@@ -14,6 +14,7 @@ y, preds, probs, sample_weight = generate_random_classification(
 sc = score(
     y=y,
     predictions=preds,
+    probabilities=probs,
     # dataset_type="classification_multilabel", # if automatic inference of dataset type fails
     calculation="both",
     default_metrics=library.default_metrics_classification.binary_classification_balanced_metrics,
