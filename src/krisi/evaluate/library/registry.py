@@ -1,11 +1,16 @@
 from typing import List
 
-from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import DatasetType
-
-from .benchmarking_models import *
+from ..metric import Metric
+from ..type import DatasetType
+from .benchmarking_models import benchmark_models
 from .default_metrics_classification import ClassificationRegistry
 from .default_metrics_regression import RegressionRegistry
+
+
+class library:
+    ClassificationRegistry = ClassificationRegistry
+    RegressionRegistry = RegressionRegistry
+    benchmark_models = benchmark_models
 
 
 def get_default_metrics_for_dataset_type(type: DatasetType) -> List[Metric]:

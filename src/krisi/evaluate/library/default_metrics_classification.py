@@ -12,13 +12,15 @@ from sklearn.metrics import (
     recall_score,
 )
 
-from krisi.evaluate.library.diagrams import (
+from ..metric import Metric
+from ..type import MetricCategories, Purpose
+from .diagrams import (
     callibration_plot,
     display_density_plot,
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.library.metric_wrappers import (
+from .metric_wrappers import (
     bennet_s,
     pred_y_imbalance_ratio,
     wrap_avg_precision,
@@ -26,8 +28,6 @@ from krisi.evaluate.library.metric_wrappers import (
     wrap_roc_auc,
     y_label_imbalance_ratio,
 )
-from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import MetricCategories, Purpose
 
 accuracy_binary = Metric[float](
     name="Accuracy",

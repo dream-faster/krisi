@@ -7,7 +7,7 @@ from sklearn.calibration import calibration_curve
 if TYPE_CHECKING:
     import plotly.graph_objects as go
 
-from krisi.evaluate.type import MetricResult
+from ..type import MetricResult
 
 
 def display_time_series(data: List[MetricResult], **kwargs) -> "go.Figure":

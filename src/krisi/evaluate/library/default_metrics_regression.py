@@ -11,15 +11,15 @@ from sklearn.metrics import (
     r2_score,
 )
 
-from krisi.evaluate.group import Group
-from krisi.evaluate.library.diagrams import (
+from ..group import Group
+from ..metric import Metric
+from ..type import ComputationalComplexity, MetricCategories, Purpose
+from .diagrams import (
     display_acf_plot,
     display_density_plot,
     display_single_value,
     display_time_series,
 )
-from krisi.evaluate.metric import Metric
-from krisi.evaluate.type import ComputationalComplexity, MetricCategories, Purpose
 
 mae = Metric[float](
     name="Mean Absolute Error",

@@ -6,8 +6,9 @@ from typing import Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from krisi.evaluate.type import Model, WeightsDS
 from krisi.utils.data import generate_synthetic_predictions_binary, shuffle_df_in_chunks
+
+from ..type import Model, WeightsDS
 
 
 class RandomClassifier(Model):
@@ -90,3 +91,12 @@ class WorstModel(Model):
         predictions = np.logical_xor(y, 1).astype(int)
         probabilities = pd.get_dummies(predictions, dtype=float)
         return predictions, probabilities
+
+
+benchmark_models = [
+    RandomClassifier,
+    RandomClassifierSmoothed,
+    RandomClassifierChunked,
+    PerfectModel,
+    WorstModel,
+]
