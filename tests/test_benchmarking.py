@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from krisi import library
 from krisi.evaluate import score
 from krisi.evaluate.benchmark import zscore
 from krisi.evaluate.library.benchmarking_models import (
@@ -8,10 +9,6 @@ from krisi.evaluate.library.benchmarking_models import (
     RandomClassifier,
     RandomClassifierChunked,
     WorstModel,
-)
-from krisi.evaluate.library.default_metrics_classification import (
-    binary_classification_balanced_metrics,
-    f_one_score_macro,
 )
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
@@ -32,7 +29,7 @@ def test_benchmarking_random():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=[f_one_score_macro],
+        default_metrics=[library.MetricRegistryClassification().f_one_score_macro],
         benchmark_models=RandomClassifier(),
     )
     sc.print()
@@ -83,7 +80,7 @@ def test_benchmarking_random_all_metrics():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=binary_classification_balanced_metrics,
+        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
         benchmark_models=RandomClassifierChunked(2),
     )
     sc.print()
@@ -101,7 +98,7 @@ def test_perfect_to_best():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=binary_classification_balanced_metrics,
+        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()
@@ -129,7 +126,7 @@ def test_benchmark_zscore():
         predictions,
         probabilities,
         sample_weight=sample_weight,
-        default_metrics=binary_classification_balanced_metrics,
+        default_metrics=library.MetricRegistryClassification().binary_classification_balanced_metrics,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()

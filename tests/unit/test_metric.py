@@ -39,7 +39,11 @@ def test_args():
 
         return dummy_func
 
-    for metric in library.binary_classification_imbalanced_metrics:
+    for (
+        metric
+    ) in (
+        library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+    ):
         if isinstance(metric, Group):
             for m in metric.metrics:
                 m.func = dummy_func_inject_kwags(m.parameters)
@@ -52,7 +56,7 @@ def test_args():
         pd.Series(np.random.randint(100, size=data_len)),
         pd.concat([probs_0, probs_0 - 1], axis="columns", copy=False),
         sample_weight=pd.Series(np.random.rand(data_len)),
-        default_metrics=library.binary_classification_imbalanced_metrics,
+        default_metrics=library.MetricRegistryClassification().binary_classification_imbalanced_metrics,
         calculation=Calculation.single,
     )
 
@@ -84,7 +88,11 @@ def test_args_rolling():
 
         return dummy_func
 
-    for metric in library.binary_classification_imbalanced_metrics:
+    for (
+        metric
+    ) in (
+        library.MetricRegistryClassification().binary_classification_imbalanced_metrics
+    ):
         if isinstance(metric, Group):
             for m in metric.metrics:
                 m.func = dummy_func_inject_kwags(m.parameters)
@@ -97,7 +105,7 @@ def test_args_rolling():
         pd.Series(np.random.randint(100, size=data_len)),
         pd.concat([probs_0, probs_0 - 1], axis="columns", copy=False),
         sample_weight=pd.Series(np.random.rand(data_len)),
-        default_metrics=library.binary_classification_imbalanced_metrics,
+        default_metrics=library.MetricRegistryClassification().binary_classification_imbalanced_metrics,
         calculation=Calculation.rolling,
         rolling_args={"window": window_size, "min_periods": min_periods},
     )

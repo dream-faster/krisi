@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score,
@@ -311,9 +313,6 @@ binary_classification_imbalanced_metrics = [
     imbalance_ratio_pred_y,
 ]
 
-
-"""~"""
-minimal_binary_classification_metrics = [accuracy_binary, f_one_score_binary]
 """~"""
 multiclass_classification_metrics = [
     cross_entropy,
@@ -332,3 +331,44 @@ minimal_multiclass_classification_metrics = [
     f_one_score_weighted,
     # roc_auc_multi_weighted,
 ]
+
+
+class MetricRegistryClassification:
+    def __init__(self):
+        self.accuracy_binary = deepcopy(accuracy_binary)
+        self.accuracy_binary_balanced = deepcopy(accuracy_binary_balanced)
+        self.avg_precision_micro = deepcopy(avg_precision_micro)
+        self.avg_precision_macro = deepcopy(avg_precision_macro)
+        self.avg_precision_weighted = deepcopy(avg_precision_weighted)
+        self.accuracy_binary = deepcopy(accuracy_binary)
+        self.recall_binary = deepcopy(recall_binary)
+        self.recall_macro = deepcopy(recall_macro)
+        self.precision_binary = deepcopy(precision_binary)
+        self.precision_macro = deepcopy(precision_macro)
+        self.matthew_corr = deepcopy(matthew_corr)
+        self.s_score = deepcopy(s_score)
+        self.f_one_score_binary = deepcopy(f_one_score_binary)
+        self.f_one_score_macro = deepcopy(f_one_score_macro)
+        self.f_one_score_micro = deepcopy(f_one_score_micro)
+        self.f_one_score_weighted = deepcopy(f_one_score_weighted)
+        self.kappa = deepcopy(kappa)
+        self.brier_score = deepcopy(brier_score)
+        self.calibration = deepcopy(calibration)
+        self.roc_auc_binary_micro = deepcopy(roc_auc_binary_micro)
+        self.roc_auc_binary_macro = deepcopy(roc_auc_binary_macro)
+        self.roc_auc_binary_weighted = deepcopy(roc_auc_binary_weighted)
+        self.roc_auc_multi_micro = deepcopy(roc_auc_multi_micro)
+        self.roc_auc_multi_macro = deepcopy(roc_auc_multi_macro)
+        self.imbalance_ratio_y = deepcopy(imbalance_ratio_y)
+        self.imbalance_ratio_pred_y = deepcopy(imbalance_ratio_pred_y)
+        self.cross_entropy = deepcopy(cross_entropy)
+
+        self.binary_classification_balanced_metrics = deepcopy(
+            binary_classification_balanced_metrics
+        )
+        self.binary_classification_imbalanced_metrics = deepcopy(
+            binary_classification_imbalanced_metrics
+        )
+        self.multiclass_classification_metrics = deepcopy(
+            multiclass_classification_metrics
+        )

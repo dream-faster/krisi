@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 import numpy as np
@@ -195,3 +196,9 @@ low_computation_regression_metrics = [
     if metric.comp_complexity is not ComputationalComplexity.high
 ]
 """ ~ """
+
+
+class MetricRegistryRegression:
+    all_regression_metrics = deepcopy(all_regression_metrics)
+    minimal_regression_metrics = deepcopy(minimal_regression_metrics)
+    low_computation_regression_metrics = deepcopy(low_computation_regression_metrics)

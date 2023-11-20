@@ -6,27 +6,22 @@ Default Metric Selection
 
 import numpy as np
 
-from krisi import score
-from krisi.evaluate.library.default_metrics_regression import (
-    all_regression_metrics,
-    low_computation_regression_metrics,
-    minimal_regression_metrics,
-)
+from krisi import library, score
 
 score(
     y=np.random.random(1000),
     predictions=np.random.random(1000),
-    default_metrics=all_regression_metrics,  # This is the default
+    default_metrics=library.MetricRegistryRegression().all_regression_metrics,  # This is the default
 ).print()
 
 score(
     y=np.random.random(1000),
     predictions=np.random.random(1000),
-    default_metrics=minimal_regression_metrics,
+    default_metrics=library.MetricRegistryRegression().minimal_regression_metrics,
 ).print(input_analysis=False)
 
 score(
     y=np.random.random(1000),
     predictions=np.random.random(1000),
-    default_metrics=low_computation_regression_metrics,
+    default_metrics=library.MetricRegistryRegression().low_computation_regression_metrics,
 ).print(input_analysis=False)
