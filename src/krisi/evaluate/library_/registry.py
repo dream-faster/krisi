@@ -2,7 +2,7 @@ from typing import List
 
 from ..metric import Metric
 from ..type import DatasetType
-from .benchmarking_models import benchmark_models
+from .benchmarking_models import ModelRegistry
 from .default_metrics_classification import ClassificationRegistry
 from .default_metrics_regression import RegressionRegistry
 
@@ -10,7 +10,7 @@ from .default_metrics_regression import RegressionRegistry
 class library:
     ClassificationRegistry = ClassificationRegistry
     RegressionRegistry = RegressionRegistry
-    benchmark_models = benchmark_models
+    ModelRegistry = ModelRegistry
 
 
 def get_default_metrics_for_dataset_type(type: DatasetType) -> List[Metric]:

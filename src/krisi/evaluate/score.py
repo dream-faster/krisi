@@ -1,11 +1,11 @@
 from typing import Any, Dict, List, Optional, Union
 
-from krisi.evaluate.library.benchmarking_models import Model
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.scorecard import ScoreCard
 from krisi.evaluate.type import (
     Calculation,
     DatasetType,
+    Model,
     Predictions,
     Probabilities,
     SampleTypes,

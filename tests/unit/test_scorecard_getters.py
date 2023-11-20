@@ -4,7 +4,6 @@ import pytest
 
 from krisi import library
 from krisi.evaluate import score
-from krisi.evaluate.library.benchmarking_models import RandomClassifierChunked
 
 
 def test_spreading_comparions_results():
@@ -12,7 +11,7 @@ def test_spreading_comparions_results():
         pd.Series(np.random.randint(2, size=100)),
         pd.Series(np.random.randint(2, size=100)),
         default_metrics=[library.ClassificationRegistry().f_one_score_macro],
-        benchmark_models=RandomClassifierChunked(0.05),
+        benchmark_models=library.ModelRegistry.RandomClassifierChunked(0.05),
     )
 
     metrics = sc.get_all_metrics(spread_comparisons=True)
@@ -25,7 +24,7 @@ def test_getting_no_skill_metric():
         pd.Series(np.random.randint(2, size=100)),
         pd.Series(np.random.randint(2, size=100)),
         default_metrics=[library.ClassificationRegistry().f_one_score_macro],
-        benchmark_models=RandomClassifierChunked(0.05),
+        benchmark_models=library.ModelRegistry.RandomClassifierChunked(0.05),
     )
 
     metric = sc["f_one_score_macro-Δ NS"]

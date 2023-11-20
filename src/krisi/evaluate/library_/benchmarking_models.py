@@ -93,10 +93,9 @@ class WorstModel(Model):
         return predictions, probabilities
 
 
-benchmark_models = [
-    RandomClassifier,
-    RandomClassifierSmoothed,
-    RandomClassifierChunked,
-    PerfectModel,
-    WorstModel,
-]
+class ModelRegistry:
+    RandomClassifier = RandomClassifier
+    RandomClassifierSmoothed = RandomClassifierSmoothed
+    RandomClassifierChunked = RandomClassifierChunked
+    PerfectModel = PerfectModel
+    WorstModel = WorstModel

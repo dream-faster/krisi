@@ -4,12 +4,6 @@ import pandas as pd
 from krisi import library
 from krisi.evaluate import score
 from krisi.evaluate.benchmark import zscore
-from krisi.evaluate.library.benchmarking_models import (
-    PerfectModel,
-    RandomClassifier,
-    RandomClassifierChunked,
-    WorstModel,
-)
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -30,7 +24,7 @@ def test_benchmarking_random():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=[library.ClassificationRegistry().f_one_score_macro],
-        benchmark_models=RandomClassifier(),
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     sc.print()
 
@@ -42,7 +36,7 @@ def test_benchmarking_random_chunked():
     X = generate_synthetic_predictions_binary(y, sample_weight)
 
     chunk_size = 2
-    preds_probs = RandomClassifierChunked(chunk_size).predict(
+    preds_probs = library.ModelRegistry.RandomClassifierChunked(chunk_size).predict(
         X, y, sample_weight=sample_weight
     )
 
@@ -81,7 +75,7 @@ def test_benchmarking_random_all_metrics():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
-        benchmark_models=RandomClassifierChunked(2),
+        benchmark_models=library.ModelRegistry.RandomClassifierChunked(2),
     )
     sc.print()
 
@@ -99,7 +93,10 @@ def test_perfect_to_best():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
-        benchmark_models=[PerfectModel(), WorstModel()],
+        benchmark_models=[
+            library.ModelRegistry.PerfectModel(),
+            library.ModelRegistry.WorstModel(),
+        ],
     )
     sc.print()
 
@@ -127,7 +124,10 @@ def test_benchmark_zscore():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
-        benchmark_models=[PerfectModel(), WorstModel()],
+        benchmark_models=[
+            library.ModelRegistry.PerfectModel(),
+            library.ModelRegistry.WorstModel(),
+        ],
     )
     sc.print()
 

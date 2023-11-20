@@ -1,5 +1,4 @@
 from krisi import library, score
-from krisi.evaluate.library.benchmarking_models import RandomClassifier
 from krisi.utils.data import generate_random_classification
 
 
@@ -13,7 +12,7 @@ def test_scorecard_union():
         probabilities=probabilities,
         sample_weight=sample_weight,
         default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
-        benchmark_models=RandomClassifier(),
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     sc_2 = score(
         y=y,
@@ -21,7 +20,7 @@ def test_scorecard_union():
         probabilities=probabilities,
         sample_weight=sample_weight,
         default_metrics=library.ClassificationRegistry().binary_classification_balanced_metrics,
-        benchmark_models=RandomClassifier(),
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
     )
     metric_key = "precision_binary"
     sc_substracted = sc_1.subtract(sc_2)

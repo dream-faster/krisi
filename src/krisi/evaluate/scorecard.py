@@ -18,12 +18,12 @@ from krisi.evaluate.assertions import (
     infer_dataset_type,
 )
 from krisi.evaluate.group import Group
-from krisi.evaluate.library.benchmarking_models import Model
-from krisi.evaluate.library.registry import get_default_metrics_for_dataset_type
+from krisi.evaluate.library_.registry import get_default_metrics_for_dataset_type
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import (
     DatasetType,
     MetricCategories,
+    Model,
     PathConst,
     Predictions,
     PredictionsDS,

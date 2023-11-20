@@ -1,7 +1,7 @@
 import pandas as pd
 import plotext as plx
 
-from krisi.evaluate.library.diagrams import calculate_calibration_bins
+from krisi.evaluate.library_.diagrams import calculate_calibration_bins
 
 
 def histogram_plot(data: pd.Series, width: float, height: float, title: str) -> str:

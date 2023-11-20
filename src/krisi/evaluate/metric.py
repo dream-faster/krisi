@@ -9,12 +9,12 @@ import numpy as np
 import pandas as pd
 
 from krisi.evaluate.benchmark import calculate_benchmark
-from krisi.evaluate.library.benchmarking_models import Model
 from krisi.evaluate.type import (
     ComputationalComplexity,
     MetricCategories,
     MetricFunction,
     MetricResult,
+    Model,
     PredictionsDS,
     ProbabilitiesDF,
     Purpose,

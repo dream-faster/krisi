@@ -3,9 +3,8 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
+from krisi import library
 from krisi.evaluate.group import Group
-from krisi.evaluate.library.default_metrics_classification import f_one_score_macro
-from krisi.evaluate.library.default_metrics_regression import residuals_mean
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import PredictionsDS, ProbabilitiesDF, TargetsDS, WeightsDS
 
@@ -33,7 +32,7 @@ def test_group_preprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[residuals_mean],
+        metrics=[library.RegressionRegistry().residuals],
         preprocess_func=lambda y, pred, probs, **kwargs: y - pred,
     )
 
@@ -53,7 +52,7 @@ def test_group_postprocess():
     groupped_metric = Group[pd.Series](
         name="residual_group",
         key="residual_group",
-        metrics=[f_one_score_macro],
+        metrics=[library.ClassificationRegistry().f_one_score_macro],
         postprocess_funcs=example_postporcess_func,
     )
 
