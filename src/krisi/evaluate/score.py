@@ -27,9 +27,7 @@ def score(
     custom_metrics: Optional[Union[List[Metric], Metric]] = None,
     dataset_type: Optional[Union[DatasetType, str]] = None,
     sample_type: Union[str, SampleTypes] = SampleTypes.outofsample,
-    calculation: Union[
-        List[Union[Calculation, str]], Union[Calculation, str]
-    ] = Calculation.single,
+    calculation: Union[Calculation, str] = Calculation.single,
     rolling_args: Optional[Dict[str, Any]] = None,
     raise_exceptions: bool = False,
     benchmark_models: Optional[Union[Model, List[Model]]] = None,
@@ -63,11 +61,11 @@ def score(
             - `SampleTypes.outofsample`
             - `SampleTypes.insample`
     calculation: Union[ List[Union[Calculation, str]], Union[Calculation, str] ], optional
-        Whether it should evaluate `Metrics` on a rolling basis or on the whole prediction or benchmark, by default Calculation.single
+        Whether it should evaluate `Metrics` on a rolling basis or on the whole prediction or both, by default Calculation.single
 
             - `Calculation.single`
             - `Calculation.rolling`
-            - `Calculation.benchmark`
+            - `Calculation.both`
     rolling_args : Dict[str, Any], optional
         Arguments to be passed onto `pd.DataFrame.rolling`.
         Default:
@@ -86,9 +84,8 @@ def score(
         If Calculation type is incorrectly specified.
     """
 
-    calculations = [
-        Calculation.from_str(calculation) for calculation in wrap_in_list(calculation)
-    ]
+    calculation = Calculation.from_str(calculation)
+
     benchmark_models = (
         wrap_in_list(benchmark_models) if benchmark_models is not None else None
     )
@@ -110,24 +107,20 @@ def score(
         **kwargs,
     )
 
-    assert any(
-        [
-            calc
-            in [
-                Calculation.single,
-                Calculation.benchmark,
-                Calculation.rolling,
-            ]
-            for calc in calculations
-        ]
-    ), f"Calculation type {calculation} not recognized."
+    assert calculation in [
+        Calculation.single,
+        Calculation.rolling,
+        Calculation.both,
+    ], f"Calculation type {calculation} not recognized."
 
-    if Calculation.single in calculations:
+    if calculation == Calculation.single:
         sc.evaluate()
-    if Calculation.rolling in calculations:
+    elif calculation == Calculation.rolling:
         sc.evaluate_over_time()
-    if Calculation.benchmark in calculations:
-        assert benchmark_models is not None, "You need to define a benchmark model!"
+    elif calculation == Calculation.both:
+        sc.evaluate()
+        sc.evaluate_over_time()
+    if benchmark_models is not None:
         sc.evaluate_benchmark(benchmark_models)
 
     sc.cleanup_group()

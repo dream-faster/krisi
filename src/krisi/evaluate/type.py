@@ -57,7 +57,7 @@ class SampleTypes(ParsableEnum):
 class Calculation(ParsableEnum):
     single = "single"
     rolling = "rolling"
-    benchmark = "benchmark"
+    both = "both"
 
 
 class SaveModes(ParsableEnum):

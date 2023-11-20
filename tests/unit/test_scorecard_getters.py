@@ -12,7 +12,6 @@ def test_spreading_comparions_results():
         pd.Series(np.random.randint(2, size=100)),
         pd.Series(np.random.randint(2, size=100)),
         default_metrics=[f_one_score_macro],
-        calculation=["benchmark"],
         benchmark_models=RandomClassifierChunked(0.05),
     )
 
@@ -26,7 +25,6 @@ def test_getting_no_skill_metric():
         pd.Series(np.random.randint(2, size=100)),
         pd.Series(np.random.randint(2, size=100)),
         default_metrics=[f_one_score_macro],
-        calculation=["benchmark"],
         benchmark_models=RandomClassifierChunked(0.05),
     )
 

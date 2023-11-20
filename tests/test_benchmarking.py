@@ -13,7 +13,6 @@ from krisi.evaluate.library.default_metrics_classification import (
     binary_classification_balanced_metrics,
     f_one_score_macro,
 )
-from krisi.evaluate.type import Calculation
 from krisi.sharedtypes import Task
 from krisi.utils.data import (
     generate_synthetic_data,
@@ -34,7 +33,6 @@ def test_benchmarking_random():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=[f_one_score_macro],
-        calculation=[Calculation.single, Calculation.benchmark],
         benchmark_models=RandomClassifier(),
     )
     sc.print()
@@ -86,7 +84,6 @@ def test_benchmarking_random_all_metrics():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=binary_classification_balanced_metrics,
-        calculation=[Calculation.benchmark],
         benchmark_models=RandomClassifierChunked(2),
     )
     sc.print()
@@ -105,7 +102,6 @@ def test_perfect_to_best():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=binary_classification_balanced_metrics,
-        calculation=Calculation.benchmark,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()
@@ -134,7 +130,6 @@ def test_benchmark_zscore():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=binary_classification_balanced_metrics,
-        calculation=Calculation.benchmark,
         benchmark_models=[PerfectModel(), WorstModel()],
     )
     sc.print()

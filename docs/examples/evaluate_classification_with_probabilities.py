@@ -6,7 +6,6 @@ Classification with Probabilities
 
 
 from krisi import score
-from krisi.evaluate.type import Calculation
 from krisi.utils.data import generate_random_classification
 
 y, preds, probs, sample_weight = generate_random_classification(
@@ -26,7 +25,7 @@ sc = score(
     predictions=preds,
     probabilities=probs,
     # dataset_type="classification_binary_balanced", # if automatic inference of dataset type fails
-    calculation=[Calculation.single, Calculation.rolling],
+    calculation="both",
 )
 sc.print()
 sc.generate_report()
