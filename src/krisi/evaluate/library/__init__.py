@@ -3,6 +3,7 @@ from typing import List
 from krisi.evaluate.metric import Metric
 from krisi.evaluate.type import DatasetType
 
+from .benchmarking_models import *
 from .default_metrics_classification import *
 from .default_metrics_classification import (
     binary_classification_balanced_metrics,

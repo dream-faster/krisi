@@ -12,6 +12,7 @@ def test_scorecard_union():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=library.binary_classification_balanced_metrics,
+        benchmark_models=library.RandomClassifier(),
     )
     sc_2 = score(
         y,
@@ -19,6 +20,7 @@ def test_scorecard_union():
         probabilities,
         sample_weight=sample_weight,
         default_metrics=library.binary_classification_balanced_metrics,
+        benchmark_models=library.RandomClassifier(),
     )
     metric_key = "precision_binary"
     sc_substracted = sc_1.subtract(sc_2)

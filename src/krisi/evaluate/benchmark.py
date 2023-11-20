@@ -38,6 +38,7 @@ def calculate_benchmark(
         if metric.result is None
         else metric.result
     )
+    benchmark_metric = metric.reset()
 
     for model in models:
         if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
@@ -54,7 +55,9 @@ def calculate_benchmark(
         )
 
         benchmark_metrics = [
-            metric._evaluation(y, preds_or_probs, sample_weight=sample_weight).result
+            benchmark_metric._evaluation(
+                y, preds_or_probs, sample_weight=sample_weight
+            ).result
             for _ in range(num_benchmark_iter)
         ]
 
