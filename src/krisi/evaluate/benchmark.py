@@ -24,6 +24,17 @@ def zscore(arr: np.ndarray) -> np.ndarray:
     return (arr - m) / s
 
 
+def _predict_evaluate(
+    X: pd.DataFrame,
+    y: pd.Series,
+    sample_weight: Optional[pd.Series],
+    metric: Metric,
+    model: Model,
+) -> float:
+    preds, probs = model.predict(X, y, sample_weight)
+    return metric.evaluate(y, preds, probs, sample_weight).result
+
+
 def calculate_benchmark(
     metric: Metric,
     models: List[Model],
@@ -31,8 +42,11 @@ def calculate_benchmark(
     predictions: PredictionsDS,
     probabilities: Optional[ProbabilitiesDF],
     sample_weight: Optional[WeightsDS],
-    num_benchmark_iter: Optional[int],
+    num_benchmark_iter: int,
 ) -> Metric:
+    if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
+        return metric
+
     metric_result = (
         metric.evaluate(y, predictions, probabilities, sample_weight).result
         if metric.result is None
@@ -41,30 +55,17 @@ def calculate_benchmark(
     benchmark_metric = metric.reset()
 
     for model in models:
-        if metric.purpose == Purpose.group or metric.purpose == Purpose.diagram:
-            return metric
-
         if probabilities is not None:
             X = pd.concat([predictions, probabilities], axis="columns", copy=False)
         else:
             X = predictions.to_frame()
-        benchmark_preds, benchmark_probs = model.predict(X, y, sample_weight)
-
-        preds_or_probs = (
-            benchmark_probs if metric.accepts_probabilities else benchmark_preds
-        )
 
         benchmark_metrics = [
-            benchmark_metric._evaluation(
-                y, preds_or_probs, sample_weight=sample_weight
-            ).result
+            _predict_evaluate(X, y, sample_weight, benchmark_metric, model)
             for _ in range(num_benchmark_iter)
         ]
 
         mean_benchmark_metric = np.mean(benchmark_metrics)
-
-        assert isinstance(mean_benchmark_metric, (float, int))
-        assert isinstance(metric_result, (float, int))
 
         if metric.purpose == Purpose.objective:
             comparison_result = metric_result - mean_benchmark_metric
