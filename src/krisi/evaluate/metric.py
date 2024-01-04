@@ -84,6 +84,7 @@ class Metric(Generic[MetricResult]):
     restrict_to_sample: Optional[SampleTypes] = None
     comp_complexity: Optional[ComputationalComplexity] = None
     supports_rolling: bool = True
+    disable_benchmarking: bool = False
     accepts_probabilities: bool = False
     supports_multiclass: bool = False
     diagnostics: Optional[Dict[str, Any]] = field(default_factory=dict)
@@ -308,6 +309,10 @@ class Metric(Generic[MetricResult]):
         num_benchmark_iter: Optional[int] = None,
     ) -> Metric:
         assert benchmark_models is not None
+
+        if self.disable_benchmarking:
+            return self
+
         return calculate_benchmark(
             self,
             benchmark_models,
