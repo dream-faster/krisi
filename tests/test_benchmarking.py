@@ -29,6 +29,28 @@ def test_benchmarking_random():
     sc.print()
 
 
+def test_disable_benchmarking():
+    X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
+    sample_weight = pd.Series([1.0] * len(y))
+    preds_probs = generate_synthetic_predictions_binary(y, sample_weight)
+    predictions = preds_probs.iloc[:, 0]
+    probabilities = preds_probs.iloc[:, 1:3]
+
+    metric_with_benchmark = library.ClassificationRegistry().f_one_score_macro
+    metric_without_benchmark = library.ClassificationRegistry().accuracy_binary
+    metric_without_benchmark.disable_benchmarking = True
+    sc = score(
+        y,
+        predictions,
+        probabilities,
+        sample_weight=sample_weight,
+        default_metrics=[metric_with_benchmark, metric_without_benchmark],
+        benchmark_models=library.ModelRegistry.RandomClassifier(),
+    )
+    assert sc[metric_with_benchmark.key].comparison_result is not None
+    assert sc[metric_without_benchmark.key].comparison_result is None
+
+
 def test_benchmarking_random_chunked():
     X, y = generate_synthetic_data(task=Task.classification, num_obs=1000)
 
