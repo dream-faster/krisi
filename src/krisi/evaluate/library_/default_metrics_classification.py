@@ -91,6 +91,7 @@ kappa = Metric[float](
     plot_funcs=[(display_single_value, dict(width=750.0))],
     plot_funcs_rolling=(display_time_series, dict(width=1500.0)),
     purpose=Purpose.objective,
+    disable_benchmarking=True,
 )
 
 """~"""
@@ -163,6 +164,7 @@ s_score = Metric[float](
     supports_multiclass=False,
     purpose=Purpose.objective,
     supports_rolling=False,
+    disable_benchmarking=True,
 )
 """~"""
 
