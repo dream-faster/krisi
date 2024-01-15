@@ -37,7 +37,7 @@ def wrap_roc_auc(
     if len(prob_columns) == 2:
         probs = probs.iloc[:, 1]
     if len(np.unique(y)) == 1:
-        return "ROC AUC only works with more than one class."
+        return "ROC AUC only works with more than one class. `y` contains only instance of one class."
 
     return roc_auc_score(
         y_true=y,
